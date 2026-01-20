@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ICS Signals Mastery</title>
+<style>
+/* --- CSS STYLES --- */
+:root {
+    --bg-grad-start: #0f172a;
+    --bg-grad-end: #1e293b;
+    --card-bg: #334155;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --accent: #38bdf8;
+    --accent-hover: #0ea5e9;
+    --success: #4ade80; /* Brighter green for HUD */
+    --error: #f87171;   /* Brighter red for HUD */
+    --gold: #fbbf24;
+    --radius: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+
+body {
+    background: linear-gradient(135deg, var(--bg-grad-start), var(--bg-grad-end));
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+/* --- LAYOUT UTILS --- */
+.container { width: 100%; max-width: 800px; margin: 0 auto; }
+.hidden { display: none !important; }
+
+h1, h2, h3 { margin-bottom: 1rem; text-align: center; }
+h1 { font-size: 2rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; }
+
+/* --- CARDS --- */
+.card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 2rem;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+/* --- NEW HUD DASHBOARD --- */
+.hud-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+    background: rgba(0,0,0,0.25);
+    padding: 15px;
+    border-radius: var(--radius);
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.hud-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 10px;
+}
+
+.hud-stats-row {
+    display: flex;
+    flex-wrap: wrap; /* Mobile friendly wrapping */
+    gap: 10px;
+    justify-content: center;
+}
+
+.stat-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.05);
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Specific Chip Styles */
+.chip-streak { color: var(--text-muted); border: 1px solid transparent; }
+.chip-streak.hot { 
+    color: var(--gold); 
+    background: rgba(251, 191, 36, 0.15); 
+    border-color: rgba(251, 191, 36, 0.4);
+    box-shadow: 0 0 10px rgba(251, 191, 36, 0.2);
+}
+
+.chip-acc { color: var(--accent); }
+.chip-correct { color: #0f172a; background: var(--success); }
+.chip-wrong { color: #0f172a; background: var(--error); }
+
+.timer-badge {
+    background: rgba(0,0,0,0.4);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: monospace;
+    margin-left: 8px;
+    color: var(--text-main);
+}
+
+/* --- FLAG DISPLAY --- */
+.flag-stage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 1rem 0 2rem 0;
+    min-height: 240px;
+    background: rgba(0,0,0,0.2);
+    border-radius: var(--radius);
+    padding: 20px;
+    position: relative;
+}
+
+.flag-stage svg {
+    height: 200px;
+    width: auto;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+}
+
+.complement-text {
+    position: absolute;
+    bottom: 10px; right: 10px;
+    background: rgba(0,0,0,0.8);
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: var(--gold);
+}
+
+/* --- INTERACTIVE ELEMENTS --- */
+.btn {
+    display: inline-block;
+    background: var(--accent);
+    color: #0f172a;
+    border: none;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    text-decoration: none;
+}
+.btn:hover { background: var(--accent-hover); transform: translateY(-1px); }
+.btn:active { transform: translateY(1px); }
+.btn-outline { background: transparent; border: 2px solid var(--accent); color: var(--accent); }
+.btn-outline:hover { background: rgba(56, 189, 248, 0.1); }
+.btn-danger { background: var(--error); color: #0f172a; }
+.btn-danger:hover { background: #ef4444; }
+
+.grid-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.option-btn {
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(255,255,255,0.1);
+    color: var(--text-main);
+    padding: 15px;
+    border-radius: 8px;
+    text-align: left;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+}
+
+.option-btn .key-hint {
+    background: rgba(0,0,0,0.3);
+    width: 24px; height: 24px;
+    border-radius: 4px;
+    display: inline-flex; align-items: center; justify-content: center;
+    margin-right: 10px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.option-btn:hover { background: rgba(255,255,255,0.1); }
+.option-btn.correct { background: rgba(74, 222, 128, 0.2); border-color: var(--success); }
+.option-btn.wrong { background: rgba(248, 113, 113, 0.2); border-color: var(--error); }
+
+.input-group { display: flex; gap: 10px; margin-top: 20px; }
+input[type="text"] {
+    flex: 1; padding: 15px;
+    border-radius: 8px;
+    border: 2px solid rgba(255,255,255,0.1);
+    background: rgba(0,0,0,0.2);
+    color: white; font-size: 1.1rem;
+}
+input[type="text"]:focus { outline: none; border-color: var(--accent); }
+
+/* --- SETTINGS & RESULTS --- */
+.settings-group { margin-bottom: 20px; }
+.settings-group label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem; }
+.pill-selector { display: flex; gap: 10px; flex-wrap: wrap; }
+.pill {
+    padding: 8px 16px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+.pill.active { background: var(--accent); color: #0f172a; font-weight: bold; }
+.pill-check { display: flex; align-items: center; gap: 8px; }
+
+.result-item {
+    display: flex; align-items: center; gap: 15px;
+    background: rgba(0,0,0,0.2);
+    padding: 10px; margin-bottom: 10px;
+    border-radius: 8px;
+    border-left: 4px solid var(--text-muted);
+}
+.result-item.r-correct { border-left-color: var(--success); }
+.result-item.r-wrong { border-left-color: var(--error); }
+.result-mini-flag svg { height: 40px; width: auto; display: block; }
+.result-info { flex: 1; font-size: 0.9rem; }
+.result-info div:first-child { font-weight: bold; margin-bottom: 2px; }
+.result-info .user-ans { font-style: italic; color: var(--error); font-size: 0.85rem; }
+.result-info .real-ans { color: var(--success); font-size: 0.85rem; }
+
+.typing-feedback {
+    margin-top: 15px; padding: 15px;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+.tf-title { font-weight: bold; margin-bottom: 5px; color: var(--accent); }
+.tf-diff { font-family: monospace; font-size: 0.95rem; }
+.missed-keys { color: var(--gold); font-size: 0.85rem; margin-top: 5px; }
+
+</style>
+</head>
+<body>
+
+<script>
+const DATA_LETTERS = {
+    "A": { labelLong: "A — Alpha", labelShort: "Alpha", primary: "I have a diver down; keep well clear at slow speed." },
+    "B": { labelLong: "B — Bravo", labelShort: "Bravo", primary: "I am taking in, or discharging or carrying dangerous goods." },
+    "C": { labelLong: "C — Charlie", labelShort: "Charlie", primary: "Yes (Affirmative)." },
+    "D": { labelLong: "D — Delta", labelShort: "Delta", primary: "Keep clear of me; I am manoeuvring with difficulty." },
+    "E": { labelLong: "E — Echo", labelShort: "Echo", primary: "I am altering my course to Starboard." },
+    "F": { labelLong: "F — Foxtrot", labelShort: "Foxtrot", primary: "I am disabled; communicate with me." },
+    "G": { labelLong: "G — Golf", labelShort: "Golf", primary: "I require a pilot. (Fishing: I am hauling nets)." },
+    "H": { labelLong: "H — Hotel", labelShort: "Hotel", primary: "I have a pilot on board." },
+    "I": { labelLong: "I — India", labelShort: "India", primary: "I am altering my course to Port." },
+    "J": { labelLong: "J — Juliet", labelShort: "Juliet", primary: "Keep clear of me. I am on fire and have dangerous cargo on board." },
+    "K": { labelLong: "K — Kilo", labelShort: "Kilo", primary: "I wish to communicate with you." },
+    "L": { labelLong: "L — Lima", labelShort: "Lima", primary: "You should stop your vessel instantly." },
+    "M": { labelLong: "M — Mike", labelShort: "Mike", primary: "My vessel is stopped and making no way through the water." },
+    "N": { labelLong: "N — November", labelShort: "November", primary: "No (Negative)." },
+    "O": { labelLong: "O — Oscar", labelShort: "Oscar", primary: "Man overboard." },
+    "P": { labelLong: "P — Papa", labelShort: "Papa", primary: "In Harbour: All persons should report on board. (Fishing: Nets caught)." },
+    "Q": { labelLong: "Q — Quebec", labelShort: "Quebec", primary: "My vessel is healthy and I request free pratique." },
+    "R": { labelLong: "R — Romeo", labelShort: "Romeo", primary: "No single letter meaning." },
+    "S": { labelLong: "S — Sierra", labelShort: "Sierra", primary: "I am operating astern propulsion." },
+    "T": { labelLong: "T — Tango", labelShort: "Tango", primary: "Keep clear of me; I am engaged in pair trawling." },
+    "U": { labelLong: "U — Uniform", labelShort: "Uniform", primary: "You are running into danger." },
+    "V": { labelLong: "V — Victor", labelShort: "Victor", primary: "I require assistance." },
+    "W": { labelLong: "W — Whiskey", labelShort: "Whiskey", primary: "I require medical assistance." },
+    "X": { labelLong: "X — X-ray", labelShort: "X-ray", primary: "Stop carrying out your intentions and watch for my signals." },
+    "Y": { labelLong: "Y — Yankee", labelShort: "Yankee", primary: "I am dragging my anchor." },
+    "Z": { labelLong: "Z — Zulu", labelShort: "Zulu", primary: "I require a tug. (Fishing: I am shooting nets)." }
+};
+
+const DATA_NUMERALS = {
+    "0": { labelLong: "0 — Numeral Zero", labelShort: "Zero", primary: "Numeral 0" },
+    "1": { labelLong: "1 — Numeral One", labelShort: "One", primary: "Numeral 1" },
+    "2": { labelLong: "2 — Numeral Two", labelShort: "Two", primary: "Numeral 2" },
+    "3": { labelLong: "3 — Numeral Three", labelShort: "Three", primary: "Numeral 3" },
+    "4": { labelLong: "4 — Numeral Four", labelShort: "Four", primary: "Numeral 4" },
+    "5": { labelLong: "5 — Numeral Five", labelShort: "Five", primary: "Numeral 5" },
+    "6": { labelLong: "6 — Numeral Six", labelShort: "Six", primary: "Numeral 6" },
+    "7": { labelLong: "7 — Numeral Seven", labelShort: "Seven", primary: "Numeral 7" },
+    "8": { labelLong: "8 — Numeral Eight", labelShort: "Eight", primary: "Numeral 8" },
+    "9": { labelLong: "9 — Numeral Nine", labelShort: "Nine", primary: "Numeral 9" }
+};
+
+const DATA_SUBS = {
+    "SUB1": { labelLong: "1st Substitute", labelShort: "1st Sub", primary: "Repeats the uppermost signal flag of that class." },
+    "SUB2": { labelLong: "2nd Substitute", labelShort: "2nd Sub", primary: "Repeats the second flag of that class." },
+    "SUB3": { labelLong: "3rd Substitute", labelShort: "3rd Sub", primary: "Repeats the third flag of that class." },
+    "ANS":  { labelLong: "Code and Answering Pendant", labelShort: "Ans Pendant", primary: "Decimal point or End of message." }
+};
+
+const DATA_SECONDARY = [
+    { id: "A_sec", letter: "A", complement: "With 3 numerals", meaning: "AZIMUTH or BEARING" },
+    { id: "C_sec", letter: "C", complement: "(Alone)", meaning: "COURSE" },
+    { id: "D_sec", letter: "D", complement: "With 2, 4, or 6 numerals", meaning: "DATE" },
+    { id: "G_sec", letter: "G", complement: "With 4 or 5 numerals", meaning: "LONGITUDE" },
+    { id: "L_sec", letter: "L", complement: "With 4 numerals", meaning: "LATITUDE" },
+    { id: "R_sec", letter: "R", complement: "With 1 or more numerals", meaning: "DISTANCE (NM)" },
+    { id: "S_sec", letter: "S", complement: "With 1 or more numerals", meaning: "SPEED (Knots)" },
+    { id: "T_sec", letter: "T", complement: "With 4 numerals", meaning: "TIME (Local)" },
+    { id: "V_sec", letter: "V", complement: "With 1 or more numerals", meaning: "SPEED (Kph)" },
+    { id: "Z_sec", letter: "Z", complement: "With 4 numerals", meaning: "TIME (UTC/GMT)" }
+];
+
+const ALL_FLAGS = { ...DATA_LETTERS, ...DATA_NUMERALS, ...DATA_SUBS };
+</script>
+
+<div class="container" id="app">
+    <div id="screen-menu" class="card">
+        <h1>ICS Signals Quiz</h1>
+        <p style="text-align:center; color: var(--text-muted); margin-bottom:20px;">Master the International Code of Signals</p>
+        
+        <div class="settings-group">
+            <label>Mode</label>
+            <div class="pill-selector" id="mode-selector">
+                <div class="pill active" onclick="setMode('CHAR')">Identify Flag</div>
+                <div class="pill" onclick="setMode('MEANING_MC')">Primary Meaning (MC)</div>
+                <div class="pill" onclick="setMode('MEANING_TYPE')">Primary Meaning (Type)</div>
+                <div class="pill" onclick="setMode('SECONDARY')">Secondary Meanings</div>
+            </div>
+        </div>
+
+        <div class="settings-group" id="category-settings">
+            <label>Categories</label>
+            <div class="pill-selector">
+                <div class="pill active pill-check" onclick="toggleCat('letters')">Letters</div>
+                <div class="pill pill-check" onclick="toggleCat('numerals')">Numerals</div>
+                <div class="pill pill-check" onclick="toggleCat('subs')">Substitutes</div>
+            </div>
+        </div>
+
+        <div class="settings-group">
+            <label>Difficulty (MC Options)</label>
+            <div class="pill-selector" id="diff-selector">
+                <div class="pill" onclick="setSetting('difficulty', 3)">3</div>
+                <div class="pill active" onclick="setSetting('difficulty', 4)">4</div>
+                <div class="pill" onclick="setSetting('difficulty', 6)">6</div>
+            </div>
+        </div>
+
+        <div class="settings-group">
+            <label>Question Count</label>
+            <div class="pill-selector" id="count-selector">
+                <div class="pill active" onclick="setSetting('count', 10)">10</div>
+                <div class="pill" onclick="setSetting('count', 20)">20</div>
+                <div class="pill" onclick="setSetting('count', 40)">40</div>
+                <div class="pill" onclick="setSetting('count', 999)">Endless</div>
+            </div>
+        </div>
+
+        <div class="settings-group">
+            <label>Gameplay Options</label>
+            <div class="pill-selector">
+                <div id="btn-autonext" class="pill" onclick="toggleAutoNext()">Auto-Next: OFF</div>
+                <div id="btn-timer" class="pill" onclick="toggleTimer()">Timer: OFF</div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <button class="btn" onclick="startGame()">Start Quiz</button>
+        </div>
+    </div>
+
+    <div id="screen-game" class="hidden">
+        
+        <div class="hud-dashboard">
+            <div class="hud-top-row">
+                <span id="hud-progress">Question 1/10</span>
+                <span id="hud-timer" class="hidden">00:10</span>
+            </div>
+            
+            <div class="hud-stats-row">
+                <div id="chip-streak" class="stat-chip chip-streak">
+                    <span>🔥</span>
+                    <span id="val-streak">0</span>
+                </div>
+                <div class="stat-chip chip-acc">
+                    <span>🎯</span>
+                    <span id="val-acc">100%</span>
+                </div>
+                <div class="stat-chip chip-correct">
+                    <span>✓</span>
+                    <span id="val-correct">0</span>
+                </div>
+                <div class="stat-chip chip-wrong">
+                    <span>✗</span>
+                    <span id="val-wrong">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="flag-stage" id="flag-stage">
+                <div id="complement-badge" class="complement-text hidden"></div>
+            </div>
+
+            <div id="question-text" style="text-align:center; margin-bottom:15px; font-weight:bold; color:var(--text-muted);">
+                Identify this signal
+            </div>
+
+            <div id="options-grid" class="grid-options hidden"></div>
+
+            <div id="typing-area" class="hidden">
+                <div class="input-group">
+                    <input type="text" id="type-input" placeholder="Type meaning here..." autocomplete="off">
+                    <button class="btn" onclick="submitTypedAnswer()">Submit</button>
+                </div>
+                <div id="typing-feedback-box" class="hidden typing-feedback"></div>
+            </div>
+
+            <div id="controls-area" style="text-align:center; margin-top:20px;" class="hidden">
+                <button class="btn btn-outline" onclick="nextQuestion()">Next Question (N)</button>
+            </div>
+        </div>
+        
+        <div style="text-align: center;">
+            <button class="btn btn-danger" style="font-size:0.8rem; padding:8px 16px;" onclick="showMenu()">Exit Quiz</button>
+        </div>
+    </div>
+
+    <div id="screen-results" class="card hidden">
+        <h1>Results</h1>
+        <div style="text-align: center; margin-bottom: 30px;">
+            <div style="font-size: 3rem; font-weight: bold; color: var(--accent);" id="final-score-percent">80%</div>
+            <div style="color: var(--text-muted);" id="final-score-text">8 out of 10 correct</div>
+        </div>
+
+        <h3 style="text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">Review</h3>
+        <div id="review-list"></div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <button class="btn" onclick="showMenu()">Back to Menu</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// --- GAME STATE ---
+let state = {
+    mode: 'CHAR',
+    categories: { letters: true, numerals: false, subs: false },
+    settings: { difficulty: 4, count: 10, timer: 0, autoNext: false },
+    queue: [],
+    currentIdx: 0,
+    history: [],
+    // New Stats
+    stats: {
+        correct: 0,
+        wrong: 0,
+        streak: 0,
+        bestStreak: 0
+    },
+    timerInterval: null,
+    timeLeft: 0,
+    waitingForNext: false
+};
+
+// --- SVG ENGINE ---
+function renderFlag(key) {
+    const W = 300, H = 200;
+    const C = { Y: "#facc15", B: "#2563eb", R: "#dc2626", W: "#f8fafc", K: "#1e293b" };
+    const uid = key + "_" + Math.floor(Math.random() * 10000);
+
+    let pathD = `M0,0 L300,0 L300,200 L0,200 Z`; 
+    let isPennant = false;
+
+    if (key === 'A' || key === 'B') {
+        pathD = `M0,0 L300,0 L220,100 L300,200 L0,200 Z`; // Swallowtail
+    } else if (DATA_NUMERALS[key] || key === 'ANS') {
+        pathD = `M0,0 L280,60 L280,140 L0,200 Z`; // Truncated Pennant
+        isPennant = true;
+    } else if (key.startsWith('SUB')) {
+        pathD = `M0,0 L260,100 L0,200 Z`; // Triangle
+        isPennant = true;
+    }
+
+    const clipDef = `<defs><clipPath id="cp_${uid}"><path d="${pathD}"/></clipPath></defs>`;
+    let content = "";
+    const gClip = `<g clip-path="url(#cp_${uid})">`;
+    const gEnd = `</g>`;
+
+    switch(key) {
+        case "A": content = gClip + `<rect x="0" y="0" width="120" height="200" fill="${C.W}"/><rect x="120" y="0" width="180" height="200" fill="${C.B}"/>` + gEnd; break;
+        case "B": content = gClip + `<rect width="300" height="200" fill="${C.R}"/>` + gEnd; break;
+        case "C": content = `<rect y="0" width="300" height="40" fill="${C.B}"/><rect y="40" width="300" height="40" fill="${C.W}"/><rect y="80" width="300" height="40" fill="${C.R}"/><rect y="120" width="300" height="40" fill="${C.W}"/><rect y="160" width="300" height="40" fill="${C.B}"/>`; break;
+        case "D": content = `<rect y="0" width="300" height="50" fill="${C.Y}"/><rect y="50" width="300" height="100" fill="${C.B}"/><rect y="150" width="300" height="50" fill="${C.Y}"/>`; break;
+        case "E": content = `<rect y="0" width="300" height="100" fill="${C.B}"/><rect y="100" width="300" height="100" fill="${C.R}"/>`; break;
+        case "F": content = `<rect width="300" height="200" fill="${C.W}"/><path d="M150,20 L280,100 L150,180 L20,100 Z" fill="${C.R}"/>`; break;
+        case "G": content = `<g>`; for(let i=0;i<6;i++) content+=`<rect x="${i*50}" width="50" height="200" fill="${i%2===0?C.Y:C.B}"/>`; content+=`</g>`; break;
+        case "H": content = `<rect x="0" width="150" height="200" fill="${C.W}"/><rect x="150" width="150" height="200" fill="${C.R}"/>`; break;
+        case "I": content = `<rect width="300" height="200" fill="${C.Y}"/><circle cx="150" cy="100" r="50" fill="${C.K}"/>`; break;
+        case "J": content = `<rect y="0" width="300" height="66" fill="${C.B}"/><rect y="66" width="300" height="68" fill="${C.W}"/><rect y="134" width="300" height="66" fill="${C.B}"/>`; break;
+        case "K": content = `<rect x="0" width="150" height="200" fill="${C.Y}"/><rect x="150" width="150" height="200" fill="${C.B}"/>`; break;
+        case "L": content = `<rect x="0" y="0" width="150" height="100" fill="${C.Y}"/><rect x="150" y="0" width="150" height="100" fill="${C.K}"/><rect x="0" y="100" width="150" height="100" fill="${C.K}"/><rect x="150" y="100" width="150" height="100" fill="${C.Y}"/>`; break;
+        case "M": content = `<rect width="300" height="200" fill="${C.B}"/><path d="M0,0 L20,0 L300,180 L300,200 L280,200 L0,20 Z" fill="${C.W}"/><path d="M300,0 L280,0 L0,180 L0,200 L20,200 L300,20 Z" fill="${C.W}"/>`; break;
+        case "N": content = `<rect width="300" height="200" fill="${C.W}"/>`; for(let r=0;r<4;r++) for(let c=0;c<4;c++) if((r+c)%2===0) content+=`<rect x="${c*75}" y="${r*50}" width="75" height="50" fill="${C.B}"/>`; break;
+        case "O": content = `<rect width="300" height="200" fill="${C.Y}"/><path d="M0,0 L300,0 L0,200 Z" fill="${C.R}"/>`; break;
+        case "P": content = `<rect width="300" height="200" fill="${C.B}"/><rect x="100" y="66" width="100" height="68" fill="${C.W}"/>`; break;
+        case "Q": content = `<rect width="300" height="200" fill="${C.Y}"/>`; break;
+        case "R": content = `<rect width="300" height="200" fill="${C.R}"/><rect x="125" y="0" width="50" height="200" fill="${C.Y}"/><rect x="0" y="75" width="300" height="50" fill="${C.Y}"/>`; break;
+        case "S": content = `<rect width="300" height="200" fill="${C.W}"/><rect x="100" y="66" width="100" height="68" fill="${C.B}"/>`; break;
+        case "T": content = `<rect x="0" width="100" height="200" fill="${C.R}"/><rect x="100" width="100" height="200" fill="${C.W}"/><rect x="200" width="100" height="200" fill="${C.B}"/>`; break;
+        case "U": content = `<rect x="0" y="0" width="150" height="100" fill="${C.R}"/><rect x="150" y="0" width="150" height="100" fill="${C.W}"/><rect x="0" y="100" width="150" height="100" fill="${C.W}"/><rect x="150" y="100" width="150" height="100" fill="${C.R}"/>`; break;
+        case "V": content = `<rect width="300" height="200" fill="${C.W}"/><path d="M0,0 L20,0 L300,180 L300,200 L280,200 L0,20 Z" fill="${C.R}"/><path d="M300,0 L280,0 L0,180 L0,200 L20,200 L300,20 Z" fill="${C.R}"/>`; break;
+        case "W": content = `<rect width="300" height="200" fill="${C.B}"/><rect x="50" y="33" width="200" height="134" fill="${C.W}"/><rect x="100" y="66" width="100" height="68" fill="${C.R}"/>`; break;
+        case "X": content = `<rect width="300" height="200" fill="${C.W}"/><rect x="125" y="0" width="50" height="200" fill="${C.B}"/><rect x="0" y="75" width="300" height="50" fill="${C.B}"/>`; break;
+        case "Y": content = `<rect width="300" height="200" fill="${C.Y}"/>`; for(let i=0;i<10;i++) content+=`<path d="M${i*60},0 L${(i*60)+30},0 L0,${(i*60)+30} L0,${i*60} Z" fill="${C.R}"/><path d="M300,${i*60} L300,${(i*60)+30} L${300-((i*60)+30)},0 L${300-(i*60)},0 Z" fill="${C.R}"/>`; break;
+        case "Z": content = `<rect x="0" y="0" width="150" height="100" fill="${C.Y}"/><rect x="150" y="0" width="150" height="100" fill="${C.B}"/><rect x="0" y="100" width="150" height="100" fill="${C.R}"/><rect x="150" y="100" width="150" height="100" fill="${C.K}"/>`; break;
+
+        case "1": content = gClip + `<rect width="300" height="200" fill="${C.W}"/><circle cx="100" cy="100" r="45" fill="${C.R}"/>` + gEnd; break;
+        case "2": content = gClip + `<rect width="300" height="200" fill="${C.B}"/><circle cx="100" cy="100" r="45" fill="${C.W}"/>` + gEnd; break;
+        case "3": content = gClip + `<rect x="0" width="100" height="200" fill="${C.R}"/><rect x="100" width="100" height="200" fill="${C.W}"/><rect x="200" width="100" height="200" fill="${C.B}"/>` + gEnd; break;
+        case "4": content = gClip + `<rect width="300" height="200" fill="${C.R}"/><rect x="80" width="40" height="200" fill="${C.W}"/><rect y="80" width="300" height="40" fill="${C.W}"/>` + gEnd; break;
+        case "5": content = gClip + `<rect x="0" width="100" height="200" fill="${C.Y}"/><rect x="100" width="200" height="200" fill="${C.B}"/>` + gEnd; break;
+        case "6": content = gClip + `<rect y="0" width="300" height="100" fill="${C.K}"/><rect y="100" width="300" height="100" fill="${C.W}"/>` + gEnd; break;
+        case "7": content = gClip + `<rect y="0" width="300" height="100" fill="${C.Y}"/><rect y="100" width="300" height="100" fill="${C.R}"/>` + gEnd; break;
+        case "8": content = gClip + `<rect width="300" height="200" fill="${C.W}"/><rect x="80" width="40" height="200" fill="${C.R}"/><rect y="80" width="300" height="40" fill="${C.R}"/>` + gEnd; break;
+        case "9": content = gClip + `<rect x="0" y="0" width="150" height="100" fill="${C.W}"/><rect x="150" y="0" width="150" height="100" fill="${C.K}"/><rect x="0" y="100" width="150" height="100" fill="${C.R}"/><rect x="150" y="100" width="150" height="100" fill="${C.Y}"/>` + gEnd; break;
+        case "0": content = gClip + `<rect x="0" width="100" height="200" fill="${C.Y}"/><rect x="100" width="100" height="200" fill="${C.R}"/><rect x="200" width="100" height="200" fill="${C.Y}"/>` + gEnd; break;
+
+        case "SUB1": content = gClip + `<rect width="300" height="200" fill="${C.B}"/><path d="M0,50 L140,100 L0,150 Z" fill="${C.Y}"/>` + gEnd; break;
+        case "SUB2": content = gClip + `<rect x="0" width="150" height="200" fill="${C.B}"/><rect x="150" width="150" height="200" fill="${C.W}"/>` + gEnd; break;
+        case "SUB3": content = gClip + `<rect width="300" height="200" fill="${C.W}"/><rect y="80" width="300" height="40" fill="${C.K}"/>` + gEnd; break;
+        
+        case "ANS": 
+             content = gClip;
+             for(let i=0; i<7; i++) content += `<rect x="${i*43}" width="43" height="200" fill="${i%2===0?C.R:C.W}"/>`;
+             content += gEnd;
+             break;
+    }
+
+    const stroke = `<path d="${pathD}" fill="none" stroke="#666" stroke-width="1"/>`;
+    return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${clipDef}${content}${stroke}</svg>`;
+}
+
+// --- CONTROLLER ---
+
+function setMode(m) {
+    state.mode = m;
+    document.querySelectorAll('#mode-selector .pill').forEach(p => p.classList.remove('active'));
+    document.querySelector(`#mode-selector .pill[onclick="setMode('${m}')"]`).classList.add('active');
+    
+    const catSettings = document.getElementById('category-settings');
+    if (m === 'SECONDARY') catSettings.classList.add('hidden');
+    else catSettings.classList.remove('hidden');
+}
+
+function toggleCat(c) {
+    state.categories[c] = !state.categories[c];
+    if (!state.categories.letters && !state.categories.numerals && !state.categories.subs) {
+        state.categories[c] = true;
+    }
+    ['letters', 'numerals', 'subs'].forEach(k => {
+        const el = document.querySelector(`.pill[onclick="toggleCat('${k}')"]`);
+        if (state.categories[k]) el.classList.add('active');
+        else el.classList.remove('active');
+    });
+}
+
+function setSetting(k, v) {
+    state.settings[k] = v;
+    const sel = k === 'difficulty' ? 'diff-selector' : 'count-selector';
+    document.querySelectorAll(`#${sel} .pill`).forEach(p => p.classList.remove('active'));
+    document.querySelector(`#${sel} .pill[onclick="setSetting('${k}', ${v})"]`).classList.add('active');
+}
+
+function toggleAutoNext() {
+    state.settings.autoNext = !state.settings.autoNext;
+    const el = document.getElementById('btn-autonext');
+    el.innerText = `Auto-Next: ${state.settings.autoNext ? 'ON' : 'OFF'}`;
+    el.classList.toggle('active');
+}
+
+function toggleTimer() {
+    let t = state.settings.timer;
+    if (t === 0) t = 10; else if (t === 10) t = 20; else t = 0;
+    state.settings.timer = t;
+    const el = document.getElementById('btn-timer');
+    el.innerText = `Timer: ${t === 0 ? 'OFF' : t + 's'}`;
+    if (t > 0) el.classList.add('active'); else el.classList.remove('active');
+}
+
+function startGame() {
+    // Reset Stats
+    state.stats = { correct: 0, wrong: 0, streak: 0, bestStreak: 0 };
+    state.currentIdx = 0;
+    state.history = [];
+    state.queue = generateQueue();
+    
+    updateHUD();
+
+    document.getElementById('screen-menu').classList.add('hidden');
+    document.getElementById('screen-results').classList.add('hidden');
+    document.getElementById('screen-game').classList.remove('hidden');
+
+    loadQuestion();
+}
+
+function generateQueue() {
+    let pool = [];
+    if (state.mode === 'SECONDARY') {
+        pool = DATA_SECONDARY.map(item => ({...item, type: 'secondary'}));
+    } else {
+        if (state.categories.letters) pool.push(...Object.keys(DATA_LETTERS).map(k => ({id: k, ...DATA_LETTERS[k], type:'letter'})));
+        if (state.categories.numerals) pool.push(...Object.keys(DATA_NUMERALS).map(k => ({id: k, ...DATA_NUMERALS[k], type:'numeral'})));
+        if (state.categories.subs) pool.push(...Object.keys(DATA_SUBS).map(k => ({id: k, ...DATA_SUBS[k], type:'sub'})));
+    }
+    pool.sort(() => Math.random() - 0.5);
+    if (state.settings.count !== 999) pool = pool.slice(0, state.settings.count);
+    return pool;
+}
+
+function loadQuestion() {
+    if (state.currentIdx >= state.queue.length && state.settings.count !== 999) {
+        endGame(); return;
+    }
+
+    const q = state.queue[state.currentIdx % state.queue.length];
+    state.currentQuestion = q;
+    state.waitingForNext = false;
+    
+    updateHUD();
+    document.getElementById('controls-area').classList.add('hidden');
+    document.getElementById('typing-feedback-box').classList.add('hidden');
+
+    const flagKey = q.type === 'secondary' ? q.letter : q.id;
+    document.getElementById('flag-stage').innerHTML = renderFlag(flagKey) + `<div id="complement-badge" class="complement-text hidden"></div>`;
+
+    const qText = document.getElementById('question-text');
+    const optionsGrid = document.getElementById('options-grid');
+    const typeArea = document.getElementById('typing-area');
+    const compBadge = document.getElementById('complement-badge');
+
+    optionsGrid.classList.add('hidden');
+    typeArea.classList.add('hidden');
+    compBadge.classList.add('hidden');
+    document.getElementById('type-input').value = "";
+
+    // Timer Logic
+    clearInterval(state.timerInterval);
+    const timerDisplay = document.getElementById('hud-timer');
+    if (state.settings.timer > 0) {
+        state.timeLeft = state.settings.timer;
+        timerDisplay.classList.remove('hidden');
+        timerDisplay.innerHTML = `⏱ <span class="timer-badge">${state.timeLeft}s</span>`;
+        state.timerInterval = setInterval(() => {
+            state.timeLeft--;
+            timerDisplay.innerHTML = `⏱ <span class="timer-badge">${state.timeLeft}s</span>`;
+            if (state.timeLeft <= 0) {
+                clearInterval(state.timerInterval);
+                handleTimeOut();
+            }
+        }, 1000);
+    } else {
+        timerDisplay.classList.add('hidden');
+    }
+
+    // Set UI Mode
+    if (state.mode === 'CHAR') {
+        qText.innerText = "Identify this signal";
+        generateOptions(q, 'labelShort');
+        optionsGrid.classList.remove('hidden');
+    } else if (state.mode === 'MEANING_MC') {
+        qText.innerText = `What is the PRIMARY meaning of ${q.labelShort}?`;
+        generateOptions(q, 'primary');
+        optionsGrid.classList.remove('hidden');
+    } else if (state.mode === 'MEANING_TYPE') {
+        qText.innerText = `Type the PRIMARY meaning of ${q.labelShort}`;
+        typeArea.classList.remove('hidden');
+        setTimeout(() => document.getElementById('type-input').focus(), 100);
+    } else if (state.mode === 'SECONDARY') {
+        qText.innerText = `Meaning with complement: "${q.complement}"`;
+        compBadge.innerText = "+ " + q.complement;
+        compBadge.classList.remove('hidden');
+        generateOptions(q, 'meaning');
+        optionsGrid.classList.remove('hidden');
+    }
+}
+
+function updateHUD() {
+    // Progress
+    const totalQ = state.settings.count === 999 ? '∞' : state.settings.count;
+    document.getElementById('hud-progress').innerText = `Question ${state.currentIdx + 1} / ${totalQ}`;
+    
+    // Stats
+    document.getElementById('val-streak').innerText = state.stats.streak;
+    document.getElementById('val-correct').innerText = state.stats.correct;
+    document.getElementById('val-wrong').innerText = state.stats.wrong;
+    
+    // Accuracy
+    const totalAns = state.stats.correct + state.stats.wrong;
+    const acc = totalAns === 0 ? 100 : Math.round((state.stats.correct / totalAns) * 100);
+    document.getElementById('val-acc').innerText = acc + "%";
+
+    // Streak Visuals
+    const streakChip = document.getElementById('chip-streak');
+    if (state.stats.streak >= 3) streakChip.classList.add('hot');
+    else streakChip.classList.remove('hot');
+}
+
+function generateOptions(correctItem, field) {
+    const grid = document.getElementById('options-grid');
+    grid.innerHTML = "";
+    
+    let pool = [];
+    if (state.mode === 'SECONDARY') {
+        pool = DATA_SECONDARY.filter(i => i.id !== correctItem.id);
+    } else {
+        const allKeys = Object.keys(ALL_FLAGS);
+        pool = allKeys.map(k => ALL_FLAGS[k]).filter(i => i.labelLong !== correctItem.labelLong);
+    }
+
+    pool.sort(() => Math.random() - 0.5);
+    const distractors = pool.slice(0, state.settings.difficulty - 1);
+    let options = [correctItem, ...distractors];
+    options.sort(() => Math.random() - 0.5);
+
+    options.forEach((opt, idx) => {
+        const btn = document.createElement('div');
+        btn.className = 'option-btn';
+        const keyVal = idx + 1;
+        const text = state.mode === 'SECONDARY' ? opt.meaning : opt[field];
+        
+        btn.innerHTML = `<span class="key-hint">${keyVal}</span> <span>${text}</span>`;
+        btn.onclick = () => checkAnswerMC(opt, btn);
+        grid.appendChild(btn);
+    });
+}
+
+function checkAnswerMC(selected, btnElement) {
+    if (state.waitingForNext) return;
+    clearInterval(state.timerInterval);
+    state.waitingForNext = true;
+
+    const correct = state.currentQuestion;
+    const isCorrect = (state.mode === 'SECONDARY') 
+        ? selected.id === correct.id 
+        : (selected.labelLong === correct.labelLong);
+
+    processResult(isCorrect, selected);
+
+    if (isCorrect) {
+        btnElement.classList.add('correct');
+        if (state.settings.autoNext) setTimeout(nextQuestion, 900);
+        else document.getElementById('controls-area').classList.remove('hidden');
+    } else {
+        btnElement.classList.add('wrong');
+        document.querySelectorAll('.option-btn').forEach(b => {
+            const target = state.mode === 'SECONDARY' ? correct.meaning : correct[state.mode === 'CHAR' ? 'labelShort' : 'primary'];
+            if (b.innerText.includes(target)) b.classList.add('correct');
+        });
+        document.getElementById('controls-area').classList.remove('hidden');
+    }
+}
+
+function submitTypedAnswer() {
+    if (state.waitingForNext) return;
+    clearInterval(state.timerInterval);
+    state.waitingForNext = true;
+
+    const input = document.getElementById('type-input').value.trim();
+    const correctText = state.currentQuestion.primary;
+    const score = calculateMatch(input, correctText);
+    const passed = score.percent > 70 || score.keywordMatch;
+
+    processResult(passed, input);
+
+    const fb = document.getElementById('typing-feedback-box');
+    fb.classList.remove('hidden');
+    fb.innerHTML = `
+        <div class="tf-title" style="color:${passed?'var(--success)':'var(--error)'}">${passed ? 'Correct!' : 'Incorrect'}</div>
+        <div class="tf-diff"><strong>Answer:</strong> ${correctText}</div>
+        ${!passed ? `<div class="missed-keys">Match Score: ${Math.round(score.percent)}%</div>` : ''}
+    `;
+
+    if (passed && state.settings.autoNext) setTimeout(nextQuestion, 1200);
+    else document.getElementById('controls-area').classList.remove('hidden');
+}
+
+function handleTimeOut() {
+    state.waitingForNext = true;
+    processResult(false, "TIMEOUT");
+    
+    if (state.mode !== 'MEANING_TYPE') {
+        document.querySelectorAll('.option-btn').forEach(b => {
+             const correct = state.currentQuestion;
+             const target = state.mode === 'SECONDARY' ? correct.meaning : correct[state.mode === 'CHAR' ? 'labelShort' : 'primary'];
+             if (b.innerText.includes(target)) b.classList.add('correct');
+        });
+    } else {
+        const fb = document.getElementById('typing-feedback-box');
+        fb.classList.remove('hidden');
+        fb.innerHTML = `<div class="tf-title" style="color:var(--error)">Time's Up!</div>
+                        <div class="tf-diff"><strong>Answer:</strong> ${state.currentQuestion.primary}</div>`;
+    }
+    document.getElementById('controls-area').classList.remove('hidden');
+}
+
+function processResult(isCorrect, userResponse) {
+    // Stats Logic
+    if (isCorrect) {
+        state.stats.correct++;
+        state.stats.streak++;
+        if (state.stats.streak > state.stats.bestStreak) state.stats.bestStreak = state.stats.streak;
+    } else {
+        state.stats.wrong++;
+        state.stats.streak = 0;
+    }
+    updateHUD();
+
+    // History Logic
+    let realAns = "";
+    if (state.mode === 'CHAR') realAns = state.currentQuestion.labelLong;
+    else if (state.mode === 'SECONDARY') realAns = state.currentQuestion.meaning;
+    else realAns = state.currentQuestion.primary;
+
+    let userTxt = "";
+    if (typeof userResponse === 'string') userTxt = userResponse;
+    else if (state.mode === 'CHAR') userTxt = userResponse.labelLong;
+    else if (state.mode === 'SECONDARY') userTxt = userResponse.meaning;
+    else userTxt = userResponse.primary;
+
+    state.history.push({ q: state.currentQuestion, correct: isCorrect, userAns: userTxt, realAns: realAns });
+}
+
+function nextQuestion() {
+    state.currentIdx++;
+    loadQuestion();
+}
+
+function endGame() {
+    document.getElementById('screen-game').classList.add('hidden');
+    document.getElementById('screen-results').classList.remove('hidden');
+
+    const total = state.stats.correct + state.stats.wrong;
+    const p = Math.round((state.stats.correct / total) * 100) || 0;
+    
+    document.getElementById('final-score-percent').innerText = `${p}%`;
+    document.getElementById('final-score-text').innerText = `${state.stats.correct} correct, ${state.stats.wrong} wrong`;
+
+    const list = document.getElementById('review-list');
+    list.innerHTML = "";
+    
+    state.history.forEach(item => {
+        const div = document.createElement('div');
+        div.className = `result-item ${item.correct ? 'r-correct' : 'r-wrong'}`;
+        const flagKey = item.q.type === 'secondary' ? item.q.letter : item.q.id;
+        div.innerHTML = `
+            <div class="result-mini-flag">${renderFlag(flagKey)}</div>
+            <div class="result-info">
+                <div>${item.q.labelShort || item.q.letter}</div>
+                ${!item.correct ? `<div class="user-ans">You: ${item.userAns}</div>` : ''}
+                <div class="real-ans">${item.realAns}</div>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+}
+
+function showMenu() {
+    clearInterval(state.timerInterval);
+    document.getElementById('screen-results').classList.add('hidden');
+    document.getElementById('screen-game').classList.add('hidden');
+    document.getElementById('screen-menu').classList.remove('hidden');
+}
+
+function calculateMatch(input, target) {
+    const normalize = s => s.toLowerCase().replace(/[^a-z0-9 ]/g, "").split(/\s+/);
+    const inpWords = normalize(input);
+    const tgtWords = normalize(target);
+    const keywords = tgtWords.filter(w => w.length > 3 || ['no', 'yes', 'man', 'net', 'tug'].includes(w));
+    let hits = 0;
+    keywords.forEach(k => { if (inpWords.some(iw => iw.startsWith(k) || k.startsWith(iw))) hits++; });
+    const keywordMatch = keywords.length > 0 && (hits / keywords.length) >= 0.75;
+    const overlap = inpWords.filter(w => tgtWords.includes(w)).length;
+    return { percent: (overlap / tgtWords.length) * 100, keywordMatch };
+}
+
+document.addEventListener('keydown', (e) => {
+    if (document.getElementById('screen-game').classList.contains('hidden')) return;
+    if (e.key === 'Escape') showMenu();
+    if (state.waitingForNext && (e.key === 'n' || e.key === 'N' || e.key === 'Enter')) {
+        nextQuestion(); return;
+    }
+    if (!state.waitingForNext && document.getElementById('typing-area').classList.contains('hidden')) {
+        const num = parseInt(e.key);
+        if (!isNaN(num) && num >= 1 && num <= 6) {
+            const btns = document.querySelectorAll('.option-btn');
+            if (btns[num-1]) btns[num-1].click();
+        }
+    }
+    if (!state.waitingForNext && !document.getElementById('typing-area').classList.contains('hidden') && e.key === 'Enter') {
+        submitTypedAnswer();
+    }
+});
+</script>
+</body>
+</html>

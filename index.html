@@ -14,9 +14,9 @@
     --success: #4ade80;      /* Green */
     --error: #f87171;        /* Red */
     --gold: #facc15;         /* Gold */
-    --glass-bg: rgba(30, 41, 59, 0.75);
+    --glass-bg: rgba(30, 41, 59, 0.85);
     --glass-border: rgba(255, 255, 255, 0.1);
-    --glass-blur: 20px;
+    --glass-blur: 24px;
     --radius: 16px;
 }
 
@@ -38,6 +38,8 @@ body {
     align-items: center;
     padding: 20px;
     overflow-x: hidden;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 /* --- LAYOUT UTILS --- */
@@ -45,9 +47,15 @@ body {
 .hidden { display: none !important; }
 
 h1 { 
-    font-size: 2.2rem; font-weight: 800; text-align: center; margin-bottom: 0.5rem;
-    background: linear-gradient(to right, #38bdf8, #818cf8); -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent; text-transform: uppercase; letter-spacing: 2px;
+    font-size: 2.2rem; 
+    font-weight: 800;
+    text-align: center; 
+    margin-bottom: 0.5rem;
+    background: linear-gradient(to right, #38bdf8, #818cf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase; 
+    letter-spacing: 2px; 
     text-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
@@ -56,41 +64,78 @@ h3 { margin-bottom: 1rem; text-align: center; }
 /* --- GLASS CARDS --- */
 .card {
     background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur));
-    border: 1px solid var(--glass-border); border-radius: var(--radius);
-    padding: 2rem; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    margin-bottom: 1.5rem; transition: transform 0.3s ease;
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    margin-bottom: 1.5rem;
+    transition: transform 0.3s ease;
 }
 
 /* --- HOME SCREEN --- */
 .mode-select-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 30px;
+}
+/* Full width for single items on last row if needed, or 3 items */
+.mode-select-grid.three-items {
+    grid-template-columns: 1fr 1fr; 
 }
 .big-mode-btn {
     background: linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%);
-    border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius);
-    padding: 30px; text-align: center; cursor: pointer; transition: all 0.3s ease;
-    display: flex; flex-direction: column; align-items: center; gap: 15px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius);
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
 }
 .big-mode-btn:hover {
-    transform: translateY(-5px); background: linear-gradient(145deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);
-    border-color: var(--accent); box-shadow: 0 10px 30px rgba(14, 165, 233, 0.2);
+    transform: translateY(-5px);
+    background: linear-gradient(145deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);
+    border-color: var(--accent);
+    box-shadow: 0 10px 30px rgba(14, 165, 233, 0.2);
 }
+/* Span full width for Prosigns if desired, or keep grid */
+.big-mode-btn.full-width {
+    grid-column: span 2;
+}
+
 .big-mode-icon { font-size: 3rem; margin-bottom: 10px; }
 .big-mode-title { font-size: 1.5rem; font-weight: 800; color: var(--accent); }
 .big-mode-desc { color: var(--text-muted); font-size: 0.9rem; }
 
 .footer-credit {
-    margin-top: 30px; text-align: center; font-size: 0.8rem; color: var(--text-muted);
-    letter-spacing: 1px; opacity: 0.7; text-transform: uppercase; font-weight: bold;
+    margin-top: 30px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    opacity: 0.7;
+    text-transform: uppercase;
+    font-weight: bold;
 }
 
 /* --- HUD DASHBOARD --- */
 .hud-dashboard {
-    display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px;
-    background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(10px);
-    padding: 15px 20px; border-radius: var(--radius);
-    border: 1px solid var(--glass-border); box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(10px);
+    padding: 15px 20px;
+    border-radius: var(--radius);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }
 .hud-top-row {
     display: flex; justify-content: space-between; align-items: center;
@@ -98,15 +143,19 @@ h3 { margin-bottom: 1rem; text-align: center; }
     border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;
     text-transform: uppercase; letter-spacing: 1px;
 }
-.hud-stats-row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+.hud-stats-row {
+    display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
+}
 .stat-chip {
     display: flex; align-items: center; gap: 8px; padding: 8px 16px;
     border-radius: 50px; background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.05); font-size: 0.95rem; font-weight: 600;
+    border: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.95rem; font-weight: 600;
 }
 .chip-streak.hot { 
     color: #fff; background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.4)); 
-    border-color: rgba(251, 191, 36, 0.5); box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
+    border-color: rgba(251, 191, 36, 0.5); 
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
     animation: pulse-gold 2s infinite;
 }
 @keyframes pulse-gold { 0% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(251, 191, 36, 0); } 100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); } }
@@ -142,6 +191,48 @@ h3 { margin-bottom: 1rem; text-align: center; }
     background: rgba(0,0,0,0.3); padding: 10px 20px; border-radius: 8px; 
     min-width: 150px; text-align: center; border: 1px solid rgba(255,255,255,0.1);
     min-height: 60px; color: var(--accent);
+}
+
+/* --- PROSIGNS TABLE --- */
+.prosigns-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+    margin-top: 10px;
+}
+.prosigns-table th {
+    text-align: left;
+    color: var(--accent);
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    padding: 0 15px;
+}
+.prosigns-table tr.row-item {
+    background: rgba(255,255,255,0.05);
+}
+.prosigns-table td {
+    padding: 15px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.prosigns-table td:first-child {
+    border-left: 1px solid rgba(255,255,255,0.05);
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    font-weight: bold;
+    color: var(--gold);
+    width: 30%;
+    font-family: monospace;
+    font-size: 1.1rem;
+}
+.prosigns-table td:last-child {
+    border-right: 1px solid rgba(255,255,255,0.05);
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    color: var(--text-main);
+}
+.overbar {
+    text-decoration: overline;
 }
 
 /* --- KEYER BUTTON (SEND MODE) --- */
@@ -184,6 +275,7 @@ h3 { margin-bottom: 1rem; text-align: center; }
 .btn-outline { background: transparent; border: 2px solid rgba(56, 189, 248, 0.5); color: var(--accent); box-shadow: none; }
 .btn-outline:hover { background: rgba(56, 189, 248, 0.1); border-color: var(--accent); }
 .btn-danger { background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); }
+.btn-success { background: linear-gradient(135deg, #22c55e 0%, #15803d 100%); box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4); }
 
 .pill-selector { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
 .pill {
@@ -203,7 +295,7 @@ input[type="text"]:focus { border-color: var(--accent); }
 
 /* --- MORSE BUTTON GRID --- */
 .morse-tap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; width: 100%; }
-.morse-tap-btn { font-size: 2rem; padding: 20px; font-weight: bold; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 12px; cursor: pointer; }
+.morse-tap-btn { font-size: 2rem; padding: 20px; font-weight: bold; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 12px; cursor: pointer; user-select: none; }
 .morse-tap-btn:active { background: var(--accent); color: #0f172a; }
 
 .feedback-text { text-align: center; height: 30px; font-weight: bold; margin-top: 15px; font-size: 1.1rem; }
@@ -318,6 +410,28 @@ const MORSE_MAP = {
 const LIMITED_LETTERS = ["X","Y","Z","F","Q","L","J"];
 const NUMBERS_ARR = ["0","1","2","3","4","5","6","7","8","9"];
 const ALL_LETTERS_ARR = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+// --- PROSIGNS DATA ---
+const PROSIGNS = [
+    { code: "AA", bar: true, meaning: "Unknown station call / General call" },
+    { code: "EEEE...", bar: false, meaning: "Erase (error)" },
+    { code: "AAA", bar: false, meaning: "Full stop / Decimal point" },
+    { code: "TTTT", bar: false, meaning: "Answering signal" },
+    { code: "T", bar: false, meaning: "Word or group received" },
+    { code: "AR", bar: false, meaning: "Ending signal / End of transmission" },
+    { code: "AS", bar: false, meaning: "Wait" },
+    { code: "DE", bar: false, meaning: "From... / This is..." },
+    { code: "K", bar: false, meaning: "Invitation to transmit" },
+    { code: "OK", bar: false, meaning: "It is correct" },
+    { code: "R", bar: false, meaning: "Received" },
+    { code: "RQ", bar: false, meaning: "Request / Question" },
+    { code: "RPT", bar: false, meaning: "Repeat (whole signal)" },
+    { code: "RPT AA", bar: false, meaning: "Repeat All After..." },
+    { code: "RPT AB", bar: false, meaning: "Repeat All Before..." },
+    { code: "RPT BN", bar: false, meaning: "Repeat All Between..." },
+    { code: "RPT WA", bar: false, meaning: "Repeat Word After..." },
+    { code: "RPT WB", bar: false, meaning: "Repeat Word Before..." }
+];
 </script>
 
 <div class="container" id="app">
@@ -326,16 +440,21 @@ const ALL_LETTERS_ARR = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
         <h1>Maritime Mastery</h1>
         <p style="text-align:center; color: var(--text-muted); margin-bottom:10px;">Learn International Signals</p>
         
-        <div class="mode-select-grid">
+        <div class="mode-select-grid three-items">
             <div class="big-mode-btn" onclick="goToFlagSetup()">
                 <div class="big-mode-icon">🚩</div>
                 <div class="big-mode-title">Flags</div>
-                <div class="big-mode-desc">Visual identification quiz</div>
+                <div class="big-mode-desc">Visual quiz</div>
             </div>
             <div class="big-mode-btn" onclick="goToMorseSetup()">
                 <div class="big-mode-icon">📡</div>
-                <div class="big-mode-title">Morse Code</div>
-                <div class="big-mode-desc">Tap or Keyer practice</div>
+                <div class="big-mode-title">Morse</div>
+                <div class="big-mode-desc">Tap & Keyer</div>
+            </div>
+            <div class="big-mode-btn full-width" onclick="goToProsigns()">
+                <div class="big-mode-icon">📖</div>
+                <div class="big-mode-title">Prosigns</div>
+                <div class="big-mode-desc">Procedure Reference</div>
             </div>
         </div>
 
@@ -446,6 +565,7 @@ const ALL_LETTERS_ARR = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
             <label>Options</label>
             <div class="pill-selector">
                 <div id="btn-morse-autonext" class="pill" onclick="toggleMorseAutoNext()">Auto-Next: OFF</div>
+                <div id="btn-morse-sound" class="pill active" onclick="toggleMorseSound()">Sound: ON</div>
             </div>
         </div>
 
@@ -475,8 +595,8 @@ const ALL_LETTERS_ARR = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
             <div id="morse-tap-controls" class="hidden">
                 <div class="morse-tap-grid">
-                    <button class="morse-tap-btn" onclick="morseInput('.')">●</button>
-                    <button class="morse-tap-btn" onclick="morseInput('-')">▬</button>
+                    <button class="morse-tap-btn" onmousedown="tapDot()" ontouchstart="tapDot()">●</button>
+                    <button class="morse-tap-btn" onmousedown="tapDash()" ontouchstart="tapDash()">▬</button>
                 </div>
             </div>
 
@@ -501,6 +621,23 @@ const ALL_LETTERS_ARR = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
         </div>
     </div>
 
+    <div id="screen-prosigns" class="card hidden">
+        <h3>Procedure Signals (Prosigns)</h3>
+        <table class="prosigns-table" id="prosigns-table">
+            <thead>
+                <tr>
+                    <th>Signal</th>
+                    <th>Meaning</th>
+                </tr>
+            </thead>
+            <tbody id="prosigns-tbody">
+                </tbody>
+        </table>
+        <div style="text-align: center; margin-top: 30px;">
+            <button class="btn" onclick="goHome()">Back to Menu</button>
+        </div>
+    </div>
+
     <div id="screen-results" class="card hidden">
         <h1>Results</h1>
         <div style="text-align: center; margin-bottom: 30px;">
@@ -519,6 +656,65 @@ const ALL_LETTERS_ARR = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 </div>
 
 <script>
+// --- AUDIO ENGINE ---
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+let audioCtx;
+let osc = null;
+let gainNode = null;
+
+function initAudio() {
+    if (!audioCtx) {
+        audioCtx = new AudioContext();
+    }
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+}
+
+function playTone() {
+    if (!appState.morse.soundEnabled) return;
+    initAudio();
+    if (osc) return; 
+
+    osc = audioCtx.createOscillator();
+    gainNode = audioCtx.createGain();
+    
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(600, audioCtx.currentTime); 
+    
+    gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + 0.01); 
+    
+    osc.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    osc.start();
+}
+
+function stopTone() {
+    if (osc) {
+        const now = audioCtx.currentTime;
+        gainNode.gain.cancelScheduledValues(now);
+        gainNode.gain.setValueAtTime(gainNode.gain.value, now);
+        gainNode.gain.linearRampToValueAtTime(0, now + 0.01); 
+        osc.stop(now + 0.01);
+        osc = null;
+    }
+}
+
+function playBeep(duration) {
+    if (!appState.morse.soundEnabled) return;
+    initAudio();
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = 'sine';
+    o.frequency.value = 600;
+    g.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    o.connect(g);
+    g.connect(audioCtx.destination);
+    o.start();
+    o.stop(audioCtx.currentTime + (duration / 1000));
+}
+
 // --- GLOBAL STATE ---
 let appState = {
     screen: 'HOME',
@@ -538,6 +734,7 @@ let appState = {
         mode: 'tap',
         set: 'limited',
         autoNext: false,
+        soundEnabled: true,
         pool: [],
         target: '',
         typed: '',
@@ -553,7 +750,7 @@ let appState = {
 };
 
 function hideAllScreens() {
-    ['screen-home', 'screen-flags-setup', 'screen-flags-game', 'screen-morse-setup', 'screen-morse-game', 'screen-results'].forEach(id => {
+    ['screen-home', 'screen-flags-setup', 'screen-flags-game', 'screen-morse-setup', 'screen-morse-game', 'screen-prosigns', 'screen-results'].forEach(id => {
         document.getElementById(id).classList.add('hidden');
     });
 }
@@ -562,6 +759,7 @@ function goHome() {
     hideAllScreens();
     document.getElementById('screen-home').classList.remove('hidden');
     if(pressAnim) cancelAnimationFrame(pressAnim);
+    stopTone();
 }
 
 // ==========================================
@@ -576,8 +774,6 @@ function goToFlagSetup() {
 function setFlagMode(m) {
     appState.flags.mode = m;
     updatePills('flag-mode-selector', m === 'CHAR' ? 0 : m === 'MEANING_MC' ? 1 : m === 'MEANING_TYPE' ? 2 : 3);
-    
-    // Hide Categories for Secondary Mode
     const catGroup = document.getElementById('flag-cats-group');
     if (m === 'SECONDARY') catGroup.classList.add('hidden');
     else catGroup.classList.remove('hidden');
@@ -645,16 +841,13 @@ function loadFlagQ() {
     appState.flags.waiting = false;
     const q = appState.flags.qList[appState.flags.currIdx % appState.flags.qList.length];
     
-    // HUD
     document.getElementById('flag-hud-progress').innerText = `Question ${appState.flags.currIdx + 1} / ${appState.flags.count === 999 ? '∞' : appState.flags.count}`;
     document.getElementById('flag-val-streak').innerText = appState.flags.streak;
     document.getElementById('flag-val-acc').innerText = appState.flags.currIdx === 0 ? '100%' : Math.round((appState.flags.score / appState.flags.currIdx) * 100) + '%';
     
-    // Streak Hot
     if (appState.flags.streak >= 3) document.getElementById('flag-chip-streak').classList.add('hot');
     else document.getElementById('flag-chip-streak').classList.remove('hot');
 
-    // Render Flag
     const flagId = q.type === 'secondary' ? q.letter : q.id;
     document.getElementById('flag-stage').innerHTML = renderFlag(flagId) + `<div id="complement-badge" class="complement-text hidden"></div>`;
     
@@ -666,7 +859,6 @@ function loadFlagQ() {
         compBadge.classList.add('hidden');
     }
 
-    // UI Setup
     const grid = document.getElementById('flag-options-grid');
     const typeArea = document.getElementById('flag-typing-area');
     const controls = document.getElementById('flag-controls');
@@ -736,7 +928,6 @@ function checkFlagMC(selected, btn) {
         isCorrect = selected.labelLong === correct.labelLong;
     }
 
-    // Save history
     let realAnsText = appState.flags.mode === 'CHAR' ? correct.labelShort : (appState.flags.mode === 'SECONDARY' ? correct.meaning : correct.primary);
     let userAnsText = appState.flags.mode === 'CHAR' ? selected.labelShort : (appState.flags.mode === 'SECONDARY' ? selected.meaning : selected.primary);
     
@@ -778,7 +969,6 @@ function submitFlagType() {
     
     const isCorrect = (match || input === correct.primary.toLowerCase());
     
-    // History
     appState.flags.history.push({
         q: correct,
         correct: isCorrect,
@@ -838,6 +1028,13 @@ function toggleMorseAutoNext() {
     btn.classList.toggle('active');
 }
 
+function toggleMorseSound() {
+    appState.morse.soundEnabled = !appState.morse.soundEnabled;
+    const btn = document.getElementById('btn-morse-sound');
+    btn.innerText = `Sound: ${appState.morse.soundEnabled ? 'ON' : 'OFF'}`;
+    btn.classList.toggle('active');
+}
+
 function startMorseGame() {
     let pool = [];
     if(appState.morse.set === 'limited') pool = LIMITED_LETTERS;
@@ -869,7 +1066,6 @@ function pickMorseChar() {
     appState.morse.typed = "";
     appState.morse.waiting = false;
     
-    // Reset UI
     document.getElementById('morse-target-char').innerText = char;
     document.getElementById('morse-user-input').innerText = "";
     document.getElementById('morse-feedback').innerText = "";
@@ -890,6 +1086,16 @@ function morseInput(symbol) {
     document.getElementById('morse-user-input').innerText = appState.morse.typed;
 }
 
+function tapDot() {
+    playBeep(60);
+    morseInput('.');
+}
+
+function tapDash() {
+    playBeep(180);
+    morseInput('-');
+}
+
 function morseBackspace() {
     if (appState.morse.waiting) return;
     appState.morse.typed = appState.morse.typed.slice(0, -1);
@@ -903,7 +1109,7 @@ function morseClear() {
 }
 
 function checkMorse() {
-    // If we are waiting (User clicked "Next" manually)
+    // If waiting (manual next clicked)
     if (appState.morse.waiting) {
         pickMorseChar();
         return;
@@ -915,7 +1121,6 @@ function checkMorse() {
     const isCorrect = (userCode === correctCode);
     const checkBtn = document.getElementById('btn-morse-check');
     
-    // Save history
     appState.morse.history.push({
         target: appState.morse.target,
         correctCode: correctCode,
@@ -964,6 +1169,8 @@ function pressDown(e) {
     appState.morse.pressStart = performance.now();
     keyerBtn.classList.add('pressed');
     
+    playTone(); // Audio start
+
     const start = performance.now();
     const tick = () => {
         if(!appState.morse.pressActive) return;
@@ -980,6 +1187,8 @@ function pressUp(e) {
     e.preventDefault();
     if(!appState.morse.pressActive) return;
     
+    stopTone(); // Audio stop
+
     appState.morse.pressActive = false;
     keyerBtn.classList.remove('pressed');
     if(pressAnim) cancelAnimationFrame(pressAnim);
@@ -989,7 +1198,6 @@ function pressUp(e) {
     const sym = (dur >= DASH_THRESHOLD_MS) ? "-" : ".";
     morseInput(sym);
     
-    // WPM Calc
     const ditGuess = (sym === ".") ? dur : (dur / 3);
     const old = appState.morse.ditEma;
     appState.morse.ditEma = (old == null) ? ditGuess : (EMA_ALPHA * ditGuess + (1 - EMA_ALPHA) * old);
@@ -1005,6 +1213,34 @@ keyerBtn.addEventListener('touchstart', pressDown);
 document.addEventListener('mouseup', pressUp);
 document.addEventListener('touchend', pressUp);
 
+
+// ==========================================
+//              PROSIGNS LOGIC
+// ==========================================
+function goToProsigns() {
+    hideAllScreens();
+    document.getElementById('screen-prosigns').classList.remove('hidden');
+    
+    const tbody = document.getElementById('prosigns-tbody');
+    tbody.innerHTML = "";
+    
+    PROSIGNS.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.className = "row-item";
+        
+        let displayCode = item.code;
+        if(item.bar) {
+            // Apply overbar to AA
+            displayCode = `<span class="overbar">${item.code}</span>`;
+        }
+        
+        tr.innerHTML = `
+            <td>${displayCode}</td>
+            <td>${item.meaning}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
 
 // ==========================================
 //              RESULTS LOGIC

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ICS Signals Mastery</title>
+<title>Maritime Signals Mastery</title>
 <style>
 /* --- CSS VARIABLES & RESET --- */
 :root {
@@ -72,6 +72,47 @@ h3 { margin-bottom: 1rem; text-align: center; }
     transition: transform 0.3s ease;
 }
 
+/* --- HOME SCREEN --- */
+.mode-select-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 30px;
+}
+.big-mode-btn {
+    background: linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius);
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+.big-mode-btn:hover {
+    transform: translateY(-5px);
+    background: linear-gradient(145deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);
+    border-color: var(--accent);
+    box-shadow: 0 10px 30px rgba(14, 165, 233, 0.2);
+}
+.big-mode-icon { font-size: 3rem; margin-bottom: 10px; }
+.big-mode-title { font-size: 1.5rem; font-weight: 800; color: var(--accent); }
+.big-mode-desc { color: var(--text-muted); font-size: 0.9rem; }
+
+.footer-credit {
+    margin-top: 30px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    opacity: 0.7;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
 /* --- HUD DASHBOARD --- */
 .hud-dashboard {
     display: flex;
@@ -85,239 +126,128 @@ h3 { margin-bottom: 1rem; text-align: center; }
     border: 1px solid var(--glass-border);
     box-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }
-
 .hud-top-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    padding-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.9rem; color: var(--text-muted);
+    border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;
+    text-transform: uppercase; letter-spacing: 1px;
 }
-
 .hud-stats-row {
-    display: flex;
-    flex-wrap: wrap; 
-    gap: 12px;
-    justify-content: center;
+    display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
 }
-
 .stat-chip {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    border-radius: 50px;
-    background: rgba(255,255,255,0.03);
+    display: flex; align-items: center; gap: 8px; padding: 8px 16px;
+    border-radius: 50px; background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.05);
-    font-size: 0.95rem;
-    font-weight: 600;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    font-size: 0.95rem; font-weight: 600;
 }
-
-/* Specific Chip Styles */
-.chip-streak { color: var(--text-muted); }
 .chip-streak.hot { 
-    color: #fff; 
-    background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.4)); 
-    border-color: rgba(251, 191, 36, 0.5);
-    text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+    color: #fff; background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.4)); 
+    border-color: rgba(251, 191, 36, 0.5); 
     box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
     animation: pulse-gold 2s infinite;
 }
 @keyframes pulse-gold { 0% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(251, 191, 36, 0); } 100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); } }
-
 .chip-acc { color: var(--accent); }
-.chip-correct { color: #fff; background: rgba(74, 222, 128, 0.2); border-color: rgba(74, 222, 128, 0.4); }
-.chip-wrong { color: #fff; background: rgba(248, 113, 113, 0.2); border-color: rgba(248, 113, 113, 0.4); }
-
-.timer-badge {
-    background: rgba(255,255,255,0.1);
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-family: 'Courier New', monospace;
-    font-weight: bold;
-    color: var(--gold);
-}
+.chip-wpm { color: var(--gold); border-color: rgba(251, 191, 36, 0.3); }
 
 /* --- FLAG STAGE --- */
 .flag-stage {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 1rem 0 2rem 0;
-    min-height: 240px;
-    /* Inner dark gradient for contrast */
+    display: flex; justify-content: center; align-items: center;
+    margin: 1rem 0 2rem 0; min-height: 240px;
     background: radial-gradient(circle at center, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.95));
-    border-radius: var(--radius);
-    padding: 20px;
-    position: relative;
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
-    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: var(--radius); padding: 20px; position: relative;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05);
 }
-
-.flag-stage svg {
-    height: 180px;
-    width: auto;
-    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-.flag-stage svg:hover { transform: scale(1.05) rotate(2deg); }
-
+.flag-stage svg { height: 180px; width: auto; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); }
 .complement-text {
-    position: absolute;
-    bottom: 15px; right: 15px;
-    background: rgba(0,0,0,0.8);
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    font-weight: bold;
-    color: var(--gold);
-    border: 1px solid rgba(255,255,255,0.1);
+    position: absolute; bottom: 15px; right: 15px;
+    background: rgba(0,0,0,0.8); padding: 6px 12px; border-radius: 8px;
+    font-size: 0.9rem; font-weight: bold; color: var(--gold); border: 1px solid rgba(255,255,255,0.1);
 }
 
-/* --- BLURRED GRADIENT OPTIONS --- */
-.grid-options {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 15px;
+/* --- MORSE STAGE --- */
+.morse-stage {
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    margin: 1rem 0 2rem 0; min-height: 240px;
+    background: radial-gradient(circle at center, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.95));
+    border-radius: var(--radius); padding: 20px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05);
+}
+.morse-big-char { font-size: 6rem; font-weight: 900; color: var(--text-main); text-shadow: 0 5px 15px rgba(0,0,0,0.5); margin-bottom: 10px; }
+.morse-display-code { 
+    font-family: monospace; font-size: 2rem; letter-spacing: 5px; 
+    background: rgba(0,0,0,0.3); padding: 10px 20px; border-radius: 8px; 
+    min-width: 150px; text-align: center; border: 1px solid rgba(255,255,255,0.1);
+    min-height: 60px; color: var(--accent);
+}
+
+/* --- KEYER BUTTON (SEND MODE) --- */
+#keyer-btn {
+    width: 100%; height: 100px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
+    color: var(--text-main); font-size: 1.2rem; font-weight: bold;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+    transition: all 0.1s; position: relative; overflow: hidden;
     margin-top: 20px;
 }
+#keyer-btn:active, #keyer-btn.pressed { background: rgba(255,255,255,0.15); transform: scale(0.98); border-color: var(--accent); }
+#keyer-sub { font-size: 0.8rem; opacity: 0.7; margin-top: 5px; font-weight: normal; }
+.press-progress {
+    width: 100%; height: 6px; background: rgba(0,0,0,0.5); border-radius: 3px; margin-top: 15px; overflow: hidden;
+}
+.press-bar { height: 100%; width: 0%; background: var(--accent); transition: width 0s; }
 
+/* --- GENERIC UI ELEMENTS --- */
+.grid-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-top: 20px; }
 .option-btn {
-    /* Glass Effect */
     background: linear-gradient(145deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 100%);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.08);
-    color: var(--text-main);
-    padding: 16px 20px;
-    border-radius: 12px;
-    text-align: left;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: all 0.25s ease;
-    display: flex;
-    align-items: center;
-    position: relative;
-    overflow: hidden;
+    backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.08);
+    color: var(--text-main); padding: 16px 20px; border-radius: 12px;
+    text-align: left; cursor: pointer; display: flex; align-items: center; transition: all 0.2s;
 }
+.option-btn:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); border-color: var(--accent); }
+.option-btn.correct { background: rgba(74, 222, 128, 0.25); border-color: var(--success); }
+.option-btn.wrong { background: rgba(248, 113, 113, 0.25); border-color: var(--error); }
 
-/* Hover State - Glowing Gradient */
-.option-btn:hover { 
-    background: linear-gradient(145deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);
-    border-color: rgba(255,255,255,0.3);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-}
-
-.option-btn:active { transform: scale(0.98); }
-
-.option-btn .key-hint {
-    background: rgba(0,0,0,0.4);
-    width: 28px; height: 28px;
-    border-radius: 6px;
-    display: inline-flex; align-items: center; justify-content: center;
-    margin-right: 15px;
-    font-size: 0.8rem;
-    font-weight: bold;
-    color: var(--text-muted);
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
-}
-
-/* Correct/Wrong States */
-.option-btn.correct { 
-    background: rgba(74, 222, 128, 0.25); 
-    border-color: var(--success); 
-    box-shadow: 0 0 15px rgba(74, 222, 128, 0.2);
-}
-.option-btn.wrong { 
-    background: rgba(248, 113, 113, 0.25); 
-    border-color: var(--error); 
-    box-shadow: 0 0 15px rgba(248, 113, 113, 0.2);
-}
-
-/* --- BUTTONS --- */
 .btn {
-    display: inline-block;
-    background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
-    color: white;
-    border: none;
-    padding: 14px 28px;
-    font-size: 1rem;
-    font-weight: 700;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.3s;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    display: inline-block; background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+    color: white; border: none; padding: 12px 28px; font-size: 1rem; font-weight: 700;
+    border-radius: 50px; cursor: pointer; transition: all 0.3s; text-transform: uppercase;
     box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
 }
-.btn:hover { 
-    filter: brightness(1.1); 
-    transform: translateY(-2px); 
-    box-shadow: 0 6px 20px rgba(14, 165, 233, 0.6);
-}
-.btn:active { transform: translateY(1px); }
+.btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
+.btn-outline { background: transparent; border: 2px solid rgba(56, 189, 248, 0.5); color: var(--accent); box-shadow: none; }
+.btn-outline:hover { background: rgba(56, 189, 248, 0.1); border-color: var(--accent); }
+.btn-danger { background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); }
 
-.btn-outline { 
-    background: transparent; 
-    border: 2px solid rgba(56, 189, 248, 0.5); 
-    color: var(--accent); 
-    box-shadow: none;
+.pill-selector { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+.pill {
+    padding: 10px 18px; background: rgba(255,255,255,0.05); border-radius: 20px;
+    cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: all 0.2s; font-size: 0.9rem;
 }
-.btn-outline:hover { 
-    background: rgba(56, 189, 248, 0.1); 
-    border-color: var(--accent);
-}
-
-.btn-danger { 
-    background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); 
-    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-}
-.btn-danger:hover { box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6); }
+.pill.active { background: var(--accent); color: #0f172a; font-weight: 700; border-color: var(--accent); }
+.settings-group { margin-bottom: 25px; }
+.settings-group label { display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.9rem; font-weight: 600; text-transform: uppercase; }
 
 /* --- INPUTS --- */
-.input-group { display: flex; gap: 10px; margin-top: 20px; }
 input[type="text"] {
-    flex: 1; padding: 16px;
-    border-radius: 12px;
-    border: 2px solid rgba(255,255,255,0.1);
-    background: rgba(15, 23, 42, 0.8);
-    color: white; font-size: 1.1rem;
-    transition: border-color 0.3s;
+    width: 100%; padding: 16px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.1);
+    background: rgba(15, 23, 42, 0.8); color: white; font-size: 1.1rem; outline: none; margin-bottom: 10px;
 }
-input[type="text"]:focus { outline: none; border-color: var(--accent); }
+input[type="text"]:focus { border-color: var(--accent); }
 
-/* --- SETTINGS PILLS --- */
-.settings-group { margin-bottom: 25px; }
-.settings-group label { display: block; margin-bottom: 10px; color: var(--text-muted); font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+/* --- MORSE BUTTON GRID --- */
+.morse-tap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; width: 100%; }
+.morse-tap-btn { font-size: 2rem; padding: 20px; font-weight: bold; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 12px; cursor: pointer; }
+.morse-tap-btn:active { background: var(--accent); color: #0f172a; }
 
-.pill-selector { display: flex; gap: 10px; flex-wrap: wrap; }
-.pill {
-    padding: 10px 18px;
-    background: rgba(255,255,255,0.05);
-    border-radius: 20px;
-    cursor: pointer;
-    border: 1px solid rgba(255,255,255,0.05);
-    transition: all 0.2s;
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-.pill:hover { background: rgba(255,255,255,0.1); }
-.pill.active { 
-    background: var(--accent); 
-    color: #0f172a; 
-    font-weight: 700; 
-    border-color: var(--accent);
-    box-shadow: 0 0 10px var(--accent-glow);
-}
-.pill-check { display: flex; align-items: center; gap: 8px; }
+.feedback-text { text-align: center; height: 30px; font-weight: bold; margin-top: 15px; font-size: 1.1rem; }
+.nav-buttons { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
 
-/* --- RESULTS & FEEDBACK --- */
+/* --- RESULTS PAGE STYLES --- */
 .result-item {
     display: flex; align-items: center; gap: 15px;
     background: rgba(255,255,255,0.03);
@@ -329,26 +259,21 @@ input[type="text"]:focus { outline: none; border-color: var(--accent); }
 .result-item.r-wrong { border-left-color: var(--error); background: linear-gradient(90deg, rgba(248,113,113,0.05) 0%, transparent 100%); }
 
 .result-mini-flag svg { height: 40px; width: auto; display: block; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+.result-mini-morse { 
+    width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 1.5rem; color: var(--accent); background: rgba(255,255,255,0.05);
+    border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);
+}
 .result-info { flex: 1; font-size: 0.95rem; }
 .result-info .user-ans { font-style: italic; color: var(--error); font-size: 0.85rem; margin-top: 2px; }
 .result-info .real-ans { color: var(--success); font-size: 0.85rem; font-weight: 600; }
-
-.typing-feedback {
-    margin-top: 20px; padding: 15px;
-    border-radius: 12px;
-    background: rgba(15, 23, 42, 0.8);
-    border: 1px solid rgba(255,255,255,0.1);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
-.tf-title { font-weight: bold; margin-bottom: 5px; font-size: 1.1rem; }
-.tf-diff { font-family: monospace; font-size: 1rem; color: #fff; }
-.missed-keys { color: var(--gold); font-size: 0.9rem; margin-top: 8px; font-style: italic; }
 
 </style>
 </head>
 <body>
 
 <script>
+// --- FLAGS DATA ---
 const DATA_LETTERS = {
     "A": { labelLong: "A — Alpha", labelShort: "Alpha", primary: "I have a diver down; keep well clear at slow speed." },
     "B": { labelLong: "B — Bravo", labelShort: "Bravo", primary: "I am taking in, or discharging or carrying dangerous goods." },
@@ -408,93 +333,106 @@ const DATA_SECONDARY = [
     { id: "S_sec", letter: "S", complement: "With 1 or more numerals", meaning: "SPEED (Knots)" },
     { id: "T_sec", letter: "T", complement: "With 4 numerals", meaning: "TIME (Local)" },
     { id: "V_sec", letter: "V", complement: "With 1 or more numerals", meaning: "SPEED (Kph)" },
-    { id: "Z_sec", letter: "Z", complement: "With 4 numerals", meaning: "TIME (UTC/GMT)" }
+    { id: "Z_sec", letter: "Z", complement: "With 4 numerals", meaning: "TIME (UTC/GMT)" },
+    { id: "G_fish", letter: "G", complement: "(Fishing)", meaning: "I am hauling nets" },
+    { id: "P_fish", letter: "P", complement: "(Fishing)", meaning: "My nets are caught fast" },
+    { id: "Z_fish", letter: "Z", complement: "(Fishing)", meaning: "I am shooting nets" }
 ];
 
 const ALL_FLAGS = { ...DATA_LETTERS, ...DATA_NUMERALS, ...DATA_SUBS };
+
+// --- MORSE DATA ---
+const MORSE_MAP = {
+    "A": ".-",    "B": "-...",  "C": "-.-.",  "D": "-..",   "E": ".",
+    "F": "..-.",  "G": "--.",   "H": "....",  "I": "..",    "J": ".---",
+    "K": "-.-",   "L": ".-..",  "M": "--",    "N": "-.",    "O": "---",
+    "P": ".--.",  "Q": "--.-",  "R": ".-.",   "S": "...",   "T": "-",
+    "U": "..-",   "V": "...-",  "W": ".--",   "X": "-..-",  "Y": "-.--",
+    "Z": "--..",
+    "0": "-----", "1": ".----", "2": "..---", "3": "...--", "4": "....-",
+    "5": ".....", "6": "-....", "7": "--...", "8": "---..", "9": "----."
+};
+
+const LIMITED_LETTERS = ["X","Y","Z","F","Q","L","J"];
+const NUMBERS_ARR = ["0","1","2","3","4","5","6","7","8","9"];
+const ALL_LETTERS_ARR = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 </script>
 
 <div class="container" id="app">
-    <div id="screen-menu" class="card">
-        <h1>ICS Signals Quiz</h1>
-        <p style="text-align:center; color: var(--text-muted); margin-bottom:30px; font-size: 1.1rem;">Master the International Code of Signals</p>
+
+    <div id="screen-home" class="card">
+        <h1>Maritime Mastery</h1>
+        <p style="text-align:center; color: var(--text-muted); margin-bottom:10px;">Learn International Signals</p>
+        
+        <div class="mode-select-grid">
+            <div class="big-mode-btn" onclick="goToFlagSetup()">
+                <div class="big-mode-icon">🚩</div>
+                <div class="big-mode-title">Flags</div>
+                <div class="big-mode-desc">Visual identification quiz</div>
+            </div>
+            <div class="big-mode-btn" onclick="goToMorseSetup()">
+                <div class="big-mode-icon">📡</div>
+                <div class="big-mode-title">Morse Code</div>
+                <div class="big-mode-desc">Tap or Keyer practice</div>
+            </div>
+        </div>
+
+        <div class="footer-credit">MADE BY GEORGE</div>
+    </div>
+
+    <div id="screen-flags-setup" class="card hidden">
+        <h3>Flag Quiz Setup</h3>
         
         <div class="settings-group">
             <label>Mode</label>
-            <div class="pill-selector" id="mode-selector">
-                <div class="pill active" onclick="setMode('CHAR')">Identify Flag</div>
-                <div class="pill" onclick="setMode('MEANING_MC')">Primary Meaning (MC)</div>
-                <div class="pill" onclick="setMode('MEANING_TYPE')">Primary Meaning (Type)</div>
-                <div class="pill" onclick="setMode('SECONDARY')">Secondary Meanings</div>
+            <div class="pill-selector" id="flag-mode-selector">
+                <div class="pill active" onclick="setFlagMode('CHAR')">Identify Flag</div>
+                <div class="pill" onclick="setFlagMode('MEANING_MC')">Meaning (MC)</div>
+                <div class="pill" onclick="setFlagMode('MEANING_TYPE')">Meaning (Type)</div>
+                <div class="pill" onclick="setFlagMode('SECONDARY')">Secondary Meanings</div>
             </div>
         </div>
 
-        <div class="settings-group" id="category-settings">
+        <div class="settings-group" id="flag-cats-group">
             <label>Categories</label>
             <div class="pill-selector">
-                <div class="pill active pill-check" onclick="toggleCat('letters')">Letters</div>
-                <div class="pill pill-check" onclick="toggleCat('numerals')">Numerals</div>
-                <div class="pill pill-check" onclick="toggleCat('subs')">Substitutes</div>
+                <div class="pill active pill-check" onclick="toggleFlagCat('letters', this)">Letters</div>
+                <div class="pill pill-check" onclick="toggleFlagCat('numerals', this)">Numerals</div>
+                <div class="pill pill-check" onclick="toggleFlagCat('subs', this)">Substitutes</div>
             </div>
         </div>
 
         <div class="settings-group">
-            <label>Difficulty (MC Options)</label>
-            <div class="pill-selector" id="diff-selector">
-                <div class="pill" onclick="setSetting('difficulty', 3)">3</div>
-                <div class="pill active" onclick="setSetting('difficulty', 4)">4</div>
-                <div class="pill" onclick="setSetting('difficulty', 6)">6</div>
-            </div>
-        </div>
-
-        <div class="settings-group">
-            <label>Question Count</label>
-            <div class="pill-selector" id="count-selector">
-                <div class="pill active" onclick="setSetting('count', 10)">10</div>
-                <div class="pill" onclick="setSetting('count', 20)">20</div>
-                <div class="pill" onclick="setSetting('count', 40)">40</div>
-                <div class="pill" onclick="setSetting('count', 999)">Endless</div>
-            </div>
-        </div>
-
-        <div class="settings-group">
-            <label>Gameplay Options</label>
+            <label>Options</label>
             <div class="pill-selector">
-                <div id="btn-autonext" class="pill" onclick="toggleAutoNext()">Auto-Next: OFF</div>
-                <div id="btn-timer" class="pill" onclick="toggleTimer()">Timer: OFF</div>
+                <div id="btn-flag-autonext" class="pill" onclick="toggleFlagAutoNext()">Auto-Next: OFF</div>
             </div>
         </div>
 
-        <div style="text-align: center; margin-top: 40px;">
-            <button class="btn" onclick="startGame()">Start Quiz</button>
+        <div class="settings-group">
+            <label>Count</label>
+            <div class="pill-selector" id="flag-count-selector">
+                <div class="pill active" onclick="setFlagCount(10)">10</div>
+                <div class="pill" onclick="setFlagCount(20)">20</div>
+                <div class="pill" onclick="setFlagCount(999)">Endless</div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px; display:flex; justify-content:center; gap:15px;">
+            <button class="btn btn-outline" onclick="goHome()">Back</button>
+            <button class="btn" onclick="startFlagGame()">Start Quiz</button>
         </div>
     </div>
 
-    <div id="screen-game" class="hidden">
-        
+    <div id="screen-flags-game" class="hidden">
         <div class="hud-dashboard">
             <div class="hud-top-row">
-                <span id="hud-progress">Question 1/10</span>
-                <span id="hud-timer" class="hidden">00:10</span>
+                <span id="flag-hud-progress">Question 1/10</span>
+                <span>FLAGS</span>
             </div>
-            
             <div class="hud-stats-row">
-                <div id="chip-streak" class="stat-chip chip-streak">
-                    <span>🔥</span>
-                    <span id="val-streak">0</span>
-                </div>
-                <div class="stat-chip chip-acc">
-                    <span>🎯</span>
-                    <span id="val-acc">100%</span>
-                </div>
-                <div class="stat-chip chip-correct">
-                    <span>✓</span>
-                    <span id="val-correct">0</span>
-                </div>
-                <div class="stat-chip chip-wrong">
-                    <span>✗</span>
-                    <span id="val-wrong">0</span>
-                </div>
+                <div id="flag-chip-streak" class="stat-chip chip-streak"><span>🔥</span><span id="flag-val-streak">0</span></div>
+                <div class="stat-chip chip-acc"><span>🎯</span><span id="flag-val-acc">100%</span></div>
             </div>
         </div>
 
@@ -502,79 +440,667 @@ const ALL_FLAGS = { ...DATA_LETTERS, ...DATA_NUMERALS, ...DATA_SUBS };
             <div class="flag-stage" id="flag-stage">
                 <div id="complement-badge" class="complement-text hidden"></div>
             </div>
-
-            <div id="question-text" style="text-align:center; margin-bottom:20px; font-weight:bold; font-size:1.1rem; color:var(--text-muted);">
+            <div id="flag-q-text" style="text-align:center; margin-bottom:20px; font-weight:bold; font-size:1.1rem; color:var(--text-muted);">
                 Identify this signal
             </div>
-
-            <div id="options-grid" class="grid-options hidden"></div>
-
-            <div id="typing-area" class="hidden">
-                <div class="input-group">
-                    <input type="text" id="type-input" placeholder="Type meaning here..." autocomplete="off">
-                    <button class="btn" onclick="submitTypedAnswer()">Submit</button>
+            <div id="flag-options-grid" class="grid-options hidden"></div>
+            <div id="flag-typing-area" class="hidden">
+                <input type="text" id="flag-type-input" placeholder="Type meaning here..." autocomplete="off">
+                <div style="text-align:center; margin-top:10px;">
+                    <button class="btn" onclick="submitFlagType()">Submit</button>
                 </div>
-                <div id="typing-feedback-box" class="hidden typing-feedback"></div>
+                <div id="flag-feedback-box" class="hidden typing-feedback"></div>
             </div>
-
-            <div id="controls-area" style="text-align:center; margin-top:30px;" class="hidden">
-                <button class="btn btn-outline" onclick="nextQuestion()">Next Question (N)</button>
+            <div id="flag-controls" class="nav-buttons hidden">
+                <button class="btn btn-outline" onclick="nextFlagQ()">Next Question</button>
             </div>
         </div>
+        <div class="nav-buttons">
+            <button class="btn btn-danger" onclick="endGame('flags')">Finish & Review</button>
+        </div>
+    </div>
+
+    <div id="screen-morse-setup" class="card hidden">
+        <h3>Morse Trainer Setup</h3>
         
-        <div style="text-align: center;">
-            <button class="btn btn-danger" style="font-size:0.85rem; padding:10px 20px;" onclick="showMenu()">Exit Quiz</button>
+        <div class="settings-group">
+            <label>Input Mode</label>
+            <div class="pill-selector" id="morse-mode-selector">
+                <div class="pill active" onclick="setMorseMode('tap')">Tap Buttons</div>
+                <div class="pill" onclick="setMorseMode('send')">Send (Keyer)</div>
+            </div>
+        </div>
+
+        <div class="settings-group">
+            <label>Character Set</label>
+            <div class="pill-selector" id="morse-set-selector">
+                <div class="pill active" onclick="setMorseSet('limited')">Easy (X Y Z F Q L J)</div>
+                <div class="pill" onclick="setMorseSet('nums')">Numbers</div>
+                <div class="pill" onclick="setMorseSet('all')">All Letters</div>
+            </div>
+        </div>
+
+        <div class="settings-group">
+            <label>Options</label>
+            <div class="pill-selector">
+                <div id="btn-morse-autonext" class="pill" onclick="toggleMorseAutoNext()">Auto-Next: OFF</div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px; display:flex; justify-content:center; gap:15px;">
+            <button class="btn btn-outline" onclick="goHome()">Back</button>
+            <button class="btn" onclick="startMorseGame()">Start Practice</button>
+        </div>
+    </div>
+
+    <div id="screen-morse-game" class="hidden">
+        <div class="hud-dashboard">
+            <div class="hud-top-row">
+                <span>MORSE PRACTICE</span>
+                <span id="morse-mode-label" style="color:var(--accent);">TAP MODE</span>
+            </div>
+            <div class="hud-stats-row">
+                <div id="morse-chip-streak" class="stat-chip chip-streak"><span>🔥</span><span id="morse-val-streak">0</span></div>
+                <div id="morse-chip-wpm" class="stat-chip chip-wpm hidden"><span>📶</span><span id="morse-val-wpm">-- WPM</span></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="morse-stage">
+                <div id="morse-target-char" class="morse-big-char">?</div>
+                <div id="morse-user-input" class="morse-display-code"></div>
+            </div>
+
+            <div id="morse-tap-controls" class="hidden">
+                <div class="morse-tap-grid">
+                    <button class="morse-tap-btn" onclick="morseInput('.')">●</button>
+                    <button class="morse-tap-btn" onclick="morseInput('-')">▬</button>
+                </div>
+            </div>
+
+            <div id="morse-send-controls" class="hidden">
+                <div id="keyer-btn">
+                    KEY
+                    <div id="keyer-sub">Hold for Dash</div>
+                    <div class="press-progress"><div id="press-bar" class="press-bar"></div></div>
+                </div>
+            </div>
+
+            <div id="morse-feedback" class="feedback-text"></div>
+
+            <div class="nav-buttons" id="morse-nav-area">
+                <button class="btn btn-outline" onclick="morseBackspace()">Back</button>
+                <button class="btn btn-outline" onclick="morseClear()">Clear</button>
+                <button class="btn" onclick="checkMorse()">Check</button>
+            </div>
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-danger" onclick="endGame('morse')">Finish & Review</button>
         </div>
     </div>
 
     <div id="screen-results" class="card hidden">
         <h1>Results</h1>
         <div style="text-align: center; margin-bottom: 30px;">
-            <div style="font-size: 4rem; font-weight: 800; color: var(--accent); text-shadow: 0 0 20px rgba(14,165,233,0.5);" id="final-score-percent">80%</div>
-            <div style="color: var(--text-muted); font-size: 1.2rem;" id="final-score-text">8 out of 10 correct</div>
+            <div style="font-size: 4rem; font-weight: 800; color: var(--accent); text-shadow: 0 0 20px rgba(14,165,233,0.5);" id="final-score-percent">0%</div>
+            <div style="color: var(--text-muted); font-size: 1.2rem;" id="final-score-text">0 out of 0 correct</div>
         </div>
 
         <h3 style="text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">Review</h3>
         <div id="review-list"></div>
 
         <div style="text-align: center; margin-top: 30px;">
-            <button class="btn" onclick="showMenu()">Back to Menu</button>
+            <button class="btn" onclick="goHome()">Back to Menu</button>
         </div>
     </div>
+
 </div>
 
 <script>
-// --- GAME STATE ---
-let state = {
-    mode: 'CHAR',
-    categories: { letters: true, numerals: false, subs: false },
-    settings: { difficulty: 4, count: 10, timer: 0, autoNext: false },
-    queue: [],
-    currentIdx: 0,
-    history: [],
-    stats: { correct: 0, wrong: 0, streak: 0, bestStreak: 0 },
-    timerInterval: null,
-    timeLeft: 0,
-    waitingForNext: false
+// --- GLOBAL STATE ---
+let appState = {
+    screen: 'HOME',
+    flags: {
+        mode: 'CHAR',
+        cats: { letters: true, numerals: false, subs: false },
+        count: 10,
+        autoNext: false,
+        qList: [],
+        currIdx: 0,
+        score: 0,
+        streak: 0,
+        waiting: false,
+        history: []
+    },
+    morse: {
+        mode: 'tap',
+        set: 'limited',
+        autoNext: false,
+        pool: [],
+        target: '',
+        typed: '',
+        streak: 0,
+        ditEma: null,
+        pressStart: 0,
+        pressActive: false,
+        waiting: false,
+        history: [],
+        correctCount: 0,
+        wrongCount: 0
+    }
 };
 
-// --- SVG ENGINE ---
+function hideAllScreens() {
+    ['screen-home', 'screen-flags-setup', 'screen-flags-game', 'screen-morse-setup', 'screen-morse-game', 'screen-results'].forEach(id => {
+        document.getElementById(id).classList.add('hidden');
+    });
+}
+
+function goHome() {
+    hideAllScreens();
+    document.getElementById('screen-home').classList.remove('hidden');
+    if(pressAnim) cancelAnimationFrame(pressAnim);
+}
+
+// ==========================================
+//              FLAGS LOGIC
+// ==========================================
+
+function goToFlagSetup() {
+    hideAllScreens();
+    document.getElementById('screen-flags-setup').classList.remove('hidden');
+}
+
+function setFlagMode(m) {
+    appState.flags.mode = m;
+    updatePills('flag-mode-selector', m === 'CHAR' ? 0 : m === 'MEANING_MC' ? 1 : m === 'MEANING_TYPE' ? 2 : 3);
+    
+    // Hide Categories for Secondary Mode
+    const catGroup = document.getElementById('flag-cats-group');
+    if (m === 'SECONDARY') catGroup.classList.add('hidden');
+    else catGroup.classList.remove('hidden');
+}
+
+function toggleFlagCat(cat, el) {
+    appState.flags.cats[cat] = !appState.flags.cats[cat];
+    if(!appState.flags.cats.letters && !appState.flags.cats.numerals && !appState.flags.cats.subs) {
+        appState.flags.cats[cat] = true; 
+    }
+    el.classList.toggle('active');
+}
+
+function toggleFlagAutoNext() {
+    appState.flags.autoNext = !appState.flags.autoNext;
+    const btn = document.getElementById('btn-flag-autonext');
+    btn.innerText = `Auto-Next: ${appState.flags.autoNext ? 'ON' : 'OFF'}`;
+    btn.classList.toggle('active');
+}
+
+function setFlagCount(c) {
+    appState.flags.count = c;
+    const pills = document.getElementById('flag-count-selector').children;
+    for(let p of pills) p.classList.remove('active');
+    event.target.classList.add('active');
+}
+
+function updatePills(parentId, activeIdx) {
+    const p = document.getElementById(parentId).children;
+    for(let i=0; i<p.length; i++) p[i].classList.remove('active');
+    p[activeIdx].classList.add('active');
+}
+
+function startFlagGame() {
+    let pool = [];
+    if (appState.flags.mode === 'SECONDARY') {
+        pool = DATA_SECONDARY.map(item => ({...item, type: 'secondary'}));
+    } else {
+        if (appState.flags.cats.letters) pool.push(...Object.keys(DATA_LETTERS).map(k => ({id: k, ...DATA_LETTERS[k]})));
+        if (appState.flags.cats.numerals) pool.push(...Object.keys(DATA_NUMERALS).map(k => ({id: k, ...DATA_NUMERALS[k]})));
+        if (appState.flags.cats.subs) pool.push(...Object.keys(DATA_SUBS).map(k => ({id: k, ...DATA_SUBS[k]})));
+    }
+    
+    pool.sort(() => Math.random() - 0.5);
+    if(appState.flags.count !== 999) pool = pool.slice(0, appState.flags.count);
+    
+    appState.flags.qList = pool;
+    appState.flags.currIdx = 0;
+    appState.flags.score = 0;
+    appState.flags.streak = 0;
+    appState.flags.waiting = false;
+    appState.flags.history = [];
+
+    hideAllScreens();
+    document.getElementById('screen-flags-game').classList.remove('hidden');
+    loadFlagQ();
+}
+
+function loadFlagQ() {
+    if(appState.flags.currIdx >= appState.flags.qList.length && appState.flags.count !== 999) {
+        endGame('flags');
+        return;
+    }
+
+    appState.flags.waiting = false;
+    const q = appState.flags.qList[appState.flags.currIdx % appState.flags.qList.length];
+    
+    // HUD
+    document.getElementById('flag-hud-progress').innerText = `Question ${appState.flags.currIdx + 1} / ${appState.flags.count === 999 ? '∞' : appState.flags.count}`;
+    document.getElementById('flag-val-streak').innerText = appState.flags.streak;
+    document.getElementById('flag-val-acc').innerText = appState.flags.currIdx === 0 ? '100%' : Math.round((appState.flags.score / appState.flags.currIdx) * 100) + '%';
+    
+    // Streak Hot
+    if (appState.flags.streak >= 3) document.getElementById('flag-chip-streak').classList.add('hot');
+    else document.getElementById('flag-chip-streak').classList.remove('hot');
+
+    // Render Flag
+    const flagId = q.type === 'secondary' ? q.letter : q.id;
+    document.getElementById('flag-stage').innerHTML = renderFlag(flagId) + `<div id="complement-badge" class="complement-text hidden"></div>`;
+    
+    const compBadge = document.getElementById('complement-badge');
+    if (q.type === 'secondary') {
+        compBadge.innerText = "+ " + q.complement;
+        compBadge.classList.remove('hidden');
+    } else {
+        compBadge.classList.add('hidden');
+    }
+
+    // UI Setup
+    const grid = document.getElementById('flag-options-grid');
+    const typeArea = document.getElementById('flag-typing-area');
+    const controls = document.getElementById('flag-controls');
+    const feedback = document.getElementById('flag-feedback-box');
+    
+    grid.classList.add('hidden');
+    typeArea.classList.add('hidden');
+    controls.classList.add('hidden');
+    feedback.classList.add('hidden');
+    
+    const qText = document.getElementById('flag-q-text');
+
+    if(appState.flags.mode === 'CHAR') {
+        qText.innerText = "Identify this flag";
+        grid.classList.remove('hidden');
+        generateFlagOptions(q, 'labelShort');
+    } else if(appState.flags.mode === 'MEANING_MC') {
+        qText.innerText = `What is the meaning of ${q.labelShort}?`;
+        grid.classList.remove('hidden');
+        generateFlagOptions(q, 'primary');
+    } else if (appState.flags.mode === 'SECONDARY') {
+        qText.innerText = `Meaning with complement: "${q.complement}"`;
+        grid.classList.remove('hidden');
+        generateFlagOptions(q, 'meaning');
+    } else {
+        qText.innerText = `Type meaning of ${q.labelShort}`;
+        typeArea.classList.remove('hidden');
+        document.getElementById('flag-type-input').value = "";
+        document.getElementById('flag-type-input').focus();
+    }
+}
+
+function generateFlagOptions(correct, field) {
+    const grid = document.getElementById('flag-options-grid');
+    grid.innerHTML = "";
+    
+    let pool = [];
+    if (appState.flags.mode === 'SECONDARY') {
+        pool = DATA_SECONDARY.filter(x => x.id !== correct.id);
+    } else {
+        const all = Object.values(ALL_FLAGS).filter(x => x.labelLong !== correct.labelLong);
+        pool = all;
+    }
+
+    pool.sort(() => Math.random() - 0.5);
+    const opts = [correct, ...pool.slice(0, 3)];
+    opts.sort(() => Math.random() - 0.5);
+    
+    opts.forEach(opt => {
+        const btn = document.createElement('div');
+        btn.className = 'option-btn';
+        btn.innerText = opt[field];
+        btn.onclick = () => checkFlagMC(opt, btn);
+        grid.appendChild(btn);
+    });
+}
+
+function checkFlagMC(selected, btn) {
+    if (appState.flags.waiting) return;
+
+    const correct = appState.flags.qList[appState.flags.currIdx % appState.flags.qList.length];
+    let isCorrect = false;
+
+    if (appState.flags.mode === 'SECONDARY') {
+        isCorrect = selected.id === correct.id;
+    } else {
+        isCorrect = selected.labelLong === correct.labelLong;
+    }
+
+    // Save history
+    let realAnsText = appState.flags.mode === 'CHAR' ? correct.labelShort : (appState.flags.mode === 'SECONDARY' ? correct.meaning : correct.primary);
+    let userAnsText = appState.flags.mode === 'CHAR' ? selected.labelShort : (appState.flags.mode === 'SECONDARY' ? selected.meaning : selected.primary);
+    
+    appState.flags.history.push({
+        q: correct,
+        correct: isCorrect,
+        userAns: userAnsText,
+        realAns: realAnsText
+    });
+
+    if(isCorrect) {
+        btn.classList.add('correct');
+        appState.flags.score++;
+        appState.flags.streak++;
+        
+        if (appState.flags.autoNext) {
+            appState.flags.waiting = true;
+            setTimeout(nextFlagQ, 900);
+            return;
+        }
+    } else {
+        btn.classList.add('wrong');
+        appState.flags.streak = 0;
+        Array.from(document.getElementById('flag-options-grid').children).forEach(child => {
+            if(child.innerText === realAnsText) child.classList.add('correct');
+        });
+    }
+    document.getElementById('flag-controls').classList.remove('hidden');
+}
+
+function submitFlagType() {
+    if (appState.flags.waiting) return;
+    
+    const input = document.getElementById('flag-type-input').value.toLowerCase();
+    const correct = appState.flags.qList[appState.flags.currIdx % appState.flags.qList.length];
+    
+    const keywords = correct.primary.toLowerCase().split(' ').filter(w => w.length > 3);
+    const match = keywords.some(k => input.includes(k));
+    
+    const isCorrect = (match || input === correct.primary.toLowerCase());
+    
+    // History
+    appState.flags.history.push({
+        q: correct,
+        correct: isCorrect,
+        userAns: input,
+        realAns: correct.primary
+    });
+
+    const fb = document.getElementById('flag-feedback-box');
+    fb.classList.remove('hidden');
+    
+    if(isCorrect) {
+        fb.innerHTML = "<span style='color:var(--success)'>Correct!</span>";
+        appState.flags.score++;
+        appState.flags.streak++;
+        
+        if (appState.flags.autoNext) {
+            appState.flags.waiting = true;
+            setTimeout(nextFlagQ, 1000);
+            return;
+        }
+    } else {
+        fb.innerHTML = `<span style='color:var(--error)'>Incorrect.</span><br><small>${correct.primary}</small>`;
+        appState.flags.streak = 0;
+    }
+    document.getElementById('flag-controls').classList.remove('hidden');
+}
+
+function nextFlagQ() {
+    appState.flags.currIdx++;
+    loadFlagQ();
+}
+
+
+// ==========================================
+//              MORSE LOGIC
+// ==========================================
+
+function goToMorseSetup() {
+    hideAllScreens();
+    document.getElementById('screen-morse-setup').classList.remove('hidden');
+}
+
+function setMorseMode(m) {
+    appState.morse.mode = m;
+    updatePills('morse-mode-selector', m === 'tap' ? 0 : 1);
+}
+
+function setMorseSet(s) {
+    appState.morse.set = s;
+    updatePills('morse-set-selector', s === 'limited' ? 0 : s === 'nums' ? 1 : 2);
+}
+
+function toggleMorseAutoNext() {
+    appState.morse.autoNext = !appState.morse.autoNext;
+    const btn = document.getElementById('btn-morse-autonext');
+    btn.innerText = `Auto-Next: ${appState.morse.autoNext ? 'ON' : 'OFF'}`;
+    btn.classList.toggle('active');
+}
+
+function startMorseGame() {
+    let pool = [];
+    if(appState.morse.set === 'limited') pool = LIMITED_LETTERS;
+    else if(appState.morse.set === 'nums') pool = NUMBERS_ARR;
+    else pool = [...ALL_LETTERS_ARR, ...NUMBERS_ARR];
+    
+    appState.morse.pool = pool;
+    appState.morse.streak = 0;
+    appState.morse.ditEma = null;
+    appState.morse.waiting = false;
+    appState.morse.history = [];
+    appState.morse.correctCount = 0;
+    appState.morse.wrongCount = 0;
+
+    hideAllScreens();
+    document.getElementById('screen-morse-game').classList.remove('hidden');
+    
+    document.getElementById('morse-mode-label').innerText = appState.morse.mode === 'tap' ? 'TAP MODE' : 'SEND MODE';
+    document.getElementById('morse-tap-controls').classList.toggle('hidden', appState.morse.mode !== 'tap');
+    document.getElementById('morse-send-controls').classList.toggle('hidden', appState.morse.mode !== 'send');
+    document.getElementById('morse-chip-wpm').classList.toggle('hidden', appState.morse.mode !== 'send');
+
+    pickMorseChar();
+}
+
+function pickMorseChar() {
+    const char = appState.morse.pool[Math.floor(Math.random() * appState.morse.pool.length)];
+    appState.morse.target = char;
+    appState.morse.typed = "";
+    appState.morse.waiting = false;
+    
+    document.getElementById('morse-target-char').innerText = char;
+    document.getElementById('morse-user-input').innerText = "";
+    document.getElementById('morse-feedback').innerText = "";
+    document.getElementById('morse-val-streak').innerText = appState.morse.streak;
+    
+    if(appState.morse.streak >= 3) document.getElementById('morse-chip-streak').classList.add('hot');
+    else document.getElementById('morse-chip-streak').classList.remove('hot');
+}
+
+function morseInput(symbol) {
+    if (appState.morse.waiting) return;
+    appState.morse.typed += symbol;
+    document.getElementById('morse-user-input').innerText = appState.morse.typed;
+}
+
+function morseBackspace() {
+    if (appState.morse.waiting) return;
+    appState.morse.typed = appState.morse.typed.slice(0, -1);
+    document.getElementById('morse-user-input').innerText = appState.morse.typed;
+}
+
+function morseClear() {
+    if (appState.morse.waiting) return;
+    appState.morse.typed = "";
+    document.getElementById('morse-user-input').innerText = "";
+}
+
+function checkMorse() {
+    if (appState.morse.waiting) return;
+
+    const correctCode = MORSE_MAP[appState.morse.target];
+    const userCode = appState.morse.typed;
+    const feedback = document.getElementById('morse-feedback');
+    const isCorrect = (userCode === correctCode);
+    
+    // Save history
+    appState.morse.history.push({
+        target: appState.morse.target,
+        correctCode: correctCode,
+        userCode: userCode,
+        correct: isCorrect
+    });
+    
+    if (isCorrect) {
+        feedback.innerHTML = "<span style='color:var(--success)'>Correct!</span>";
+        appState.morse.streak++;
+        appState.morse.correctCount++;
+        
+        if (appState.morse.autoNext) {
+            appState.morse.waiting = true;
+            setTimeout(pickMorseChar, 800);
+        }
+    } else {
+        feedback.innerHTML = `<span style='color:var(--error)'>Wrong!</span> ${correctCode}`;
+        appState.morse.streak = 0;
+        appState.morse.wrongCount++;
+        appState.morse.typed = ""; 
+        document.getElementById('morse-user-input').innerText = "";
+        document.getElementById('morse-val-streak').innerText = 0;
+        document.getElementById('morse-chip-streak').classList.remove('hot');
+    }
+}
+
+// --- SEND MODE (KEYER) ---
+const DASH_THRESHOLD_MS = 250; 
+const EMA_ALPHA = 0.2;
+let pressAnim = null;
+
+const keyerBtn = document.getElementById('keyer-btn');
+const pressBar = document.getElementById('press-bar');
+
+function pressDown(e) {
+    if(appState.morse.mode !== 'send' || appState.morse.waiting) return;
+    e.preventDefault();
+    if(appState.morse.pressActive) return;
+    
+    appState.morse.pressActive = true;
+    appState.morse.pressStart = performance.now();
+    keyerBtn.classList.add('pressed');
+    
+    const start = performance.now();
+    const tick = () => {
+        if(!appState.morse.pressActive) return;
+        const elapsed = performance.now() - start;
+        const pct = Math.min((elapsed / DASH_THRESHOLD_MS) * 100, 100);
+        pressBar.style.width = pct + "%";
+        pressAnim = requestAnimationFrame(tick);
+    };
+    pressAnim = requestAnimationFrame(tick);
+}
+
+function pressUp(e) {
+    if(appState.morse.mode !== 'send' || appState.morse.waiting) return;
+    e.preventDefault();
+    if(!appState.morse.pressActive) return;
+    
+    appState.morse.pressActive = false;
+    keyerBtn.classList.remove('pressed');
+    if(pressAnim) cancelAnimationFrame(pressAnim);
+    pressBar.style.width = "0%";
+    
+    const dur = performance.now() - appState.morse.pressStart;
+    const sym = (dur >= DASH_THRESHOLD_MS) ? "-" : ".";
+    morseInput(sym);
+    
+    // WPM Calc
+    const ditGuess = (sym === ".") ? dur : (dur / 3);
+    const old = appState.morse.ditEma;
+    appState.morse.ditEma = (old == null) ? ditGuess : (EMA_ALPHA * ditGuess + (1 - EMA_ALPHA) * old);
+    
+    const wpm = Math.round(1200 / appState.morse.ditEma);
+    if(isFinite(wpm) && wpm > 0 && wpm < 60) {
+        document.getElementById('morse-val-wpm').innerText = wpm + " WPM";
+    }
+}
+
+keyerBtn.addEventListener('mousedown', pressDown);
+keyerBtn.addEventListener('touchstart', pressDown);
+document.addEventListener('mouseup', pressUp);
+document.addEventListener('touchend', pressUp);
+
+
+// ==========================================
+//              RESULTS LOGIC
+// ==========================================
+
+function endGame(mode) {
+    hideAllScreens();
+    document.getElementById('screen-results').classList.remove('hidden');
+    
+    let total = 0, correct = 0, history = [];
+    
+    if (mode === 'flags') {
+        history = appState.flags.history;
+        total = history.length;
+        correct = history.filter(h => h.correct).length;
+    } else {
+        history = appState.morse.history;
+        total = history.length;
+        correct = history.filter(h => h.correct).length;
+    }
+
+    const p = total === 0 ? 0 : Math.round((correct / total) * 100);
+    
+    document.getElementById('final-score-percent').innerText = `${p}%`;
+    document.getElementById('final-score-text').innerText = `${correct} out of ${total} correct`;
+
+    const list = document.getElementById('review-list');
+    list.innerHTML = "";
+    
+    history.forEach(item => {
+        const div = document.createElement('div');
+        div.className = `result-item ${item.correct ? 'r-correct' : 'r-wrong'}`;
+        
+        if (mode === 'flags') {
+            const flagKey = item.q.type === 'secondary' ? item.q.letter : item.q.id;
+            div.innerHTML = `
+                <div class="result-mini-flag">${renderFlag(flagKey)}</div>
+                <div class="result-info">
+                    <div>${item.q.labelShort || item.q.letter}</div>
+                    ${!item.correct ? `<div class="user-ans">You: ${item.userAns}</div>` : ''}
+                    <div class="real-ans">${item.realAns}</div>
+                </div>
+            `;
+        } else {
+            // Morse Review
+            div.innerHTML = `
+                <div class="result-mini-morse">${item.target}</div>
+                <div class="result-info">
+                    <div>${item.correctCode}</div>
+                    ${!item.correct ? `<div class="user-ans">You: ${item.userCode || '(empty)'}</div>` : ''}
+                </div>
+            `;
+        }
+        list.appendChild(div);
+    });
+}
+
+// ==========================================
+//              SVG ENGINE
+// ==========================================
 function renderFlag(key) {
     const W = 300, H = 200;
     const C = { Y: "#facc15", B: "#2563eb", R: "#dc2626", W: "#f8fafc", K: "#1e293b" };
     const uid = key + "_" + Math.floor(Math.random() * 10000);
 
     let pathD = `M0,0 L300,0 L300,200 L0,200 Z`; 
-    let isPennant = false;
 
     if (key === 'A' || key === 'B') {
-        pathD = `M0,0 L300,0 L220,100 L300,200 L0,200 Z`; // Swallowtail
+        pathD = `M0,0 L300,0 L220,100 L300,200 L0,200 Z`; 
     } else if (DATA_NUMERALS[key] || key === 'ANS') {
-        pathD = `M0,0 L280,60 L280,140 L0,200 Z`; // Truncated Pennant
-        isPennant = true;
-    } else if (key.startsWith('SUB')) {
-        pathD = `M0,0 L260,100 L0,200 Z`; // Triangle
-        isPennant = true;
+        pathD = `M0,0 L280,60 L280,140 L0,200 Z`; 
+    } else if (key && key.startsWith('SUB')) {
+        pathD = `M0,0 L260,100 L0,200 Z`; 
     }
 
     const clipDef = `<defs><clipPath id="cp_${uid}"><path d="${pathD}"/></clipPath></defs>`;
@@ -624,7 +1150,6 @@ function renderFlag(key) {
         case "SUB1": content = gClip + `<rect width="300" height="200" fill="${C.B}"/><path d="M0,50 L140,100 L0,150 Z" fill="${C.Y}"/>` + gEnd; break;
         case "SUB2": content = gClip + `<rect x="0" width="150" height="200" fill="${C.B}"/><rect x="150" width="150" height="200" fill="${C.W}"/>` + gEnd; break;
         case "SUB3": content = gClip + `<rect width="300" height="200" fill="${C.W}"/><rect y="80" width="300" height="40" fill="${C.K}"/>` + gEnd; break;
-        
         case "ANS": 
              content = gClip;
              for(let i=0; i<7; i++) content += `<rect x="${i*43}" width="43" height="200" fill="${i%2===0?C.R:C.W}"/>`;
@@ -636,366 +1161,6 @@ function renderFlag(key) {
     return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${clipDef}${content}${stroke}</svg>`;
 }
 
-// --- CONTROLLER ---
-
-function setMode(m) {
-    state.mode = m;
-    document.querySelectorAll('#mode-selector .pill').forEach(p => p.classList.remove('active'));
-    document.querySelector(`#mode-selector .pill[onclick="setMode('${m}')"]`).classList.add('active');
-    
-    const catSettings = document.getElementById('category-settings');
-    if (m === 'SECONDARY') catSettings.classList.add('hidden');
-    else catSettings.classList.remove('hidden');
-}
-
-function toggleCat(c) {
-    state.categories[c] = !state.categories[c];
-    if (!state.categories.letters && !state.categories.numerals && !state.categories.subs) {
-        state.categories[c] = true;
-    }
-    ['letters', 'numerals', 'subs'].forEach(k => {
-        const el = document.querySelector(`.pill[onclick="toggleCat('${k}')"]`);
-        if (state.categories[k]) el.classList.add('active');
-        else el.classList.remove('active');
-    });
-}
-
-function setSetting(k, v) {
-    state.settings[k] = v;
-    const sel = k === 'difficulty' ? 'diff-selector' : 'count-selector';
-    document.querySelectorAll(`#${sel} .pill`).forEach(p => p.classList.remove('active'));
-    document.querySelector(`#${sel} .pill[onclick="setSetting('${k}', ${v})"]`).classList.add('active');
-}
-
-function toggleAutoNext() {
-    state.settings.autoNext = !state.settings.autoNext;
-    const el = document.getElementById('btn-autonext');
-    el.innerText = `Auto-Next: ${state.settings.autoNext ? 'ON' : 'OFF'}`;
-    el.classList.toggle('active');
-}
-
-function toggleTimer() {
-    let t = state.settings.timer;
-    if (t === 0) t = 10; else if (t === 10) t = 20; else t = 0;
-    state.settings.timer = t;
-    const el = document.getElementById('btn-timer');
-    el.innerText = `Timer: ${t === 0 ? 'OFF' : t + 's'}`;
-    if (t > 0) el.classList.add('active'); else el.classList.remove('active');
-}
-
-function startGame() {
-    // Reset Stats
-    state.stats = { correct: 0, wrong: 0, streak: 0, bestStreak: 0 };
-    state.currentIdx = 0;
-    state.history = [];
-    state.queue = generateQueue();
-    
-    updateHUD();
-
-    document.getElementById('screen-menu').classList.add('hidden');
-    document.getElementById('screen-results').classList.add('hidden');
-    document.getElementById('screen-game').classList.remove('hidden');
-
-    loadQuestion();
-}
-
-function generateQueue() {
-    let pool = [];
-    if (state.mode === 'SECONDARY') {
-        pool = DATA_SECONDARY.map(item => ({...item, type: 'secondary'}));
-    } else {
-        if (state.categories.letters) pool.push(...Object.keys(DATA_LETTERS).map(k => ({id: k, ...DATA_LETTERS[k], type:'letter'})));
-        if (state.categories.numerals) pool.push(...Object.keys(DATA_NUMERALS).map(k => ({id: k, ...DATA_NUMERALS[k], type:'numeral'})));
-        if (state.categories.subs) pool.push(...Object.keys(DATA_SUBS).map(k => ({id: k, ...DATA_SUBS[k], type:'sub'})));
-    }
-    pool.sort(() => Math.random() - 0.5);
-    if (state.settings.count !== 999) pool = pool.slice(0, state.settings.count);
-    return pool;
-}
-
-function loadQuestion() {
-    if (state.currentIdx >= state.queue.length && state.settings.count !== 999) {
-        endGame(); return;
-    }
-
-    const q = state.queue[state.currentIdx % state.queue.length];
-    state.currentQuestion = q;
-    state.waitingForNext = false;
-    
-    updateHUD();
-    document.getElementById('controls-area').classList.add('hidden');
-    document.getElementById('typing-feedback-box').classList.add('hidden');
-
-    const flagKey = q.type === 'secondary' ? q.letter : q.id;
-    document.getElementById('flag-stage').innerHTML = renderFlag(flagKey) + `<div id="complement-badge" class="complement-text hidden"></div>`;
-
-    const qText = document.getElementById('question-text');
-    const optionsGrid = document.getElementById('options-grid');
-    const typeArea = document.getElementById('typing-area');
-    const compBadge = document.getElementById('complement-badge');
-
-    optionsGrid.classList.add('hidden');
-    typeArea.classList.add('hidden');
-    compBadge.classList.add('hidden');
-    document.getElementById('type-input').value = "";
-
-    // Timer Logic
-    clearInterval(state.timerInterval);
-    const timerDisplay = document.getElementById('hud-timer');
-    if (state.settings.timer > 0) {
-        state.timeLeft = state.settings.timer;
-        timerDisplay.classList.remove('hidden');
-        timerDisplay.innerHTML = `⏱ <span class="timer-badge">${state.timeLeft}s</span>`;
-        state.timerInterval = setInterval(() => {
-            state.timeLeft--;
-            timerDisplay.innerHTML = `⏱ <span class="timer-badge">${state.timeLeft}s</span>`;
-            if (state.timeLeft <= 0) {
-                clearInterval(state.timerInterval);
-                handleTimeOut();
-            }
-        }, 1000);
-    } else {
-        timerDisplay.classList.add('hidden');
-    }
-
-    // Set UI Mode
-    if (state.mode === 'CHAR') {
-        qText.innerText = "Identify this signal";
-        generateOptions(q, 'labelShort');
-        optionsGrid.classList.remove('hidden');
-    } else if (state.mode === 'MEANING_MC') {
-        qText.innerText = `What is the PRIMARY meaning of ${q.labelShort}?`;
-        generateOptions(q, 'primary');
-        optionsGrid.classList.remove('hidden');
-    } else if (state.mode === 'MEANING_TYPE') {
-        qText.innerText = `Type the PRIMARY meaning of ${q.labelShort}`;
-        typeArea.classList.remove('hidden');
-        setTimeout(() => document.getElementById('type-input').focus(), 100);
-    } else if (state.mode === 'SECONDARY') {
-        qText.innerText = `Meaning with complement: "${q.complement}"`;
-        compBadge.innerText = "+ " + q.complement;
-        compBadge.classList.remove('hidden');
-        generateOptions(q, 'meaning');
-        optionsGrid.classList.remove('hidden');
-    }
-}
-
-function updateHUD() {
-    // Progress
-    const totalQ = state.settings.count === 999 ? '∞' : state.settings.count;
-    document.getElementById('hud-progress').innerText = `Question ${state.currentIdx + 1} / ${totalQ}`;
-    
-    // Stats
-    document.getElementById('val-streak').innerText = state.stats.streak;
-    document.getElementById('val-correct').innerText = state.stats.correct;
-    document.getElementById('val-wrong').innerText = state.stats.wrong;
-    
-    // Accuracy
-    const totalAns = state.stats.correct + state.stats.wrong;
-    const acc = totalAns === 0 ? 100 : Math.round((state.stats.correct / totalAns) * 100);
-    document.getElementById('val-acc').innerText = acc + "%";
-
-    // Streak Visuals
-    const streakChip = document.getElementById('chip-streak');
-    if (state.stats.streak >= 3) streakChip.classList.add('hot');
-    else streakChip.classList.remove('hot');
-}
-
-function generateOptions(correctItem, field) {
-    const grid = document.getElementById('options-grid');
-    grid.innerHTML = "";
-    
-    let pool = [];
-    if (state.mode === 'SECONDARY') {
-        pool = DATA_SECONDARY.filter(i => i.id !== correctItem.id);
-    } else {
-        const allKeys = Object.keys(ALL_FLAGS);
-        pool = allKeys.map(k => ALL_FLAGS[k]).filter(i => i.labelLong !== correctItem.labelLong);
-    }
-
-    pool.sort(() => Math.random() - 0.5);
-    const distractors = pool.slice(0, state.settings.difficulty - 1);
-    let options = [correctItem, ...distractors];
-    options.sort(() => Math.random() - 0.5);
-
-    options.forEach((opt, idx) => {
-        const btn = document.createElement('div');
-        btn.className = 'option-btn';
-        const keyVal = idx + 1;
-        const text = state.mode === 'SECONDARY' ? opt.meaning : opt[field];
-        
-        btn.innerHTML = `<span class="key-hint">${keyVal}</span> <span>${text}</span>`;
-        btn.onclick = () => checkAnswerMC(opt, btn);
-        grid.appendChild(btn);
-    });
-}
-
-function checkAnswerMC(selected, btnElement) {
-    if (state.waitingForNext) return;
-    clearInterval(state.timerInterval);
-    state.waitingForNext = true;
-
-    const correct = state.currentQuestion;
-    const isCorrect = (state.mode === 'SECONDARY') 
-        ? selected.id === correct.id 
-        : (selected.labelLong === correct.labelLong);
-
-    processResult(isCorrect, selected);
-
-    if (isCorrect) {
-        btnElement.classList.add('correct');
-        if (state.settings.autoNext) setTimeout(nextQuestion, 900);
-        else document.getElementById('controls-area').classList.remove('hidden');
-    } else {
-        btnElement.classList.add('wrong');
-        document.querySelectorAll('.option-btn').forEach(b => {
-            const target = state.mode === 'SECONDARY' ? correct.meaning : correct[state.mode === 'CHAR' ? 'labelShort' : 'primary'];
-            if (b.innerText.includes(target)) b.classList.add('correct');
-        });
-        document.getElementById('controls-area').classList.remove('hidden');
-    }
-}
-
-function submitTypedAnswer() {
-    if (state.waitingForNext) return;
-    clearInterval(state.timerInterval);
-    state.waitingForNext = true;
-
-    const input = document.getElementById('type-input').value.trim();
-    const correctText = state.currentQuestion.primary;
-    const score = calculateMatch(input, correctText);
-    const passed = score.percent > 70 || score.keywordMatch;
-
-    processResult(passed, input);
-
-    const fb = document.getElementById('typing-feedback-box');
-    fb.classList.remove('hidden');
-    fb.innerHTML = `
-        <div class="tf-title" style="color:${passed?'var(--success)':'var(--error)'}">${passed ? 'Correct!' : 'Incorrect'}</div>
-        <div class="tf-diff"><strong>Answer:</strong> ${correctText}</div>
-        ${!passed ? `<div class="missed-keys">Match Score: ${Math.round(score.percent)}%</div>` : ''}
-    `;
-
-    if (passed && state.settings.autoNext) setTimeout(nextQuestion, 1200);
-    else document.getElementById('controls-area').classList.remove('hidden');
-}
-
-function handleTimeOut() {
-    state.waitingForNext = true;
-    processResult(false, "TIMEOUT");
-    
-    if (state.mode !== 'MEANING_TYPE') {
-        document.querySelectorAll('.option-btn').forEach(b => {
-             const correct = state.currentQuestion;
-             const target = state.mode === 'SECONDARY' ? correct.meaning : correct[state.mode === 'CHAR' ? 'labelShort' : 'primary'];
-             if (b.innerText.includes(target)) b.classList.add('correct');
-        });
-    } else {
-        const fb = document.getElementById('typing-feedback-box');
-        fb.classList.remove('hidden');
-        fb.innerHTML = `<div class="tf-title" style="color:var(--error)">Time's Up!</div>
-                        <div class="tf-diff"><strong>Answer:</strong> ${state.currentQuestion.primary}</div>`;
-    }
-    document.getElementById('controls-area').classList.remove('hidden');
-}
-
-function processResult(isCorrect, userResponse) {
-    // Stats Logic
-    if (isCorrect) {
-        state.stats.correct++;
-        state.stats.streak++;
-        if (state.stats.streak > state.stats.bestStreak) state.stats.bestStreak = state.stats.streak;
-    } else {
-        state.stats.wrong++;
-        state.stats.streak = 0;
-    }
-    updateHUD();
-
-    // History Logic
-    let realAns = "";
-    if (state.mode === 'CHAR') realAns = state.currentQuestion.labelLong;
-    else if (state.mode === 'SECONDARY') realAns = state.currentQuestion.meaning;
-    else realAns = state.currentQuestion.primary;
-
-    let userTxt = "";
-    if (typeof userResponse === 'string') userTxt = userResponse;
-    else if (state.mode === 'CHAR') userTxt = userResponse.labelLong;
-    else if (state.mode === 'SECONDARY') userTxt = userResponse.meaning;
-    else userTxt = userResponse.primary;
-
-    state.history.push({ q: state.currentQuestion, correct: isCorrect, userAns: userTxt, realAns: realAns });
-}
-
-function nextQuestion() {
-    state.currentIdx++;
-    loadQuestion();
-}
-
-function endGame() {
-    document.getElementById('screen-game').classList.add('hidden');
-    document.getElementById('screen-results').classList.remove('hidden');
-
-    const total = state.stats.correct + state.stats.wrong;
-    const p = Math.round((state.stats.correct / total) * 100) || 0;
-    
-    document.getElementById('final-score-percent').innerText = `${p}%`;
-    document.getElementById('final-score-text').innerText = `${state.stats.correct} correct, ${state.stats.wrong} wrong`;
-
-    const list = document.getElementById('review-list');
-    list.innerHTML = "";
-    
-    state.history.forEach(item => {
-        const div = document.createElement('div');
-        div.className = `result-item ${item.correct ? 'r-correct' : 'r-wrong'}`;
-        const flagKey = item.q.type === 'secondary' ? item.q.letter : item.q.id;
-        div.innerHTML = `
-            <div class="result-mini-flag">${renderFlag(flagKey)}</div>
-            <div class="result-info">
-                <div>${item.q.labelShort || item.q.letter}</div>
-                ${!item.correct ? `<div class="user-ans">You: ${item.userAns}</div>` : ''}
-                <div class="real-ans">${item.realAns}</div>
-            </div>
-        `;
-        list.appendChild(div);
-    });
-}
-
-function showMenu() {
-    clearInterval(state.timerInterval);
-    document.getElementById('screen-results').classList.add('hidden');
-    document.getElementById('screen-game').classList.add('hidden');
-    document.getElementById('screen-menu').classList.remove('hidden');
-}
-
-function calculateMatch(input, target) {
-    const normalize = s => s.toLowerCase().replace(/[^a-z0-9 ]/g, "").split(/\s+/);
-    const inpWords = normalize(input);
-    const tgtWords = normalize(target);
-    const keywords = tgtWords.filter(w => w.length > 3 || ['no', 'yes', 'man', 'net', 'tug'].includes(w));
-    let hits = 0;
-    keywords.forEach(k => { if (inpWords.some(iw => iw.startsWith(k) || k.startsWith(iw))) hits++; });
-    const keywordMatch = keywords.length > 0 && (hits / keywords.length) >= 0.75;
-    const overlap = inpWords.filter(w => tgtWords.includes(w)).length;
-    return { percent: (overlap / tgtWords.length) * 100, keywordMatch };
-}
-
-document.addEventListener('keydown', (e) => {
-    if (document.getElementById('screen-game').classList.contains('hidden')) return;
-    if (e.key === 'Escape') showMenu();
-    if (state.waitingForNext && (e.key === 'n' || e.key === 'N' || e.key === 'Enter')) {
-        nextQuestion(); return;
-    }
-    if (!state.waitingForNext && document.getElementById('typing-area').classList.contains('hidden')) {
-        const num = parseInt(e.key);
-        if (!isNaN(num) && num >= 1 && num <= 6) {
-            const btns = document.querySelectorAll('.option-btn');
-            if (btns[num-1]) btns[num-1].click();
-        }
-    }
-    if (!state.waitingForNext && !document.getElementById('typing-area').classList.contains('hidden') && e.key === 'Enter') {
-        submitTypedAnswer();
-    }
-});
 </script>
 </body>
 </html>

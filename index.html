@@ -191,7 +191,7 @@ h3 { margin-bottom: 1rem; text-align: center; }
     min-height: 60px; color: var(--accent);
 }
 
-/* --- PROSIGNS TABLE --- */
+/* --- PROSIGNS DISPLAY --- */
 .prosigns-table {
     width: 100%;
     border-collapse: separate;
@@ -229,8 +229,25 @@ h3 { margin-bottom: 1rem; text-align: center; }
     border-bottom-right-radius: 10px;
     color: var(--text-main);
 }
+
 .overbar {
     text-decoration: overline;
+    text-decoration-thickness: 2px;
+    text-decoration-color: var(--accent);
+}
+
+/* Prosigns Game Specifics */
+.prosign-stage {
+    display: flex; justify-content: center; align-items: center;
+    margin: 1rem 0 2rem 0; min-height: 240px;
+    background: radial-gradient(circle at center, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.95));
+    border-radius: var(--radius); padding: 20px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05);
+}
+.prosign-big-text {
+    font-size: 4rem; font-weight: 800; color: var(--text-main);
+    letter-spacing: 3px; text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    font-family: monospace;
 }
 
 /* --- KEYER BUTTON (SEND MODE) --- */
@@ -313,9 +330,9 @@ input[type="text"]:focus { border-color: var(--accent); }
 .result-item.r-wrong { border-left-color: var(--error); background: linear-gradient(90deg, rgba(248,113,113,0.05) 0%, transparent 100%); }
 
 .result-mini-flag svg { height: 40px; width: auto; display: block; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
-.result-mini-morse { 
-    width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
-    font-weight: 900; font-size: 1.5rem; color: var(--accent); background: rgba(255,255,255,0.05);
+.result-mini-morse, .result-mini-prosign { 
+    width: 50px; height: 40px; display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 1.1rem; color: var(--accent); background: rgba(255,255,255,0.05);
     border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);
 }
 .result-info { flex: 1; font-size: 0.95rem; }
@@ -414,12 +431,12 @@ const ALL_LETTERS_ARR = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 // --- PROSIGNS DATA ---
 const PROSIGNS = [
     { code: "AA", bar: true, meaning: "Unknown station call / General call" },
-    { code: "EEEE...", bar: false, meaning: "Erase (error)" },
+    { code: "EEEE", bar: false, meaning: "Erase (error)" },
     { code: "AAA", bar: false, meaning: "Full stop / Decimal point" },
     { code: "TTTT", bar: false, meaning: "Answering signal" },
     { code: "T", bar: false, meaning: "Word or group received" },
-    { code: "AR", bar: false, meaning: "Ending signal / End of transmission" },
-    { code: "AS", bar: false, meaning: "Wait" },
+    { code: "AR", bar: true, meaning: "Ending signal / End of transmission" },
+    { code: "AS", bar: true, meaning: "Wait" },
     { code: "DE", bar: false, meaning: "From... / This is..." },
     { code: "K", bar: false, meaning: "Invitation to transmit" },
     { code: "OK", bar: false, meaning: "It is correct" },
@@ -463,7 +480,6 @@ const PROSIGNS = [
 
     <div id="screen-flags-setup" class="card hidden">
         <h3>Flag Quiz Setup</h3>
-        
         <div class="settings-group">
             <label>Mode</label>
             <div class="pill-selector" id="flag-mode-selector">
@@ -473,7 +489,6 @@ const PROSIGNS = [
                 <div class="pill" onclick="setFlagMode('SECONDARY')">Secondary Meanings</div>
             </div>
         </div>
-
         <div class="settings-group" id="flag-cats-group">
             <label>Categories</label>
             <div class="pill-selector">
@@ -482,14 +497,12 @@ const PROSIGNS = [
                 <div class="pill pill-check" onclick="toggleFlagCat('subs', this)">Substitutes</div>
             </div>
         </div>
-
         <div class="settings-group">
             <label>Options</label>
             <div class="pill-selector">
                 <div id="btn-flag-autonext" class="pill" onclick="toggleFlagAutoNext()">Auto-Next: OFF</div>
             </div>
         </div>
-
         <div class="settings-group">
             <label>Count</label>
             <div class="pill-selector" id="flag-count-selector">
@@ -498,7 +511,6 @@ const PROSIGNS = [
                 <div class="pill" onclick="setFlagCount(999)">Endless</div>
             </div>
         </div>
-
         <div style="text-align: center; margin-top: 40px; display:flex; justify-content:center; gap:15px;">
             <button class="btn btn-outline" onclick="goHome()">Back</button>
             <button class="btn" onclick="startFlagGame()">Start Quiz</button>
@@ -516,14 +528,11 @@ const PROSIGNS = [
                 <div class="stat-chip chip-acc"><span>🎯</span><span id="flag-val-acc">100%</span></div>
             </div>
         </div>
-
         <div class="card">
             <div class="flag-stage" id="flag-stage">
                 <div id="complement-badge" class="complement-text hidden"></div>
             </div>
-            <div id="flag-q-text" style="text-align:center; margin-bottom:20px; font-weight:bold; font-size:1.1rem; color:var(--text-muted);">
-                Identify this signal
-            </div>
+            <div id="flag-q-text" style="text-align:center; margin-bottom:20px; font-weight:bold; font-size:1.1rem; color:var(--text-muted);">Identify this signal</div>
             <div id="flag-options-grid" class="grid-options hidden"></div>
             <div id="flag-typing-area" class="hidden">
                 <input type="text" id="flag-type-input" placeholder="Type meaning here..." autocomplete="off">
@@ -543,7 +552,6 @@ const PROSIGNS = [
 
     <div id="screen-morse-setup" class="card hidden">
         <h3>Morse Trainer Setup</h3>
-        
         <div class="settings-group">
             <label>Input Mode</label>
             <div class="pill-selector" id="morse-mode-selector">
@@ -551,7 +559,6 @@ const PROSIGNS = [
                 <div class="pill" onclick="setMorseMode('send')">Send (Keyer)</div>
             </div>
         </div>
-
         <div class="settings-group">
             <label>Character Set</label>
             <div class="pill-selector" id="morse-set-selector">
@@ -560,7 +567,6 @@ const PROSIGNS = [
                 <div class="pill" onclick="setMorseSet('all')">All Letters</div>
             </div>
         </div>
-
         <div class="settings-group">
             <label>Options</label>
             <div class="pill-selector">
@@ -568,7 +574,6 @@ const PROSIGNS = [
                 <div id="btn-morse-sound" class="pill active" onclick="toggleMorseSound()">Sound: ON</div>
             </div>
         </div>
-
         <div style="text-align: center; margin-top: 40px; display:flex; justify-content:center; gap:15px;">
             <button class="btn btn-outline" onclick="goHome()">Back</button>
             <button class="btn" onclick="startMorseGame()">Start Practice</button>
@@ -586,20 +591,17 @@ const PROSIGNS = [
                 <div id="morse-chip-wpm" class="stat-chip chip-wpm hidden"><span>📶</span><span id="morse-val-wpm">-- WPM</span></div>
             </div>
         </div>
-
         <div class="card">
             <div class="morse-stage">
                 <div id="morse-target-char" class="morse-big-char">?</div>
                 <div id="morse-user-input" class="morse-display-code"></div>
             </div>
-
             <div id="morse-tap-controls" class="hidden">
                 <div class="morse-tap-grid">
                     <button class="morse-tap-btn" onmousedown="tapDot(event)" ontouchstart="tapDot(event)">●</button>
                     <button class="morse-tap-btn" onmousedown="tapDash(event)" ontouchstart="tapDash(event)">▬</button>
                 </div>
             </div>
-
             <div id="morse-send-controls" class="hidden">
                 <div id="keyer-btn">
                     KEY
@@ -607,9 +609,7 @@ const PROSIGNS = [
                     <div class="press-progress"><div id="press-bar" class="press-bar"></div></div>
                 </div>
             </div>
-
             <div id="morse-feedback" class="feedback-text"></div>
-
             <div class="nav-buttons" id="morse-nav-area">
                 <button class="btn btn-outline" onclick="morseBackspace()">Back</button>
                 <button class="btn btn-outline" onclick="morseClear()">Clear</button>
@@ -622,19 +622,43 @@ const PROSIGNS = [
     </div>
 
     <div id="screen-prosigns" class="card hidden">
-        <h3>Procedure Signals (Prosigns)</h3>
+        <h3>Procedure Signals</h3>
         <table class="prosigns-table" id="prosigns-table">
             <thead>
-                <tr>
-                    <th>Signal</th>
-                    <th>Meaning</th>
-                </tr>
+                <tr><th>Signal</th><th>Meaning</th></tr>
             </thead>
-            <tbody id="prosigns-tbody">
-                </tbody>
+            <tbody id="prosigns-tbody"></tbody>
         </table>
-        <div style="text-align: center; margin-top: 30px;">
-            <button class="btn" onclick="goHome()">Back to Menu</button>
+        <div style="text-align: center; margin-top: 30px; display:flex; flex-direction:column; gap:10px;">
+            <button class="btn btn-success" style="width:100%;" onclick="startProsignsGame()">Start Prosigns Quiz</button>
+            <button class="btn btn-outline" style="width:100%;" onclick="goHome()">Back to Menu</button>
+        </div>
+    </div>
+
+    <div id="screen-prosigns-game" class="hidden">
+        <div class="hud-dashboard">
+            <div class="hud-top-row">
+                <span id="pro-hud-progress">1/10</span>
+                <span>PROSIGNS</span>
+            </div>
+            <div class="hud-stats-row">
+                <div id="pro-chip-streak" class="stat-chip chip-streak"><span>🔥</span><span id="pro-val-streak">0</span></div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="prosign-stage">
+                <div id="prosign-display" class="prosign-big-text">AA</div>
+            </div>
+            <div style="text-align:center; margin-bottom:20px; font-weight:bold; font-size:1.1rem; color:var(--text-muted);">
+                What does this signal mean?
+            </div>
+            <div id="pro-options-grid" class="grid-options"></div>
+            <div id="pro-controls" class="nav-buttons hidden">
+                <button class="btn btn-outline" onclick="nextProsignQ()">Next Question</button>
+            </div>
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-danger" onclick="endGame('prosigns')">Finish & Review</button>
         </div>
     </div>
 
@@ -644,10 +668,8 @@ const PROSIGNS = [
             <div style="font-size: 4rem; font-weight: 800; color: var(--accent); text-shadow: 0 0 20px rgba(14,165,233,0.5);" id="final-score-percent">0%</div>
             <div style="color: var(--text-muted); font-size: 1.2rem;" id="final-score-text">0 out of 0 correct</div>
         </div>
-
         <h3 style="text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">Review</h3>
         <div id="review-list"></div>
-
         <div style="text-align: center; margin-top: 30px;">
             <button class="btn" onclick="goHome()">Back to Menu</button>
         </div>
@@ -663,28 +685,20 @@ let osc = null;
 let gainNode = null;
 
 function initAudio() {
-    if (!audioCtx) {
-        audioCtx = new AudioContext();
-    }
-    if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-    }
+    if (!audioCtx) { audioCtx = new AudioContext(); }
+    if (audioCtx.state === 'suspended') { audioCtx.resume(); }
 }
 
 function playTone() {
     if (!appState.morse.soundEnabled) return;
     initAudio();
     if (osc) return; 
-
     osc = audioCtx.createOscillator();
     gainNode = audioCtx.createGain();
-    
     osc.type = 'sine';
     osc.frequency.setValueAtTime(600, audioCtx.currentTime); 
-    
     gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
     gainNode.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + 0.01); 
-    
     osc.connect(gainNode);
     gainNode.connect(audioCtx.destination);
     osc.start();
@@ -746,11 +760,19 @@ let appState = {
         history: [],
         correctCount: 0,
         wrongCount: 0
+    },
+    prosigns: {
+        qList: [],
+        currIdx: 0,
+        score: 0,
+        streak: 0,
+        waiting: false,
+        history: []
     }
 };
 
 function hideAllScreens() {
-    ['screen-home', 'screen-flags-setup', 'screen-flags-game', 'screen-morse-setup', 'screen-morse-game', 'screen-prosigns', 'screen-results'].forEach(id => {
+    ['screen-home', 'screen-flags-setup', 'screen-flags-game', 'screen-morse-setup', 'screen-morse-game', 'screen-prosigns', 'screen-prosigns-game', 'screen-results'].forEach(id => {
         document.getElementById(id).classList.add('hidden');
     });
 }
@@ -1066,13 +1088,11 @@ function pickMorseChar() {
     appState.morse.typed = "";
     appState.morse.waiting = false;
     
-    // Reset UI
     document.getElementById('morse-target-char').innerText = char;
     document.getElementById('morse-user-input').innerText = "";
     document.getElementById('morse-feedback').innerText = "";
     document.getElementById('morse-val-streak').innerText = appState.morse.streak;
     
-    // Reset Check Button
     const checkBtn = document.getElementById('btn-morse-check');
     checkBtn.innerText = "Check";
     checkBtn.classList.remove('btn-success');
@@ -1088,13 +1108,13 @@ function morseInput(symbol) {
 }
 
 function tapDot(e) {
-    if(e && e.preventDefault) e.preventDefault(); // Stop ghost click
+    if(e && e.preventDefault) e.preventDefault(); 
     playBeep(60);
     morseInput('.');
 }
 
 function tapDash(e) {
-    if(e && e.preventDefault) e.preventDefault(); // Stop ghost click
+    if(e && e.preventDefault) e.preventDefault(); 
     playBeep(180);
     morseInput('-');
 }
@@ -1112,7 +1132,6 @@ function morseClear() {
 }
 
 function checkMorse() {
-    // If waiting (user clicked NEXT manually)
     if (appState.morse.waiting) {
         pickMorseChar();
         return;
@@ -1140,7 +1159,6 @@ function checkMorse() {
         if (appState.morse.autoNext) {
             setTimeout(pickMorseChar, 1000);
         } else {
-            // Change button to Next for manual advance
             checkBtn.innerText = "Next ➡";
             checkBtn.classList.add('btn-success');
         }
@@ -1172,7 +1190,7 @@ function pressDown(e) {
     appState.morse.pressStart = performance.now();
     keyerBtn.classList.add('pressed');
     
-    playTone(); // Audio start
+    playTone(); 
 
     const start = performance.now();
     const tick = () => {
@@ -1190,7 +1208,7 @@ function pressUp(e) {
     e.preventDefault();
     if(!appState.morse.pressActive) return;
     
-    stopTone(); // Audio stop
+    stopTone(); 
 
     appState.morse.pressActive = false;
     keyerBtn.classList.remove('pressed');
@@ -1244,6 +1262,94 @@ function goToProsigns() {
     });
 }
 
+function startProsignsGame() {
+    // Reset State
+    appState.prosigns.qList = [...PROSIGNS].sort(() => Math.random() - 0.5);
+    appState.prosigns.currIdx = 0;
+    appState.prosigns.score = 0;
+    appState.prosigns.streak = 0;
+    appState.prosigns.waiting = false;
+    appState.prosigns.history = [];
+
+    hideAllScreens();
+    document.getElementById('screen-prosigns-game').classList.remove('hidden');
+    loadProsignQ();
+}
+
+function loadProsignQ() {
+    if(appState.prosigns.currIdx >= 10 || appState.prosigns.currIdx >= appState.prosigns.qList.length) {
+        endGame('prosigns');
+        return;
+    }
+
+    appState.prosigns.waiting = false;
+    const q = appState.prosigns.qList[appState.prosigns.currIdx];
+    
+    // Update HUD
+    document.getElementById('pro-hud-progress').innerText = `${appState.prosigns.currIdx + 1}/10`;
+    document.getElementById('pro-val-streak').innerText = appState.prosigns.streak;
+    if (appState.prosigns.streak >= 3) document.getElementById('pro-chip-streak').classList.add('hot');
+    else document.getElementById('pro-chip-streak').classList.remove('hot');
+    
+    // Render Question
+    const displayEl = document.getElementById('prosign-display');
+    displayEl.innerText = q.code;
+    if (q.bar) displayEl.classList.add('overbar');
+    else displayEl.classList.remove('overbar');
+    
+    document.getElementById('pro-controls').classList.add('hidden');
+    
+    // Options
+    const grid = document.getElementById('pro-options-grid');
+    grid.innerHTML = "";
+    
+    const distractors = PROSIGNS.filter(x => x.code !== q.code).sort(() => Math.random() - 0.5).slice(0, 3);
+    const opts = [q, ...distractors].sort(() => Math.random() - 0.5);
+    
+    opts.forEach(opt => {
+        const btn = document.createElement('div');
+        btn.className = 'option-btn';
+        btn.innerText = opt.meaning;
+        btn.onclick = () => checkProsign(opt, btn);
+        grid.appendChild(btn);
+    });
+}
+
+function checkProsign(selected, btn) {
+    if(appState.prosigns.waiting) return;
+    
+    const correct = appState.prosigns.qList[appState.prosigns.currIdx];
+    const isCorrect = (selected.code === correct.code);
+    
+    appState.prosigns.history.push({
+        q: correct,
+        correct: isCorrect,
+        userAns: selected.meaning,
+        realAns: correct.meaning
+    });
+    
+    if(isCorrect) {
+        btn.classList.add('correct');
+        appState.prosigns.score++;
+        appState.prosigns.streak++;
+        appState.prosigns.waiting = true;
+        setTimeout(nextProsignQ, 1000);
+    } else {
+        btn.classList.add('wrong');
+        appState.prosigns.streak = 0;
+        Array.from(document.getElementById('pro-options-grid').children).forEach(child => {
+            if(child.innerText === correct.meaning) child.classList.add('correct');
+        });
+        document.getElementById('pro-controls').classList.remove('hidden');
+    }
+}
+
+function nextProsignQ() {
+    appState.prosigns.currIdx++;
+    loadProsignQ();
+}
+
+
 // ==========================================
 //              RESULTS LOGIC
 // ==========================================
@@ -1256,14 +1362,15 @@ function endGame(mode) {
     
     if (mode === 'flags') {
         history = appState.flags.history;
-        total = history.length;
-        correct = history.filter(h => h.correct).length;
-    } else {
+    } else if (mode === 'morse') {
         history = appState.morse.history;
-        total = history.length;
-        correct = history.filter(h => h.correct).length;
+    } else {
+        history = appState.prosigns.history;
     }
 
+    total = history.length;
+    correct = history.filter(h => h.correct).length;
+    
     const p = total === 0 ? 0 : Math.round((correct / total) * 100);
     
     document.getElementById('final-score-percent').innerText = `${p}%`;
@@ -1286,13 +1393,22 @@ function endGame(mode) {
                     <div class="real-ans">${item.realAns}</div>
                 </div>
             `;
-        } else {
-            // Morse Review
+        } else if (mode === 'morse') {
             div.innerHTML = `
                 <div class="result-mini-morse">${item.target}</div>
                 <div class="result-info">
                     <div style="letter-spacing:2px; font-weight:bold;">${item.correctCode}</div>
                     ${!item.correct ? `<div class="user-ans">You: ${item.userCode || '(empty)'}</div>` : ''}
+                </div>
+            `;
+        } else {
+            // Prosigns
+            const codeDisplay = item.q.bar ? `<span class="overbar">${item.q.code}</span>` : item.q.code;
+            div.innerHTML = `
+                <div class="result-mini-prosign">${codeDisplay}</div>
+                <div class="result-info">
+                    <div style="font-weight:bold;">${item.q.meaning}</div>
+                    ${!item.correct ? `<div class="user-ans">You: ${item.userAns}</div>` : ''}
                 </div>
             `;
         }

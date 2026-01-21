@@ -14,7 +14,7 @@
     --success: #4ade80;      /* Green */
     --error: #f87171;        /* Red */
     --gold: #facc15;         /* Gold */
-    --glass-bg: rgba(30, 41, 59, 0.85);
+    --glass-bg: rgba(30, 41, 59, 0.95);
     --glass-border: rgba(255, 255, 255, 0.1);
     --glass-blur: 24px;
     --radius: 16px;
@@ -61,7 +61,7 @@ h1 {
 
 h3 { margin-bottom: 1rem; text-align: center; }
 
-/* --- GLASS CARDS --- */
+/* --- CARDS --- */
 .card {
     background: var(--glass-bg);
     backdrop-filter: blur(var(--glass-blur));
@@ -81,9 +81,6 @@ h3 { margin-bottom: 1rem; text-align: center; }
     gap: 20px;
     margin-top: 30px;
 }
-.mode-select-grid.three-items {
-    grid-template-columns: 1fr 1fr; 
-}
 .big-mode-btn {
     background: linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%);
     border: 1px solid rgba(255,255,255,0.1);
@@ -102,9 +99,6 @@ h3 { margin-bottom: 1rem; text-align: center; }
     background: linear-gradient(145deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);
     border-color: var(--accent);
     box-shadow: 0 10px 30px rgba(14, 165, 233, 0.2);
-}
-.big-mode-btn.full-width {
-    grid-column: span 2;
 }
 
 .big-mode-icon { font-size: 3rem; margin-bottom: 10px; }
@@ -250,8 +244,8 @@ h3 { margin-bottom: 1rem; text-align: center; }
     font-family: monospace;
 }
 
-/* --- KEYER BUTTON (SEND MODE) --- */
-#keyer-btn {
+/* --- KEYER BUTTONS --- */
+.keyer-btn-base {
     width: 100%; height: 100px;
     background: linear-gradient(180deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
     border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
@@ -262,12 +256,91 @@ h3 { margin-bottom: 1rem; text-align: center; }
     margin-top: 20px;
     touch-action: manipulation;
 }
-#keyer-btn:active, #keyer-btn.pressed { background: rgba(255,255,255,0.15); transform: scale(0.98); border-color: var(--accent); }
+.keyer-btn-base:active, .keyer-btn-base.pressed { background: rgba(255,255,255,0.15); transform: scale(0.98); border-color: var(--accent); }
 #keyer-sub { font-size: 0.8rem; opacity: 0.7; margin-top: 5px; font-weight: normal; }
 .press-progress {
     width: 100%; height: 6px; background: rgba(0,0,0,0.5); border-radius: 3px; margin-top: 15px; overflow: hidden;
 }
 .press-bar { height: 100%; width: 0%; background: var(--accent); transition: width 0s; }
+
+/* --- INPUTS --- */
+input[type="text"] {
+    width: 100%; padding: 16px; padding-right: 40px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.1);
+    background: rgba(15, 23, 42, 0.8); color: white; font-size: 1.1rem; outline: none; margin-bottom: 10px; transition: border 0.3s;
+}
+input[type="text"]:focus { border-color: var(--accent); }
+input[type="text"]:disabled { background: rgba(0,0,0,0.5); color: #aaa; }
+
+/* --- EXAM SPECIFIC STYLES --- */
+.progress-bar {
+    width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-bottom: 20px; overflow: hidden;
+}
+.progress-fill {
+    height: 100%; background: var(--accent); width: 0%; transition: width 0.5s ease;
+}
+
+.exam-section-title { color: var(--accent); text-transform: uppercase; font-size: 0.9rem; margin-bottom: 10px; letter-spacing: 1px; font-weight: bold; }
+.exam-status { text-align: center; margin-bottom: 20px; font-size: 1.1rem; color: var(--text-muted); }
+
+/* EXAM SIGNAL LIGHT */
+.signal-light {
+    width: 120px; height: 120px; background: #333; border-radius: 50%;
+    margin: 0 auto 30px auto; border: 4px solid #555;
+    box-shadow: inset 0 0 20px #000;
+    transition: background 0.05s;
+}
+.signal-light.lit {
+    background: #fff;
+    box-shadow: 0 0 50px #fff, inset 0 0 10px #fff;
+    border-color: #fff;
+}
+
+/* EXAM QUESTIONS */
+.theory-q { margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px; }
+.theory-q label { display: block; margin-bottom: 10px; font-weight: bold; color: var(--text-main); }
+
+/* EXAM FEEDBACK */
+.input-wrapper { position: relative; margin-bottom: 5px; }
+.status-icon {
+    position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+    font-size: 1.2rem; pointer-events: none;
+}
+.border-correct { border-color: var(--success) !important; box-shadow: 0 0 8px rgba(74, 222, 128, 0.3); }
+.border-wrong { border-color: var(--error) !important; box-shadow: 0 0 8px rgba(248, 113, 113, 0.3); }
+.feedback-msg { color: var(--error); font-size: 0.9rem; margin-bottom: 20px; padding-left: 5px; font-weight: bold; }
+.feedback-box { margin-top: 20px; padding: 15px; border-radius: 10px; background: rgba(0,0,0,0.3); text-align: center; }
+.pass-text { color: var(--success); font-weight: bold; font-size: 1.2rem; }
+.fail-text { color: var(--error); font-weight: bold; font-size: 1.2rem; }
+
+/* EXAM SENDING DISPLAY */
+.send-display-box {
+    text-align: center; margin-top: 20px; 
+    font-family: monospace; color: var(--accent); 
+    min-height: 60px; font-size: 4rem; letter-spacing: 5px; 
+    background: rgba(0,0,0,0.3); border-radius: 8px; padding: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: background 0.2s;
+}
+.send-display-box.flash-red {
+    background: rgba(239, 68, 68, 0.4); border-color: var(--error);
+}
+.live-dots { font-size: 1rem; color: var(--text-muted); min-height: 20px; margin-top: 5px; }
+
+/* EXAM COMPARISON */
+.comparison-container {
+    display: flex; flex-direction: column; gap: 10px; margin-top: 15px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;
+}
+.comp-row { display: flex; justify-content: center; gap: 5px; font-family: monospace; font-size: 1.2rem; flex-wrap: wrap; }
+.char-box { 
+    width: 30px; height: 40px; display: flex; align-items: center; justify-content: center; 
+    border-radius: 4px; background: rgba(255,255,255,0.05); font-weight: bold;
+}
+.char-correct { color: #0f172a; background: var(--success); }
+.char-wrong { color: #0f172a; background: var(--error); }
+.char-miss { color: var(--text-muted); border: 1px dashed var(--text-muted); opacity: 0.5; }
+.label-row { font-size: 0.8rem; color: var(--text-muted); margin-bottom: -5px; text-align: left; margin-left: 10px;}
+
+.skip-btn-container { position: absolute; top: 20px; right: 20px; }
 
 /* --- GENERIC UI ELEMENTS --- */
 .grid-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-top: 20px; }
@@ -286,7 +359,7 @@ h3 { margin-bottom: 1rem; text-align: center; }
     color: white; border: none; padding: 12px 28px; font-size: 1rem; font-weight: 700;
     border-radius: 50px; cursor: pointer; transition: all 0.3s; text-transform: uppercase;
     box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
-    touch-action: manipulation;
+    touch-action: manipulation; margin: 5px;
 }
 .btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
 .btn-outline { background: transparent; border: 2px solid rgba(56, 189, 248, 0.5); color: var(--accent); box-shadow: none; }
@@ -303,17 +376,27 @@ h3 { margin-bottom: 1rem; text-align: center; }
 .settings-group { margin-bottom: 25px; }
 .settings-group label { display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.9rem; font-weight: 600; text-transform: uppercase; }
 
-/* --- INPUTS --- */
-input[type="text"] {
-    width: 100%; padding: 16px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.1);
-    background: rgba(15, 23, 42, 0.8); color: white; font-size: 1.1rem; outline: none; margin-bottom: 10px;
-}
-input[type="text"]:focus { border-color: var(--accent); }
-
 /* --- MORSE BUTTON GRID --- */
 .morse-tap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; width: 100%; }
 .morse-tap-btn { font-size: 2rem; padding: 20px; font-weight: bold; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 12px; cursor: pointer; user-select: none; touch-action: manipulation; }
 .morse-tap-btn:active { background: var(--accent); color: #0f172a; }
+
+.keyer-btn-base, #keyer-btn {
+    width: 100%; height: 120px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
+    color: var(--text-main); font-size: 1.5rem; font-weight: bold;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+    transition: all 0.1s; position: relative; overflow: hidden;
+    margin-top: 20px; touch-action: manipulation;
+}
+.keyer-btn-base:active, .keyer-btn-base.pressed, #keyer-btn.pressed { background: rgba(255,255,255,0.15); transform: scale(0.98); border-color: var(--accent); }
+#keyer-sub { font-size: 0.8rem; opacity: 0.7; margin-top: 5px; font-weight: normal; }
+.press-progress {
+    width: 100%; height: 6px; background: rgba(0,0,0,0.5); border-radius: 3px; margin-top: 15px; overflow: hidden;
+}
+.press-bar { height: 100%; width: 0%; background: var(--accent); transition: width 0s; }
 
 .feedback-text { text-align: center; height: 30px; font-weight: bold; margin-top: 15px; font-size: 1.1rem; }
 .nav-buttons { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
@@ -339,117 +422,11 @@ input[type="text"]:focus { border-color: var(--accent); }
 .result-info .user-ans { font-style: italic; color: var(--error); font-size: 0.85rem; margin-top: 2px; }
 .result-info .real-ans { color: var(--success); font-size: 0.85rem; font-weight: 600; }
 
+.typing-feedback { margin-top: 15px; padding: 15px; border-radius: 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); }
+
 </style>
 </head>
 <body>
-
-<script>
-// --- FLAGS DATA ---
-const DATA_LETTERS = {
-    "A": { labelLong: "A — Alpha", labelShort: "Alpha", primary: "I have a diver down; keep well clear at slow speed." },
-    "B": { labelLong: "B — Bravo", labelShort: "Bravo", primary: "I am taking in, or discharging or carrying dangerous goods." },
-    "C": { labelLong: "C — Charlie", labelShort: "Charlie", primary: "Yes (Affirmative)." },
-    "D": { labelLong: "D — Delta", labelShort: "Delta", primary: "Keep clear of me; I am manoeuvring with difficulty." },
-    "E": { labelLong: "E — Echo", labelShort: "Echo", primary: "I am altering my course to Starboard." },
-    "F": { labelLong: "F — Foxtrot", labelShort: "Foxtrot", primary: "I am disabled; communicate with me." },
-    "G": { labelLong: "G — Golf", labelShort: "Golf", primary: "I require a pilot. (Fishing: I am hauling nets)." },
-    "H": { labelLong: "H — Hotel", labelShort: "Hotel", primary: "I have a pilot on board." },
-    "I": { labelLong: "I — India", labelShort: "India", primary: "I am altering my course to Port." },
-    "J": { labelLong: "J — Juliet", labelShort: "Juliet", primary: "Keep clear of me. I am on fire and have dangerous cargo on board." },
-    "K": { labelLong: "K — Kilo", labelShort: "Kilo", primary: "I wish to communicate with you." },
-    "L": { labelLong: "L — Lima", labelShort: "Lima", primary: "You should stop your vessel instantly." },
-    "M": { labelLong: "M — Mike", labelShort: "Mike", primary: "My vessel is stopped and making no way through the water." },
-    "N": { labelLong: "N — November", labelShort: "November", primary: "No (Negative)." },
-    "O": { labelLong: "O — Oscar", labelShort: "Oscar", primary: "Man overboard." },
-    "P": { labelLong: "P — Papa", labelShort: "Papa", primary: "In Harbour: All persons should report on board. (Fishing: Nets caught)." },
-    "Q": { labelLong: "Q — Quebec", labelShort: "Quebec", primary: "My vessel is healthy and I request free pratique." },
-    "R": { labelLong: "R — Romeo", labelShort: "Romeo", primary: "No single letter meaning." },
-    "S": { labelLong: "S — Sierra", labelShort: "Sierra", primary: "I am operating astern propulsion." },
-    "T": { labelLong: "T — Tango", labelShort: "Tango", primary: "Keep clear of me; I am engaged in pair trawling." },
-    "U": { labelLong: "U — Uniform", labelShort: "Uniform", primary: "You are running into danger." },
-    "V": { labelLong: "V — Victor", labelShort: "Victor", primary: "I require assistance." },
-    "W": { labelLong: "W — Whiskey", labelShort: "Whiskey", primary: "I require medical assistance." },
-    "X": { labelLong: "X — X-ray", labelShort: "X-ray", primary: "Stop carrying out your intentions and watch for my signals." },
-    "Y": { labelLong: "Y — Yankee", labelShort: "Yankee", primary: "I am dragging my anchor." },
-    "Z": { labelLong: "Z — Zulu", labelShort: "Zulu", primary: "I require a tug. (Fishing: I am shooting nets)." }
-};
-
-const DATA_NUMERALS = {
-    "0": { labelLong: "0 — Numeral Zero", labelShort: "Zero", primary: "Numeral 0" },
-    "1": { labelLong: "1 — Numeral One", labelShort: "One", primary: "Numeral 1" },
-    "2": { labelLong: "2 — Numeral Two", labelShort: "Two", primary: "Numeral 2" },
-    "3": { labelLong: "3 — Numeral Three", labelShort: "Three", primary: "Numeral 3" },
-    "4": { labelLong: "4 — Numeral Four", labelShort: "Four", primary: "Numeral 4" },
-    "5": { labelLong: "5 — Numeral Five", labelShort: "Five", primary: "Numeral 5" },
-    "6": { labelLong: "6 — Numeral Six", labelShort: "Six", primary: "Numeral 6" },
-    "7": { labelLong: "7 — Numeral Seven", labelShort: "Seven", primary: "Numeral 7" },
-    "8": { labelLong: "8 — Numeral Eight", labelShort: "Eight", primary: "Numeral 8" },
-    "9": { labelLong: "9 — Numeral Nine", labelShort: "Nine", primary: "Numeral 9" }
-};
-
-const DATA_SUBS = {
-    "SUB1": { labelLong: "1st Substitute", labelShort: "1st Sub", primary: "Repeats the uppermost signal flag of that class." },
-    "SUB2": { labelLong: "2nd Substitute", labelShort: "2nd Sub", primary: "Repeats the second flag of that class." },
-    "SUB3": { labelLong: "3rd Substitute", labelShort: "3rd Sub", primary: "Repeats the third flag of that class." },
-    "ANS":  { labelLong: "Code and Answering Pendant", labelShort: "Ans Pendant", primary: "Decimal point or End of message." }
-};
-
-const DATA_SECONDARY = [
-    { id: "A_sec", letter: "A", complement: "With 3 numerals", meaning: "AZIMUTH or BEARING" },
-    { id: "C_sec", letter: "C", complement: "(Alone)", meaning: "COURSE" },
-    { id: "D_sec", letter: "D", complement: "With 2, 4, or 6 numerals", meaning: "DATE" },
-    { id: "G_sec", letter: "G", complement: "With 4 or 5 numerals", meaning: "LONGITUDE" },
-    { id: "L_sec", letter: "L", complement: "With 4 numerals", meaning: "LATITUDE" },
-    { id: "R_sec", letter: "R", complement: "With 1 or more numerals", meaning: "DISTANCE (NM)" },
-    { id: "S_sec", letter: "S", complement: "With 1 or more numerals", meaning: "SPEED (Knots)" },
-    { id: "T_sec", letter: "T", complement: "With 4 numerals", meaning: "TIME (Local)" },
-    { id: "V_sec", letter: "V", complement: "With 1 or more numerals", meaning: "SPEED (Kph)" },
-    { id: "Z_sec", letter: "Z", complement: "With 4 numerals", meaning: "TIME (UTC/GMT)" },
-    { id: "G_fish", letter: "G", complement: "(Fishing)", meaning: "I am hauling nets" },
-    { id: "P_fish", letter: "P", complement: "(Fishing)", meaning: "My nets are caught fast" },
-    { id: "Z_fish", letter: "Z", complement: "(Fishing)", meaning: "I am shooting nets" }
-];
-
-const ALL_FLAGS = { ...DATA_LETTERS, ...DATA_NUMERALS, ...DATA_SUBS };
-
-// --- MORSE DATA ---
-const MORSE_MAP = {
-    "A": ".-",    "B": "-...",  "C": "-.-.",  "D": "-..",   "E": ".",
-    "F": "..-.",  "G": "--.",   "H": "....",  "I": "..",    "J": ".---",
-    "K": "-.-",   "L": ".-..",  "M": "--",    "N": "-.",    "O": "---",
-    "P": ".--.",  "Q": "--.-",  "R": ".-.",   "S": "...",   "T": "-",
-    "U": "..-",   "V": "...-",  "W": ".--",   "X": "-..-",  "Y": "-.--",
-    "Z": "--..",
-    "0": "-----", "1": ".----", "2": "..---", "3": "...--", "4": "....-",
-    "5": ".....", "6": "-....", "7": "--...", "8": "---..", "9": "----."
-};
-
-const LIMITED_LETTERS = ["X","Y","Z","F","Q","L","J"];
-const NUMBERS_ARR = ["0","1","2","3","4","5","6","7","8","9"];
-const ALL_LETTERS_ARR = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-
-// --- PROSIGNS DATA ---
-const PROSIGNS = [
-    { code: "AA", bar: true, meaning: "Unknown station call / General call" },
-    { code: "EEEE", bar: false, meaning: "Erase (error)" },
-    { code: "AAA", bar: false, meaning: "Full stop / Decimal point" },
-    { code: "TTTT", bar: false, meaning: "Answering signal" },
-    { code: "T", bar: false, meaning: "Word or group received" },
-    { code: "AR", bar: true, meaning: "Ending signal / End of transmission" },
-    { code: "AS", bar: true, meaning: "Wait" },
-    { code: "DE", bar: false, meaning: "From... / This is..." },
-    { code: "K", bar: false, meaning: "Invitation to transmit" },
-    { code: "OK", bar: false, meaning: "It is correct" },
-    { code: "R", bar: false, meaning: "Received" },
-    { code: "RQ", bar: false, meaning: "Request / Question" },
-    { code: "RPT", bar: false, meaning: "Repeat (whole signal)" },
-    { code: "RPT AA", bar: false, meaning: "Repeat All After..." },
-    { code: "RPT AB", bar: false, meaning: "Repeat All Before..." },
-    { code: "RPT BN", bar: false, meaning: "Repeat All Between..." },
-    { code: "RPT WA", bar: false, meaning: "Repeat Word After..." },
-    { code: "RPT WB", bar: false, meaning: "Repeat Word Before..." }
-];
-</script>
 
 <div class="container" id="app">
 
@@ -457,7 +434,7 @@ const PROSIGNS = [
         <h1>Maritime Mastery</h1>
         <p style="text-align:center; color: var(--text-muted); margin-bottom:10px;">Learn International Signals</p>
         
-        <div class="mode-select-grid three-items">
+        <div class="mode-select-grid">
             <div class="big-mode-btn" onclick="goToFlagSetup()">
                 <div class="big-mode-icon">🚩</div>
                 <div class="big-mode-title">Flags</div>
@@ -468,10 +445,15 @@ const PROSIGNS = [
                 <div class="big-mode-title">Morse</div>
                 <div class="big-mode-desc">Tap & Keyer</div>
             </div>
-            <div class="big-mode-btn full-width" onclick="goToProsigns()">
+            <div class="big-mode-btn" onclick="goToProsigns()">
                 <div class="big-mode-icon">📖</div>
                 <div class="big-mode-title">Prosigns</div>
                 <div class="big-mode-desc">Procedure Reference</div>
+            </div>
+            <div class="big-mode-btn" onclick="goToExam()">
+                <div class="big-mode-icon">🎓</div>
+                <div class="big-mode-title">Final Exam</div>
+                <div class="big-mode-desc">Comprehensive Test</div>
             </div>
         </div>
 
@@ -603,7 +585,7 @@ const PROSIGNS = [
                 </div>
             </div>
             <div id="morse-send-controls" class="hidden">
-                <div id="keyer-btn">
+                <div id="keyer-btn" class="keyer-btn-base">
                     KEY
                     <div id="keyer-sub">Hold for Dash</div>
                     <div class="press-progress"><div id="press-bar" class="press-bar"></div></div>
@@ -659,6 +641,23 @@ const PROSIGNS = [
         </div>
         <div class="nav-buttons">
             <button class="btn btn-danger" onclick="endGame('prosigns')">Finish & Review</button>
+        </div>
+    </div>
+
+    <div id="screen-exam" class="hidden">
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h2 style="margin:0; color:var(--accent);">Final Exam</h2>
+                <div style="display:flex; gap:10px;">
+                    <div class="skip-btn-container" style="position:static;">
+                        <button class="btn btn-outline" onclick="skipExamSection()">Skip</button>
+                    </div>
+                    <button class="btn btn-outline" onclick="goHome()">Exit</button>
+                </div>
+            </div>
+            <div class="progress-bar"><div id="exam-main-progress" class="progress-fill"></div></div>
+            <div id="exam-status" class="exam-status">Section 1 of 4</div>
+            <div id="exam-content"></div>
         </div>
     </div>
 
@@ -732,47 +731,14 @@ function playBeep(duration) {
 // --- GLOBAL STATE ---
 let appState = {
     screen: 'HOME',
-    flags: {
-        mode: 'CHAR',
-        cats: { letters: true, numerals: false, subs: false },
-        count: 10,
-        autoNext: false,
-        qList: [],
-        currIdx: 0,
-        score: 0,
-        streak: 0,
-        waiting: false,
-        history: []
-    },
-    morse: {
-        mode: 'tap',
-        set: 'limited',
-        autoNext: false,
-        soundEnabled: true,
-        pool: [],
-        target: '',
-        typed: '',
-        streak: 0,
-        ditEma: null,
-        pressStart: 0,
-        pressActive: false,
-        waiting: false,
-        history: [],
-        correctCount: 0,
-        wrongCount: 0
-    },
-    prosigns: {
-        qList: [],
-        currIdx: 0,
-        score: 0,
-        streak: 0,
-        waiting: false,
-        history: []
-    }
+    flags: { mode: 'CHAR', cats: { letters: true, numerals: false, subs: false }, count: 10, autoNext: false, qList: [], currIdx: 0, score: 0, streak: 0, waiting: false, history: [] },
+    morse: { mode: 'tap', set: 'limited', autoNext: false, soundEnabled: true, pool: [], target: '', typed: '', streak: 0, ditEma: null, pressStart: 0, pressActive: false, waiting: false, history: [], correctCount: 0, wrongCount: 0 },
+    prosigns: { qList: [], currIdx: 0, score: 0, streak: 0, waiting: false, history: [] },
+    exam: { section: 1, scores: { 1:0, 2:0, 3:0, 4:0 }, maxScores: { 1:20, 2:10, 3:10, 4:10 }, sectionData: {}, skipped: false }
 };
 
 function hideAllScreens() {
-    ['screen-home', 'screen-flags-setup', 'screen-flags-game', 'screen-morse-setup', 'screen-morse-game', 'screen-prosigns', 'screen-prosigns-game', 'screen-results'].forEach(id => {
+    ['screen-home', 'screen-flags-setup', 'screen-flags-game', 'screen-morse-setup', 'screen-morse-game', 'screen-prosigns', 'screen-prosigns-game', 'screen-results', 'screen-exam'].forEach(id => {
         document.getElementById(id).classList.add('hidden');
     });
 }
@@ -784,661 +750,86 @@ function goHome() {
     stopTone();
 }
 
-// ==========================================
-//              FLAGS LOGIC
-// ==========================================
+// --- DATA ---
+const DATA_LETTERS = {
+    "A": { labelLong: "A — Alpha", labelShort: "Alpha", primary: "I have a diver down; keep well clear at slow speed." },
+    "B": { labelLong: "B — Bravo", labelShort: "Bravo", primary: "I am taking in, or discharging or carrying dangerous goods." },
+    "C": { labelLong: "C — Charlie", labelShort: "Charlie", primary: "Yes (Affirmative)." },
+    "D": { labelLong: "D — Delta", labelShort: "Delta", primary: "Keep clear of me; I am manoeuvring with difficulty." },
+    "E": { labelLong: "E — Echo", labelShort: "Echo", primary: "I am altering my course to Starboard." },
+    "F": { labelLong: "F — Foxtrot", labelShort: "Foxtrot", primary: "I am disabled; communicate with me." },
+    "G": { labelLong: "G — Golf", labelShort: "Golf", primary: "I require a pilot. (Fishing: I am hauling nets)." },
+    "H": { labelLong: "H — Hotel", labelShort: "Hotel", primary: "I have a pilot on board." },
+    "I": { labelLong: "I — India", labelShort: "India", primary: "I am altering my course to Port." },
+    "J": { labelLong: "J — Juliet", labelShort: "Juliet", primary: "Keep clear of me. I am on fire and have dangerous cargo on board." },
+    "K": { labelLong: "K — Kilo", labelShort: "Kilo", primary: "I wish to communicate with you." },
+    "L": { labelLong: "L — Lima", labelShort: "Lima", primary: "You should stop your vessel instantly." },
+    "M": { labelLong: "M — Mike", labelShort: "Mike", primary: "My vessel is stopped and making no way through the water." },
+    "N": { labelLong: "N — November", labelShort: "November", primary: "No (Negative)." },
+    "O": { labelLong: "O — Oscar", labelShort: "Oscar", primary: "Man overboard." },
+    "P": { labelLong: "P — Papa", labelShort: "Papa", primary: "In Harbour: All persons should report on board. (Fishing: Nets caught)." },
+    "Q": { labelLong: "Q — Quebec", labelShort: "Quebec", primary: "My vessel is healthy and I request free pratique." },
+    "R": { labelLong: "R — Romeo", labelShort: "Romeo", primary: "No single letter meaning." },
+    "S": { labelLong: "S — Sierra", labelShort: "Sierra", primary: "I am operating astern propulsion." },
+    "T": { labelLong: "T — Tango", labelShort: "Tango", primary: "Keep clear of me; I am engaged in pair trawling." },
+    "U": { labelLong: "U — Uniform", labelShort: "Uniform", primary: "You are running into danger." },
+    "V": { labelLong: "V — Victor", labelShort: "Victor", primary: "I require assistance." },
+    "W": { labelLong: "W — Whiskey", labelShort: "Whiskey", primary: "I require medical assistance." },
+    "X": { labelLong: "X — X-ray", labelShort: "X-ray", primary: "Stop carrying out your intentions and watch for my signals." },
+    "Y": { labelLong: "Y — Yankee", labelShort: "Yankee", primary: "I am dragging my anchor." },
+    "Z": { labelLong: "Z — Zulu", labelShort: "Zulu", primary: "I require a tug. (Fishing: I am shooting nets)." }
+};
+const DATA_NUMERALS = { "0": { labelLong: "0 — Numeral Zero", labelShort: "Zero", primary: "Numeral 0" }, "1": { labelLong: "1 — Numeral One", labelShort: "One", primary: "Numeral 1" }, "2": { labelLong: "2 — Numeral Two", labelShort: "Two", primary: "Numeral 2" }, "3": { labelLong: "3 — Numeral Three", labelShort: "Three", primary: "Numeral 3" }, "4": { labelLong: "4 — Numeral Four", labelShort: "Four", primary: "Numeral 4" }, "5": { labelLong: "5 — Numeral Five", labelShort: "Five", primary: "Numeral 5" }, "6": { labelLong: "6 — Numeral Six", labelShort: "Six", primary: "Numeral 6" }, "7": { labelLong: "7 — Numeral Seven", labelShort: "Seven", primary: "Numeral 7" }, "8": { labelLong: "8 — Numeral Eight", labelShort: "Eight", primary: "Numeral 8" }, "9": { labelLong: "9 — Numeral Nine", labelShort: "Nine", primary: "Numeral 9" } };
+const DATA_SUBS = { "SUB1": { labelLong: "1st Substitute", labelShort: "1st Sub", primary: "Repeats the uppermost signal flag of that class." }, "SUB2": { labelLong: "2nd Substitute", labelShort: "2nd Sub", primary: "Repeats the second flag of that class." }, "SUB3": { labelLong: "3rd Substitute", labelShort: "3rd Sub", primary: "Repeats the third flag of that class." }, "ANS": { labelLong: "Code and Answering Pendant", labelShort: "Ans Pendant", primary: "Decimal point or End of message." } };
+const DATA_SECONDARY = [ { id: "A_sec", letter: "A", complement: "With 3 numerals", meaning: "AZIMUTH or BEARING" }, { id: "C_sec", letter: "C", complement: "(Alone)", meaning: "COURSE" }, { id: "D_sec", letter: "D", complement: "With 2, 4, or 6 numerals", meaning: "DATE" }, { id: "G_sec", letter: "G", complement: "With 4 or 5 numerals", meaning: "LONGITUDE" }, { id: "L_sec", letter: "L", complement: "With 4 numerals", meaning: "LATITUDE" }, { id: "R_sec", letter: "R", complement: "With 1 or more numerals", meaning: "DISTANCE (NM)" }, { id: "S_sec", letter: "S", complement: "With 1 or more numerals", meaning: "SPEED (Knots)" }, { id: "T_sec", letter: "T", complement: "With 4 numerals", meaning: "TIME (Local)" }, { id: "V_sec", letter: "V", complement: "With 1 or more numerals", meaning: "SPEED (Kph)" }, { id: "Z_sec", letter: "Z", complement: "With 4 numerals", meaning: "TIME (UTC/GMT)" }, { id: "G_fish", letter: "G", complement: "(Fishing)", meaning: "I am hauling nets" }, { id: "P_fish", letter: "P", complement: "(Fishing)", meaning: "My nets are caught fast" }, { id: "Z_fish", letter: "Z", complement: "(Fishing)", meaning: "I am shooting nets" } ];
+const ALL_FLAGS = { ...DATA_LETTERS, ...DATA_NUMERALS, ...DATA_SUBS };
+const MORSE_MAP = { "A": ".-", "B": "-...", "C": "-.-.", "D": "-..", "E": ".", "F": "..-.", "G": "--.", "H": "....", "I": "..", "J": ".---", "K": "-.-", "L": ".-..", "M": "--", "N": "-.", "O": "---", "P": ".--.", "Q": "--.-", "R": ".-.", "S": "...", "T": "-", "U": "..-", "V": "...-", "W": ".--", "X": "-..-", "Y": "-.--", "Z": "--..", "0": "-----", "1": ".----", "2": "..---", "3": "...--", "4": "....-", "5": ".....", "6": "-....", "7": "--...", "8": "---..", "9": "----." };
+const LIMITED_LETTERS = ["X","Y","Z","F","Q","L","J"];
+const NUMBERS_ARR = ["0","1","2","3","4","5","6","7","8","9"];
+const ALL_LETTERS_ARR = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+const PROSIGNS = [ { code: "AA", bar: true, meaning: "Unknown station call / General call" }, { code: "EEEE", bar: false, meaning: "Erase (error)" }, { code: "AAA", bar: false, meaning: "Full stop / Decimal point" }, { code: "TTTT", bar: false, meaning: "Answering signal" }, { code: "T", bar: false, meaning: "Word or group received" }, { code: "AR", bar: true, meaning: "Ending signal / End of transmission" }, { code: "AS", bar: true, meaning: "Wait" }, { code: "DE", bar: false, meaning: "From... / This is..." }, { code: "K", bar: false, meaning: "Invitation to transmit" }, { code: "OK", bar: false, meaning: "It is correct" }, { code: "R", bar: false, meaning: "Received" }, { code: "RQ", bar: false, meaning: "Request / Question" }, { code: "RPT", bar: false, meaning: "Repeat (whole signal)" }, { code: "RPT AA", bar: false, meaning: "Repeat All After..." }, { code: "RPT AB", bar: false, meaning: "Repeat All Before..." }, { code: "RPT BN", bar: false, meaning: "Repeat All Between..." }, { code: "RPT WA", bar: false, meaning: "Repeat Word After..." }, { code: "RPT WB", bar: false, meaning: "Repeat Word Before..." } ];
+const THEORY_POOL = [
+    { q: "You sight flag Quebec with a ball above it. What does this mean?", a: ["distress"], display: "Distress" },
+    { q: "You see flag Sierra with a ball underneath. What does this mean?", a: ["distress"], display: "Distress" },
+    { q: "Decode: Z, 2, 1, 1st Sub, 2nd Sub.", a: ["z2121", "time2121", "2121"], display: "Z2121 (Time)" },
+    { q: "In general terms, what is the code group ‘MCR’ concerned with?", a: ["medical", "medicalsignalcode"], display: "Medical Signal Code" },
+    { q: "What is a decimal point in Morse code?", a: ["aaa", ".-.-.-"], display: "AAA (or .-.-.-)" },
+    { q: "What is the significance of the procedure signal ‘DE’?", a: ["from", "thisis"], display: "From (or This is)" },
+    { q: "A fishing vessel has the Golf flag hoisted. What does this mean?", a: ["haulingnets", "hauling"], display: "Hauling nets" },
+    { q: "What is the significance of the procedure group ‘RPT AB’?", a: ["repeatallbefore"], display: "Repeat all before" },
+    { q: "Decode: D, 0, 2, 1st Sub, 3, 2nd Sub, 1.", a: ["d020321", "date020321", "020321"], display: "D020321 (Date)" },
+    { q: "The following code message has been received ‘CY….N’. What is the significance of the group ‘N’?", a: ["negative", "significanceofpreviousgroupshouldbereadinthenegative"], display: "Negative (Significance of previous group should be read in the negative)" },
+    { q: "The following code message has been received ‘CY….C’. What is the significance of the group ‘C’?", a: ["affirmative", "significanceofpreviousgroupshouldbereadintheaffirmative"], display: "Affirmative (Significance of previous group should be read in the affirmative)" },
+    { q: "What is the significance of the procedure group ‘RPT BN’?", a: ["repeatallbetween"], display: "Repeat all between" },
+    { q: "You have called another vessel by aldis lamp and they respond with ‘AS15’, what does this mean?", a: ["wait15minutes", "wait15mins", "wait15"], display: "Wait 15 minutes" },
+    { q: "Decode the following flag hoist: A, 2, 5, 0, Code Pendant, 2nd Sub.", a: ["a250.0", "azimuth250.0"], display: "Azimuth 250° (or Bearing)" },
+    { q: "Decode the following flag hoist: S, 1, 2, Code Pendant, 1st Sub.", a: ["s12.1", "speed12.1"], display: "Speed 12.1 knots" },
+    { q: "Decode the following flag hoist: G, 1, 1st Sub, 2, 3rd Sub.", a: ["g1122", "longitude1122"], display: "Longitude 1122" },
+    { q: "A warship has the code & signal pendant hoisted above a flag group. What does this mean?", a: ["communicatingusingtheinternationalcodeofsignals", "communicatingusingics"], display: "Communicating using the International Code of Signals" },
+    { q: "You see a group of flags consisting of ‘NC’. What does this mean?", a: ["iamindistress", "distress"], display: "I am in distress" },
+    { q: "How long should a tackline be?", a: ["2metres", "2meters", "2m"], display: "2 metres" },
+    { q: "In general terms, how is a medical sign indicated by a flag group?", a: ["threelettersstartingwithm", "3lettersstartingwithm"], display: "Three letters starting with M" },
+    { q: "What does the term ‘Close up’ mean?", a: ["hoistedtothefullextentofthehalyards"], display: "Hoisted to the full extent of the halyards" }
+];
 
-function goToFlagSetup() {
-    hideAllScreens();
-    document.getElementById('screen-flags-setup').classList.remove('hidden');
-}
+// --- UTILS ---
+function normalize(str) { return str.toLowerCase().replace(/[^a-z0-9]/g, ""); }
+function handleInputCase(e) { e.target.value = e.target.value.toUpperCase(); }
+function levenshtein(a, b) { const matrix = []; for(let i=0; i<=b.length; i++) matrix[i] = [i]; for(let j=0; j<=a.length; j++) matrix[0][j] = j; for(let i=1; i<=b.length; i++) { for(let j=1; j<=a.length; j++) { if(b.charAt(i-1) == a.charAt(j-1)) matrix[i][j] = matrix[i-1][j-1]; else matrix[i][j] = Math.min(matrix[i-1][j-1]+1, matrix[i][j-1]+1, matrix[i-1][j]+1); } } return matrix[b.length][a.length]; }
 
-function setFlagMode(m) {
-    appState.flags.mode = m;
-    updatePills('flag-mode-selector', m === 'CHAR' ? 0 : m === 'MEANING_MC' ? 1 : m === 'MEANING_TYPE' ? 2 : 3);
-    const catGroup = document.getElementById('flag-cats-group');
-    if (m === 'SECONDARY') catGroup.classList.add('hidden');
-    else catGroup.classList.remove('hidden');
-}
-
-function toggleFlagCat(cat, el) {
-    appState.flags.cats[cat] = !appState.flags.cats[cat];
-    if(!appState.flags.cats.letters && !appState.flags.cats.numerals && !appState.flags.cats.subs) {
-        appState.flags.cats[cat] = true; 
-    }
-    el.classList.toggle('active');
-}
-
-function toggleFlagAutoNext() {
-    appState.flags.autoNext = !appState.flags.autoNext;
-    const btn = document.getElementById('btn-flag-autonext');
-    btn.innerText = `Auto-Next: ${appState.flags.autoNext ? 'ON' : 'OFF'}`;
-    btn.classList.toggle('active');
-}
-
-function setFlagCount(c) {
-    appState.flags.count = c;
-    const pills = document.getElementById('flag-count-selector').children;
-    for(let p of pills) p.classList.remove('active');
-    event.target.classList.add('active');
-}
-
-function updatePills(parentId, activeIdx) {
-    const p = document.getElementById(parentId).children;
-    for(let i=0; i<p.length; i++) p[i].classList.remove('active');
-    p[activeIdx].classList.add('active');
-}
-
-function startFlagGame() {
-    let pool = [];
-    if (appState.flags.mode === 'SECONDARY') {
-        pool = DATA_SECONDARY.map(item => ({...item, type: 'secondary'}));
-    } else {
-        if (appState.flags.cats.letters) pool.push(...Object.keys(DATA_LETTERS).map(k => ({id: k, ...DATA_LETTERS[k]})));
-        if (appState.flags.cats.numerals) pool.push(...Object.keys(DATA_NUMERALS).map(k => ({id: k, ...DATA_NUMERALS[k]})));
-        if (appState.flags.cats.subs) pool.push(...Object.keys(DATA_SUBS).map(k => ({id: k, ...DATA_SUBS[k]})));
-    }
-    
-    pool.sort(() => Math.random() - 0.5);
-    if(appState.flags.count !== 999) pool = pool.slice(0, appState.flags.count);
-    
-    appState.flags.qList = pool;
-    appState.flags.currIdx = 0;
-    appState.flags.score = 0;
-    appState.flags.streak = 0;
-    appState.flags.waiting = false;
-    appState.flags.history = [];
-
-    hideAllScreens();
-    document.getElementById('screen-flags-game').classList.remove('hidden');
-    loadFlagQ();
-}
-
-function loadFlagQ() {
-    if(appState.flags.currIdx >= appState.flags.qList.length && appState.flags.count !== 999) {
-        endGame('flags');
-        return;
-    }
-
-    appState.flags.waiting = false;
-    const q = appState.flags.qList[appState.flags.currIdx % appState.flags.qList.length];
-    
-    document.getElementById('flag-hud-progress').innerText = `Question ${appState.flags.currIdx + 1} / ${appState.flags.count === 999 ? '∞' : appState.flags.count}`;
-    document.getElementById('flag-val-streak').innerText = appState.flags.streak;
-    document.getElementById('flag-val-acc').innerText = appState.flags.currIdx === 0 ? '100%' : Math.round((appState.flags.score / appState.flags.currIdx) * 100) + '%';
-    
-    if (appState.flags.streak >= 3) document.getElementById('flag-chip-streak').classList.add('hot');
-    else document.getElementById('flag-chip-streak').classList.remove('hot');
-
-    const flagId = q.type === 'secondary' ? q.letter : q.id;
-    document.getElementById('flag-stage').innerHTML = renderFlag(flagId) + `<div id="complement-badge" class="complement-text hidden"></div>`;
-    
-    const compBadge = document.getElementById('complement-badge');
-    if (q.type === 'secondary') {
-        compBadge.innerText = "+ " + q.complement;
-        compBadge.classList.remove('hidden');
-    } else {
-        compBadge.classList.add('hidden');
-    }
-
-    const grid = document.getElementById('flag-options-grid');
-    const typeArea = document.getElementById('flag-typing-area');
-    const controls = document.getElementById('flag-controls');
-    const feedback = document.getElementById('flag-feedback-box');
-    
-    grid.classList.add('hidden');
-    typeArea.classList.add('hidden');
-    controls.classList.add('hidden');
-    feedback.classList.add('hidden');
-    
-    const qText = document.getElementById('flag-q-text');
-
-    if(appState.flags.mode === 'CHAR') {
-        qText.innerText = "Identify this flag";
-        grid.classList.remove('hidden');
-        generateFlagOptions(q, 'labelShort');
-    } else if(appState.flags.mode === 'MEANING_MC') {
-        qText.innerText = `What is the meaning of ${q.labelShort}?`;
-        grid.classList.remove('hidden');
-        generateFlagOptions(q, 'primary');
-    } else if (appState.flags.mode === 'SECONDARY') {
-        qText.innerText = `Meaning with complement: "${q.complement}"`;
-        grid.classList.remove('hidden');
-        generateFlagOptions(q, 'meaning');
-    } else {
-        qText.innerText = `Type meaning of ${q.labelShort}`;
-        typeArea.classList.remove('hidden');
-        document.getElementById('flag-type-input').value = "";
-        document.getElementById('flag-type-input').focus();
-    }
-}
-
-function generateFlagOptions(correct, field) {
-    const grid = document.getElementById('flag-options-grid');
-    grid.innerHTML = "";
-    
-    let pool = [];
-    if (appState.flags.mode === 'SECONDARY') {
-        pool = DATA_SECONDARY.filter(x => x.id !== correct.id);
-    } else {
-        const all = Object.values(ALL_FLAGS).filter(x => x.labelLong !== correct.labelLong);
-        pool = all;
-    }
-
-    pool.sort(() => Math.random() - 0.5);
-    const opts = [correct, ...pool.slice(0, 3)];
-    opts.sort(() => Math.random() - 0.5);
-    
-    opts.forEach(opt => {
-        const btn = document.createElement('div');
-        btn.className = 'option-btn';
-        btn.innerText = opt[field];
-        btn.onclick = () => checkFlagMC(opt, btn);
-        grid.appendChild(btn);
-    });
-}
-
-function checkFlagMC(selected, btn) {
-    if (appState.flags.waiting) return;
-
-    const correct = appState.flags.qList[appState.flags.currIdx % appState.flags.qList.length];
-    let isCorrect = false;
-
-    if (appState.flags.mode === 'SECONDARY') {
-        isCorrect = selected.id === correct.id;
-    } else {
-        isCorrect = selected.labelLong === correct.labelLong;
-    }
-
-    let realAnsText = appState.flags.mode === 'CHAR' ? correct.labelShort : (appState.flags.mode === 'SECONDARY' ? correct.meaning : correct.primary);
-    let userAnsText = appState.flags.mode === 'CHAR' ? selected.labelShort : (appState.flags.mode === 'SECONDARY' ? selected.meaning : selected.primary);
-    
-    appState.flags.history.push({
-        q: correct,
-        correct: isCorrect,
-        userAns: userAnsText,
-        realAns: realAnsText
-    });
-
-    if(isCorrect) {
-        btn.classList.add('correct');
-        appState.flags.score++;
-        appState.flags.streak++;
-        
-        if (appState.flags.autoNext) {
-            appState.flags.waiting = true;
-            setTimeout(nextFlagQ, 900);
-            return;
-        }
-    } else {
-        btn.classList.add('wrong');
-        appState.flags.streak = 0;
-        Array.from(document.getElementById('flag-options-grid').children).forEach(child => {
-            if(child.innerText === realAnsText) child.classList.add('correct');
-        });
-    }
-    document.getElementById('flag-controls').classList.remove('hidden');
-}
-
-function submitFlagType() {
-    if (appState.flags.waiting) return;
-    
-    const input = document.getElementById('flag-type-input').value.toLowerCase();
-    const correct = appState.flags.qList[appState.flags.currIdx % appState.flags.qList.length];
-    
-    const keywords = correct.primary.toLowerCase().split(' ').filter(w => w.length > 3);
-    const match = keywords.some(k => input.includes(k));
-    
-    const isCorrect = (match || input === correct.primary.toLowerCase());
-    
-    appState.flags.history.push({
-        q: correct,
-        correct: isCorrect,
-        userAns: input,
-        realAns: correct.primary
-    });
-
-    const fb = document.getElementById('flag-feedback-box');
-    fb.classList.remove('hidden');
-    
-    if(isCorrect) {
-        fb.innerHTML = "<span style='color:var(--success)'>Correct!</span>";
-        appState.flags.score++;
-        appState.flags.streak++;
-        
-        if (appState.flags.autoNext) {
-            appState.flags.waiting = true;
-            setTimeout(nextFlagQ, 1000);
-            return;
-        }
-    } else {
-        fb.innerHTML = `<span style='color:var(--error)'>Incorrect.</span><br><small>${correct.primary}</small>`;
-        appState.flags.streak = 0;
-    }
-    document.getElementById('flag-controls').classList.remove('hidden');
-}
-
-function nextFlagQ() {
-    appState.flags.currIdx++;
-    loadFlagQ();
-}
-
-
-// ==========================================
-//              MORSE LOGIC
-// ==========================================
-
-function goToMorseSetup() {
-    hideAllScreens();
-    document.getElementById('screen-morse-setup').classList.remove('hidden');
-}
-
-function setMorseMode(m) {
-    appState.morse.mode = m;
-    updatePills('morse-mode-selector', m === 'tap' ? 0 : 1);
-}
-
-function setMorseSet(s) {
-    appState.morse.set = s;
-    updatePills('morse-set-selector', s === 'limited' ? 0 : s === 'nums' ? 1 : 2);
-}
-
-function toggleMorseAutoNext() {
-    appState.morse.autoNext = !appState.morse.autoNext;
-    const btn = document.getElementById('btn-morse-autonext');
-    btn.innerText = `Auto-Next: ${appState.morse.autoNext ? 'ON' : 'OFF'}`;
-    btn.classList.toggle('active');
-}
-
-function toggleMorseSound() {
-    appState.morse.soundEnabled = !appState.morse.soundEnabled;
-    const btn = document.getElementById('btn-morse-sound');
-    btn.innerText = `Sound: ${appState.morse.soundEnabled ? 'ON' : 'OFF'}`;
-    btn.classList.toggle('active');
-}
-
-function startMorseGame() {
-    let pool = [];
-    if(appState.morse.set === 'limited') pool = LIMITED_LETTERS;
-    else if(appState.morse.set === 'nums') pool = NUMBERS_ARR;
-    else pool = [...ALL_LETTERS_ARR, ...NUMBERS_ARR];
-    
-    appState.morse.pool = pool;
-    appState.morse.streak = 0;
-    appState.morse.ditEma = null;
-    appState.morse.waiting = false;
-    appState.morse.history = [];
-    appState.morse.correctCount = 0;
-    appState.morse.wrongCount = 0;
-
-    hideAllScreens();
-    document.getElementById('screen-morse-game').classList.remove('hidden');
-    
-    document.getElementById('morse-mode-label').innerText = appState.morse.mode === 'tap' ? 'TAP MODE' : 'SEND MODE';
-    document.getElementById('morse-tap-controls').classList.toggle('hidden', appState.morse.mode !== 'tap');
-    document.getElementById('morse-send-controls').classList.toggle('hidden', appState.morse.mode !== 'send');
-    document.getElementById('morse-chip-wpm').classList.toggle('hidden', appState.morse.mode !== 'send');
-
-    pickMorseChar();
-}
-
-function pickMorseChar() {
-    const char = appState.morse.pool[Math.floor(Math.random() * appState.morse.pool.length)];
-    appState.morse.target = char;
-    appState.morse.typed = "";
-    appState.morse.waiting = false;
-    
-    document.getElementById('morse-target-char').innerText = char;
-    document.getElementById('morse-user-input').innerText = "";
-    document.getElementById('morse-feedback').innerText = "";
-    document.getElementById('morse-val-streak').innerText = appState.morse.streak;
-    
-    const checkBtn = document.getElementById('btn-morse-check');
-    checkBtn.innerText = "Check";
-    checkBtn.classList.remove('btn-success');
-    
-    if(appState.morse.streak >= 3) document.getElementById('morse-chip-streak').classList.add('hot');
-    else document.getElementById('morse-chip-streak').classList.remove('hot');
-}
-
-function morseInput(symbol) {
-    if (appState.morse.waiting) return;
-    appState.morse.typed += symbol;
-    document.getElementById('morse-user-input').innerText = appState.morse.typed;
-}
-
-function tapDot(e) {
-    if(e && e.preventDefault) e.preventDefault(); 
-    playBeep(60);
-    morseInput('.');
-}
-
-function tapDash(e) {
-    if(e && e.preventDefault) e.preventDefault(); 
-    playBeep(180);
-    morseInput('-');
-}
-
-function morseBackspace() {
-    if (appState.morse.waiting) return;
-    appState.morse.typed = appState.morse.typed.slice(0, -1);
-    document.getElementById('morse-user-input').innerText = appState.morse.typed;
-}
-
-function morseClear() {
-    if (appState.morse.waiting) return;
-    appState.morse.typed = "";
-    document.getElementById('morse-user-input').innerText = "";
-}
-
-function checkMorse() {
-    if (appState.morse.waiting) {
-        pickMorseChar();
-        return;
-    }
-
-    const correctCode = MORSE_MAP[appState.morse.target];
-    const userCode = appState.morse.typed;
-    const feedback = document.getElementById('morse-feedback');
-    const isCorrect = (userCode === correctCode);
-    const checkBtn = document.getElementById('btn-morse-check');
-    
-    appState.morse.history.push({
-        target: appState.morse.target,
-        correctCode: correctCode,
-        userCode: userCode,
-        correct: isCorrect
-    });
-    
-    if (isCorrect) {
-        feedback.innerHTML = "<span style='color:var(--success)'>Correct!</span>";
-        appState.morse.streak++;
-        appState.morse.correctCount++;
-        appState.morse.waiting = true;
-        
-        if (appState.morse.autoNext) {
-            setTimeout(pickMorseChar, 1000);
-        } else {
-            checkBtn.innerText = "Next ➡";
-            checkBtn.classList.add('btn-success');
-        }
-    } else {
-        feedback.innerHTML = `<span style='color:var(--error)'>Wrong!</span> ${correctCode}`;
-        appState.morse.streak = 0;
-        appState.morse.wrongCount++;
-        appState.morse.typed = ""; 
-        document.getElementById('morse-user-input').innerText = "";
-        document.getElementById('morse-val-streak').innerText = 0;
-        document.getElementById('morse-chip-streak').classList.remove('hot');
-    }
-}
-
-// --- SEND MODE (KEYER) ---
-const DASH_THRESHOLD_MS = 250; 
-const EMA_ALPHA = 0.2;
-let pressAnim = null;
-
-const keyerBtn = document.getElementById('keyer-btn');
-const pressBar = document.getElementById('press-bar');
-
-function pressDown(e) {
-    if(appState.morse.mode !== 'send' || appState.morse.waiting) return;
-    e.preventDefault();
-    if(appState.morse.pressActive) return;
-    
-    appState.morse.pressActive = true;
-    appState.morse.pressStart = performance.now();
-    keyerBtn.classList.add('pressed');
-    
-    playTone(); 
-
-    const start = performance.now();
-    const tick = () => {
-        if(!appState.morse.pressActive) return;
-        const elapsed = performance.now() - start;
-        const pct = Math.min((elapsed / DASH_THRESHOLD_MS) * 100, 100);
-        pressBar.style.width = pct + "%";
-        pressAnim = requestAnimationFrame(tick);
-    };
-    pressAnim = requestAnimationFrame(tick);
-}
-
-function pressUp(e) {
-    if(appState.morse.mode !== 'send' || appState.morse.waiting) return;
-    e.preventDefault();
-    if(!appState.morse.pressActive) return;
-    
-    stopTone(); 
-
-    appState.morse.pressActive = false;
-    keyerBtn.classList.remove('pressed');
-    if(pressAnim) cancelAnimationFrame(pressAnim);
-    pressBar.style.width = "0%";
-    
-    const dur = performance.now() - appState.morse.pressStart;
-    const sym = (dur >= DASH_THRESHOLD_MS) ? "-" : ".";
-    morseInput(sym);
-    
-    const ditGuess = (sym === ".") ? dur : (dur / 3);
-    const old = appState.morse.ditEma;
-    appState.morse.ditEma = (old == null) ? ditGuess : (EMA_ALPHA * ditGuess + (1 - EMA_ALPHA) * old);
-    
-    const wpm = Math.round(1200 / appState.morse.ditEma);
-    if(isFinite(wpm) && wpm > 0 && wpm < 60) {
-        document.getElementById('morse-val-wpm').innerText = wpm + " WPM";
-    }
-}
-
-keyerBtn.addEventListener('mousedown', pressDown);
-keyerBtn.addEventListener('touchstart', pressDown);
-document.addEventListener('mouseup', pressUp);
-document.addEventListener('touchend', pressUp);
-
-
-// ==========================================
-//              PROSIGNS LOGIC
-// ==========================================
-function goToProsigns() {
-    hideAllScreens();
-    document.getElementById('screen-prosigns').classList.remove('hidden');
-    
-    const tbody = document.getElementById('prosigns-tbody');
-    tbody.innerHTML = "";
-    
-    PROSIGNS.forEach(item => {
-        const tr = document.createElement('tr');
-        tr.className = "row-item";
-        
-        let displayCode = item.code;
-        if(item.bar) {
-            displayCode = `<span class="overbar">${item.code}</span>`;
-        }
-        
-        tr.innerHTML = `
-            <td>${displayCode}</td>
-            <td>${item.meaning}</td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-function startProsignsGame() {
-    // Reset State
-    appState.prosigns.qList = [...PROSIGNS].sort(() => Math.random() - 0.5);
-    appState.prosigns.currIdx = 0;
-    appState.prosigns.score = 0;
-    appState.prosigns.streak = 0;
-    appState.prosigns.waiting = false;
-    appState.prosigns.history = [];
-
-    hideAllScreens();
-    document.getElementById('screen-prosigns-game').classList.remove('hidden');
-    loadProsignQ();
-}
-
-function loadProsignQ() {
-    if(appState.prosigns.currIdx >= 10 || appState.prosigns.currIdx >= appState.prosigns.qList.length) {
-        endGame('prosigns');
-        return;
-    }
-
-    appState.prosigns.waiting = false;
-    const q = appState.prosigns.qList[appState.prosigns.currIdx];
-    
-    // Update HUD
-    document.getElementById('pro-hud-progress').innerText = `${appState.prosigns.currIdx + 1}/10`;
-    document.getElementById('pro-val-streak').innerText = appState.prosigns.streak;
-    if (appState.prosigns.streak >= 3) document.getElementById('pro-chip-streak').classList.add('hot');
-    else document.getElementById('pro-chip-streak').classList.remove('hot');
-    
-    // Render Question
-    const displayEl = document.getElementById('prosign-display');
-    displayEl.innerText = q.code;
-    if (q.bar) displayEl.classList.add('overbar');
-    else displayEl.classList.remove('overbar');
-    
-    document.getElementById('pro-controls').classList.add('hidden');
-    
-    // Options
-    const grid = document.getElementById('pro-options-grid');
-    grid.innerHTML = "";
-    
-    const distractors = PROSIGNS.filter(x => x.code !== q.code).sort(() => Math.random() - 0.5).slice(0, 3);
-    const opts = [q, ...distractors].sort(() => Math.random() - 0.5);
-    
-    opts.forEach(opt => {
-        const btn = document.createElement('div');
-        btn.className = 'option-btn';
-        btn.innerText = opt.meaning;
-        btn.onclick = () => checkProsign(opt, btn);
-        grid.appendChild(btn);
-    });
-}
-
-function checkProsign(selected, btn) {
-    if(appState.prosigns.waiting) return;
-    
-    const correct = appState.prosigns.qList[appState.prosigns.currIdx];
-    const isCorrect = (selected.code === correct.code);
-    
-    appState.prosigns.history.push({
-        q: correct,
-        correct: isCorrect,
-        userAns: selected.meaning,
-        realAns: correct.meaning
-    });
-    
-    if(isCorrect) {
-        btn.classList.add('correct');
-        appState.prosigns.score++;
-        appState.prosigns.streak++;
-        appState.prosigns.waiting = true;
-        setTimeout(nextProsignQ, 1000);
-    } else {
-        btn.classList.add('wrong');
-        appState.prosigns.streak = 0;
-        Array.from(document.getElementById('pro-options-grid').children).forEach(child => {
-            if(child.innerText === correct.meaning) child.classList.add('correct');
-        });
-        document.getElementById('pro-controls').classList.remove('hidden');
-    }
-}
-
-function nextProsignQ() {
-    appState.prosigns.currIdx++;
-    loadProsignQ();
-}
-
-
-// ==========================================
-//              RESULTS LOGIC
-// ==========================================
-
-function endGame(mode) {
-    hideAllScreens();
-    document.getElementById('screen-results').classList.remove('hidden');
-    
-    let total = 0, correct = 0, history = [];
-    
-    if (mode === 'flags') {
-        history = appState.flags.history;
-    } else if (mode === 'morse') {
-        history = appState.morse.history;
-    } else {
-        history = appState.prosigns.history;
-    }
-
-    total = history.length;
-    correct = history.filter(h => h.correct).length;
-    
-    const p = total === 0 ? 0 : Math.round((correct / total) * 100);
-    
-    document.getElementById('final-score-percent').innerText = `${p}%`;
-    document.getElementById('final-score-text').innerText = `${correct} out of ${total} correct`;
-
-    const list = document.getElementById('review-list');
-    list.innerHTML = "";
-    
-    history.forEach(item => {
-        const div = document.createElement('div');
-        div.className = `result-item ${item.correct ? 'r-correct' : 'r-wrong'}`;
-        
-        if (mode === 'flags') {
-            const flagKey = item.q.type === 'secondary' ? item.q.letter : item.q.id;
-            div.innerHTML = `
-                <div class="result-mini-flag">${renderFlag(flagKey)}</div>
-                <div class="result-info">
-                    <div>${item.q.labelShort || item.q.letter}</div>
-                    ${!item.correct ? `<div class="user-ans">You: ${item.userAns}</div>` : ''}
-                    <div class="real-ans">${item.realAns}</div>
-                </div>
-            `;
-        } else if (mode === 'morse') {
-            div.innerHTML = `
-                <div class="result-mini-morse">${item.target}</div>
-                <div class="result-info">
-                    <div style="letter-spacing:2px; font-weight:bold;">${item.correctCode}</div>
-                    ${!item.correct ? `<div class="user-ans">You: ${item.userCode || '(empty)'}</div>` : ''}
-                </div>
-            `;
-        } else {
-            // Prosigns
-            const codeDisplay = item.q.bar ? `<span class="overbar">${item.q.code}</span>` : item.q.code;
-            div.innerHTML = `
-                <div class="result-mini-prosign">${codeDisplay}</div>
-                <div class="result-info">
-                    <div style="font-weight:bold;">${item.q.meaning}</div>
-                    ${!item.correct ? `<div class="user-ans">You: ${item.userAns}</div>` : ''}
-                </div>
-            `;
-        }
-        list.appendChild(div);
-    });
-}
-
-// ==========================================
-//              SVG ENGINE
-// ==========================================
+// --- RENDER FLAG ---
 function renderFlag(key) {
     const W = 300, H = 200;
     const C = { Y: "#facc15", B: "#2563eb", R: "#dc2626", W: "#f8fafc", K: "#1e293b" };
     const uid = key + "_" + Math.floor(Math.random() * 10000);
-
     let pathD = `M0,0 L300,0 L300,200 L0,200 Z`; 
-
-    if (key === 'A' || key === 'B') {
-        pathD = `M0,0 L300,0 L220,100 L300,200 L0,200 Z`; 
-    } else if (DATA_NUMERALS[key] || key === 'ANS') {
-        pathD = `M0,0 L280,60 L280,140 L0,200 Z`; 
-    } else if (key && key.startsWith('SUB')) {
-        pathD = `M0,0 L260,100 L0,200 Z`; 
-    }
-
+    if (key === 'A' || key === 'B') pathD = `M0,0 L300,0 L220,100 L300,200 L0,200 Z`; 
+    else if (DATA_NUMERALS[key] || key === 'ANS') pathD = `M0,0 L280,60 L280,140 L0,200 Z`; 
+    else if (key && key.startsWith('SUB')) pathD = `M0,0 L260,100 L0,200 Z`; 
     const clipDef = `<defs><clipPath id="cp_${uid}"><path d="${pathD}"/></clipPath></defs>`;
     let content = "";
     const gClip = `<g clip-path="url(#cp_${uid})">`;
     const gEnd = `</g>`;
-
     switch(key) {
         case "A": content = gClip + `<rect x="0" y="0" width="120" height="200" fill="${C.W}"/><rect x="120" y="0" width="180" height="200" fill="${C.B}"/>` + gEnd; break;
         case "B": content = gClip + `<rect width="300" height="200" fill="${C.R}"/>` + gEnd; break;
@@ -1466,7 +857,6 @@ function renderFlag(key) {
         case "X": content = `<rect width="300" height="200" fill="${C.W}"/><rect x="125" y="0" width="50" height="200" fill="${C.B}"/><rect x="0" y="75" width="300" height="50" fill="${C.B}"/>`; break;
         case "Y": content = `<rect width="300" height="200" fill="${C.Y}"/>`; for(let i=0;i<10;i++) content+=`<path d="M${i*60},0 L${(i*60)+30},0 L0,${(i*60)+30} L0,${i*60} Z" fill="${C.R}"/><path d="M300,${i*60} L300,${(i*60)+30} L${300-((i*60)+30)},0 L${300-(i*60)},0 Z" fill="${C.R}"/>`; break;
         case "Z": content = `<rect x="0" y="0" width="150" height="100" fill="${C.Y}"/><rect x="150" y="0" width="150" height="100" fill="${C.B}"/><rect x="0" y="100" width="150" height="100" fill="${C.R}"/><rect x="150" y="100" width="150" height="100" fill="${C.K}"/>`; break;
-
         case "1": content = gClip + `<rect width="300" height="200" fill="${C.W}"/><circle cx="100" cy="100" r="45" fill="${C.R}"/>` + gEnd; break;
         case "2": content = gClip + `<rect width="300" height="200" fill="${C.B}"/><circle cx="100" cy="100" r="45" fill="${C.W}"/>` + gEnd; break;
         case "3": content = gClip + `<rect x="0" width="100" height="200" fill="${C.R}"/><rect x="100" width="100" height="200" fill="${C.W}"/><rect x="200" width="100" height="200" fill="${C.B}"/>` + gEnd; break;
@@ -1477,20 +867,321 @@ function renderFlag(key) {
         case "8": content = gClip + `<rect width="300" height="200" fill="${C.W}"/><rect x="80" width="40" height="200" fill="${C.R}"/><rect y="80" width="300" height="40" fill="${C.R}"/>` + gEnd; break;
         case "9": content = gClip + `<rect x="0" y="0" width="150" height="100" fill="${C.W}"/><rect x="150" y="0" width="150" height="100" fill="${C.K}"/><rect x="0" y="100" width="150" height="100" fill="${C.R}"/><rect x="150" y="100" width="150" height="100" fill="${C.Y}"/>` + gEnd; break;
         case "0": content = gClip + `<rect x="0" width="100" height="200" fill="${C.Y}"/><rect x="100" width="100" height="200" fill="${C.R}"/><rect x="200" width="100" height="200" fill="${C.Y}"/>` + gEnd; break;
-
         case "SUB1": content = gClip + `<rect width="300" height="200" fill="${C.B}"/><path d="M0,50 L140,100 L0,150 Z" fill="${C.Y}"/>` + gEnd; break;
         case "SUB2": content = gClip + `<rect x="0" width="150" height="200" fill="${C.B}"/><rect x="150" width="150" height="200" fill="${C.W}"/>` + gEnd; break;
         case "SUB3": content = gClip + `<rect width="300" height="200" fill="${C.W}"/><rect y="80" width="300" height="40" fill="${C.K}"/>` + gEnd; break;
         case "ANS": 
-             content = gClip;
-             for(let i=0; i<7; i++) content += `<rect x="${i*43}" width="43" height="200" fill="${i%2===0?C.R:C.W}"/>`;
-             content += gEnd;
-             break;
+             content = gClip; for(let i=0; i<7; i++) content += `<rect x="${i*43}" width="43" height="200" fill="${i%2===0?C.R:C.W}"/>`; content += gEnd; break;
     }
-
     const stroke = `<path d="${pathD}" fill="none" stroke="#666" stroke-width="1"/>`;
     return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${clipDef}${content}${stroke}</svg>`;
 }
+
+// ==========================================
+//              FLAGS FUNCTIONS
+// ==========================================
+function goToFlagSetup() { hideAllScreens(); document.getElementById('screen-flags-setup').classList.remove('hidden'); }
+function setFlagMode(m) { appState.flags.mode = m; updatePills('flag-mode-selector', m === 'CHAR' ? 0 : m === 'MEANING_MC' ? 1 : m === 'MEANING_TYPE' ? 2 : 3); const catGroup = document.getElementById('flag-cats-group'); if (m === 'SECONDARY') catGroup.classList.add('hidden'); else catGroup.classList.remove('hidden'); }
+function toggleFlagCat(cat, el) { appState.flags.cats[cat] = !appState.flags.cats[cat]; if(!appState.flags.cats.letters && !appState.flags.cats.numerals && !appState.flags.cats.subs) appState.flags.cats[cat] = true; el.classList.toggle('active'); }
+function toggleFlagAutoNext() { appState.flags.autoNext = !appState.flags.autoNext; const btn = document.getElementById('btn-flag-autonext'); btn.innerText = `Auto-Next: ${appState.flags.autoNext ? 'ON' : 'OFF'}`; btn.classList.toggle('active'); }
+function setFlagCount(c) { appState.flags.count = c; const pills = document.getElementById('flag-count-selector').children; for(let p of pills) p.classList.remove('active'); event.target.classList.add('active'); }
+function startFlagGame() {
+    let pool = [];
+    if (appState.flags.mode === 'SECONDARY') pool = DATA_SECONDARY.map(item => ({...item, type: 'secondary'}));
+    else {
+        if (appState.flags.cats.letters) pool.push(...Object.keys(DATA_LETTERS).map(k => ({id: k, ...DATA_LETTERS[k]})));
+        if (appState.flags.cats.numerals) pool.push(...Object.keys(DATA_NUMERALS).map(k => ({id: k, ...DATA_NUMERALS[k]})));
+        if (appState.flags.cats.subs) pool.push(...Object.keys(DATA_SUBS).map(k => ({id: k, ...DATA_SUBS[k]})));
+    }
+    pool.sort(() => Math.random() - 0.5);
+    if(appState.flags.count !== 999) pool = pool.slice(0, appState.flags.count);
+    appState.flags.qList = pool; appState.flags.currIdx = 0; appState.flags.score = 0; appState.flags.streak = 0; appState.flags.waiting = false; appState.flags.history = [];
+    hideAllScreens(); document.getElementById('screen-flags-game').classList.remove('hidden'); loadFlagQ();
+}
+function loadFlagQ() {
+    if(appState.flags.currIdx >= appState.flags.qList.length && appState.flags.count !== 999) { endGame('flags'); return; }
+    appState.flags.waiting = false;
+    const q = appState.flags.qList[appState.flags.currIdx % appState.flags.qList.length];
+    document.getElementById('flag-hud-progress').innerText = `Question ${appState.flags.currIdx + 1} / ${appState.flags.count === 999 ? '∞' : appState.flags.count}`;
+    document.getElementById('flag-val-streak').innerText = appState.flags.streak;
+    document.getElementById('flag-val-acc').innerText = appState.flags.currIdx === 0 ? '100%' : Math.round((appState.flags.score / appState.flags.currIdx) * 100) + '%';
+    if (appState.flags.streak >= 3) document.getElementById('flag-chip-streak').classList.add('hot'); else document.getElementById('flag-chip-streak').classList.remove('hot');
+    const flagId = q.type === 'secondary' ? q.letter : q.id;
+    document.getElementById('flag-stage').innerHTML = renderFlag(flagId) + `<div id="complement-badge" class="complement-text hidden"></div>`;
+    const compBadge = document.getElementById('complement-badge');
+    if (q.type === 'secondary') { compBadge.innerText = "+ " + q.complement; compBadge.classList.remove('hidden'); } else compBadge.classList.add('hidden');
+    document.getElementById('flag-options-grid').classList.add('hidden');
+    document.getElementById('flag-typing-area').classList.add('hidden');
+    document.getElementById('flag-controls').classList.add('hidden');
+    document.getElementById('flag-feedback-box').classList.add('hidden');
+    const qText = document.getElementById('flag-q-text');
+    if(appState.flags.mode === 'CHAR') { qText.innerText = "Identify this flag"; document.getElementById('flag-options-grid').classList.remove('hidden'); generateFlagOptions(q, 'labelShort'); }
+    else if(appState.flags.mode === 'MEANING_MC') { qText.innerText = `What is the meaning of ${q.labelShort}?`; document.getElementById('flag-options-grid').classList.remove('hidden'); generateFlagOptions(q, 'primary'); }
+    else if (appState.flags.mode === 'SECONDARY') { qText.innerText = `Meaning with complement: "${q.complement}"`; document.getElementById('flag-options-grid').classList.remove('hidden'); generateFlagOptions(q, 'meaning'); }
+    else { qText.innerText = `Type meaning of ${q.labelShort}`; document.getElementById('flag-typing-area').classList.remove('hidden'); document.getElementById('flag-type-input').value = ""; document.getElementById('flag-type-input').focus(); }
+}
+function generateFlagOptions(correct, field) {
+    const grid = document.getElementById('flag-options-grid'); grid.innerHTML = "";
+    let pool = [];
+    if (appState.flags.mode === 'SECONDARY') pool = DATA_SECONDARY.filter(x => x.id !== correct.id);
+    else pool = Object.values(ALL_FLAGS).filter(x => x.labelLong !== correct.labelLong);
+    pool.sort(() => Math.random() - 0.5);
+    const opts = [correct, ...pool.slice(0, 3)].sort(() => Math.random() - 0.5);
+    opts.forEach(opt => { const btn = document.createElement('div'); btn.className = 'option-btn'; btn.innerText = opt[field]; btn.onclick = () => checkFlagMC(opt, btn); grid.appendChild(btn); });
+}
+function checkFlagMC(selected, btn) {
+    if (appState.flags.waiting) return;
+    const correct = appState.flags.qList[appState.flags.currIdx % appState.flags.qList.length];
+    let isCorrect = appState.flags.mode === 'SECONDARY' ? selected.id === correct.id : selected.labelLong === correct.labelLong;
+    let realAnsText = appState.flags.mode === 'CHAR' ? correct.labelShort : (appState.flags.mode === 'SECONDARY' ? correct.meaning : correct.primary);
+    let userAnsText = appState.flags.mode === 'CHAR' ? selected.labelShort : (appState.flags.mode === 'SECONDARY' ? selected.meaning : selected.primary);
+    appState.flags.history.push({ q: correct, correct: isCorrect, userAns: userAnsText, realAns: realAnsText });
+    if(isCorrect) { btn.classList.add('correct'); appState.flags.score++; appState.flags.streak++; if (appState.flags.autoNext) { appState.flags.waiting = true; setTimeout(nextFlagQ, 900); return; } }
+    else { btn.classList.add('wrong'); appState.flags.streak = 0; Array.from(document.getElementById('flag-options-grid').children).forEach(child => { if(child.innerText === realAnsText) child.classList.add('correct'); }); }
+    document.getElementById('flag-controls').classList.remove('hidden');
+}
+function submitFlagType() {
+    if (appState.flags.waiting) return;
+    const input = document.getElementById('flag-type-input').value.toLowerCase();
+    const correct = appState.flags.qList[appState.flags.currIdx % appState.flags.qList.length];
+    const keywords = correct.primary.toLowerCase().split(' ').filter(w => w.length > 3);
+    const match = keywords.some(k => input.includes(k));
+    const isCorrect = (match || input === correct.primary.toLowerCase());
+    appState.flags.history.push({ q: correct, correct: isCorrect, userAns: input, realAns: correct.primary });
+    const fb = document.getElementById('flag-feedback-box'); fb.classList.remove('hidden');
+    if(isCorrect) { fb.innerHTML = "<span style='color:var(--success)'>Correct!</span>"; appState.flags.score++; appState.flags.streak++; if (appState.flags.autoNext) { appState.flags.waiting = true; setTimeout(nextFlagQ, 1000); return; } }
+    else { fb.innerHTML = `<span style='color:var(--error)'>Incorrect.</span><br><small>${correct.primary}</small>`; appState.flags.streak = 0; }
+    document.getElementById('flag-controls').classList.remove('hidden');
+}
+function nextFlagQ() { appState.flags.currIdx++; loadFlagQ(); }
+
+// ==========================================
+//              MORSE FUNCTIONS
+// ==========================================
+function goToMorseSetup() { hideAllScreens(); document.getElementById('screen-morse-setup').classList.remove('hidden'); }
+function setMorseMode(m) { appState.morse.mode = m; updatePills('morse-mode-selector', m === 'tap' ? 0 : 1); }
+function setMorseSet(s) { appState.morse.set = s; updatePills('morse-set-selector', s === 'limited' ? 0 : s === 'nums' ? 1 : 2); }
+function toggleMorseAutoNext() { appState.morse.autoNext = !appState.morse.autoNext; const btn = document.getElementById('btn-morse-autonext'); btn.innerText = `Auto-Next: ${appState.morse.autoNext ? 'ON' : 'OFF'}`; btn.classList.toggle('active'); }
+function toggleMorseSound() { appState.morse.soundEnabled = !appState.morse.soundEnabled; const btn = document.getElementById('btn-morse-sound'); btn.innerText = `Sound: ${appState.morse.soundEnabled ? 'ON' : 'OFF'}`; btn.classList.toggle('active'); }
+function startMorseGame() {
+    let pool = []; if(appState.morse.set === 'limited') pool = LIMITED_LETTERS; else if(appState.morse.set === 'nums') pool = NUMBERS_ARR; else pool = [...ALL_LETTERS_ARR, ...NUMBERS_ARR];
+    appState.morse.pool = pool; appState.morse.streak = 0; appState.morse.ditEma = null; appState.morse.waiting = false; appState.morse.history = []; appState.morse.correctCount = 0; appState.morse.wrongCount = 0;
+    hideAllScreens(); document.getElementById('screen-morse-game').classList.remove('hidden');
+    document.getElementById('morse-mode-label').innerText = appState.morse.mode === 'tap' ? 'TAP MODE' : 'SEND MODE';
+    document.getElementById('morse-tap-controls').classList.toggle('hidden', appState.morse.mode !== 'tap');
+    document.getElementById('morse-send-controls').classList.toggle('hidden', appState.morse.mode !== 'send');
+    document.getElementById('morse-chip-wpm').classList.toggle('hidden', appState.morse.mode !== 'send');
+    pickMorseChar();
+}
+function pickMorseChar() {
+    const char = appState.morse.pool[Math.floor(Math.random() * appState.morse.pool.length)];
+    appState.morse.target = char; appState.morse.typed = ""; appState.morse.waiting = false;
+    document.getElementById('morse-target-char').innerText = char; document.getElementById('morse-user-input').innerText = ""; document.getElementById('morse-feedback').innerText = ""; document.getElementById('morse-val-streak').innerText = appState.morse.streak;
+    const checkBtn = document.getElementById('btn-morse-check'); checkBtn.innerText = "Check"; checkBtn.classList.remove('btn-success');
+    if(appState.morse.streak >= 3) document.getElementById('morse-chip-streak').classList.add('hot'); else document.getElementById('morse-chip-streak').classList.remove('hot');
+}
+function morseInput(symbol) { if (appState.morse.waiting) return; appState.morse.typed += symbol; document.getElementById('morse-user-input').innerText = appState.morse.typed; }
+function tapDot(e) { if(e && e.preventDefault) e.preventDefault(); playBeep(60); morseInput('.'); }
+function tapDash(e) { if(e && e.preventDefault) e.preventDefault(); playBeep(180); morseInput('-'); }
+function morseBackspace() { if (appState.morse.waiting) return; appState.morse.typed = appState.morse.typed.slice(0, -1); document.getElementById('morse-user-input').innerText = appState.morse.typed; }
+function morseClear() { if (appState.morse.waiting) return; appState.morse.typed = ""; document.getElementById('morse-user-input').innerText = ""; }
+function checkMorse() {
+    if (appState.morse.waiting) { pickMorseChar(); return; }
+    const correctCode = MORSE_MAP[appState.morse.target]; const userCode = appState.morse.typed; const feedback = document.getElementById('morse-feedback'); const isCorrect = (userCode === correctCode); const checkBtn = document.getElementById('btn-morse-check');
+    appState.morse.history.push({ target: appState.morse.target, correctCode: correctCode, userCode: userCode, correct: isCorrect });
+    if (isCorrect) { feedback.innerHTML = "<span style='color:var(--success)'>Correct!</span>"; appState.morse.streak++; appState.morse.correctCount++; appState.morse.waiting = true; if (appState.morse.autoNext) setTimeout(pickMorseChar, 1000); else { checkBtn.innerText = "Next ➡"; checkBtn.classList.add('btn-success'); } }
+    else { feedback.innerHTML = `<span style='color:var(--error)'>Wrong!</span> ${correctCode}`; appState.morse.streak = 0; appState.morse.wrongCount++; appState.morse.typed = ""; document.getElementById('morse-user-input').innerText = ""; document.getElementById('morse-val-streak').innerText = 0; document.getElementById('morse-chip-streak').classList.remove('hot'); }
+}
+const DASH_THRESHOLD_MS = 250; const EMA_ALPHA = 0.2; let pressAnim = null; const keyerBtn = document.getElementById('keyer-btn'); const pressBar = document.getElementById('press-bar');
+function pressDown(e) { if(appState.morse.mode !== 'send' || appState.morse.waiting) return; e.preventDefault(); if(appState.morse.pressActive) return; appState.morse.pressActive = true; appState.morse.pressStart = performance.now(); keyerBtn.classList.add('pressed'); playTone(); const start = performance.now(); const tick = () => { if(!appState.morse.pressActive) return; const elapsed = performance.now() - start; const pct = Math.min((elapsed / DASH_THRESHOLD_MS) * 100, 100); pressBar.style.width = pct + "%"; pressAnim = requestAnimationFrame(tick); }; pressAnim = requestAnimationFrame(tick); }
+function pressUp(e) {
+    if(appState.morse.mode !== 'send' || appState.morse.waiting) return; e.preventDefault(); if(!appState.morse.pressActive) return; stopTone(); appState.morse.pressActive = false; keyerBtn.classList.remove('pressed'); if(pressAnim) cancelAnimationFrame(pressAnim); pressBar.style.width = "0%";
+    const dur = performance.now() - appState.morse.pressStart; const sym = (dur >= DASH_THRESHOLD_MS) ? "-" : "."; morseInput(sym);
+    const ditGuess = (sym === ".") ? dur : (dur / 3); const old = appState.morse.ditEma; appState.morse.ditEma = (old == null) ? ditGuess : (EMA_ALPHA * ditGuess + (1 - EMA_ALPHA) * old);
+    const wpm = Math.round(1200 / appState.morse.ditEma); if(isFinite(wpm) && wpm > 0 && wpm < 60) document.getElementById('morse-val-wpm').innerText = wpm + " WPM";
+}
+keyerBtn.addEventListener('mousedown', pressDown); keyerBtn.addEventListener('touchstart', pressDown); document.addEventListener('mouseup', pressUp); document.addEventListener('touchend', pressUp);
+
+// ==========================================
+//              PROSIGNS LOGIC
+// ==========================================
+function goToProsigns() { hideAllScreens(); document.getElementById('screen-prosigns').classList.remove('hidden'); const tbody = document.getElementById('prosigns-tbody'); tbody.innerHTML = ""; PROSIGNS.forEach(item => { const tr = document.createElement('tr'); tr.className = "row-item"; let displayCode = item.code; if(item.bar) displayCode = `<span class="overbar">${item.code}</span>`; tr.innerHTML = `<td>${displayCode}</td><td>${item.meaning}</td>`; tbody.appendChild(tr); }); }
+function startProsignsGame() { appState.prosigns.qList = [...PROSIGNS].sort(() => Math.random() - 0.5); appState.prosigns.currIdx = 0; appState.prosigns.score = 0; appState.prosigns.streak = 0; appState.prosigns.waiting = false; appState.prosigns.history = []; hideAllScreens(); document.getElementById('screen-prosigns-game').classList.remove('hidden'); loadProsignQ(); }
+function loadProsignQ() {
+    if(appState.prosigns.currIdx >= 10 || appState.prosigns.currIdx >= appState.prosigns.qList.length) { endGame('prosigns'); return; }
+    appState.prosigns.waiting = false; const q = appState.prosigns.qList[appState.prosigns.currIdx];
+    document.getElementById('pro-hud-progress').innerText = `${appState.prosigns.currIdx + 1}/10`; document.getElementById('pro-val-streak').innerText = appState.prosigns.streak;
+    if (appState.prosigns.streak >= 3) document.getElementById('pro-chip-streak').classList.add('hot'); else document.getElementById('pro-chip-streak').classList.remove('hot');
+    const displayEl = document.getElementById('prosign-display'); displayEl.innerText = q.code; if (q.bar) displayEl.classList.add('overbar'); else displayEl.classList.remove('overbar');
+    document.getElementById('pro-controls').classList.add('hidden');
+    const grid = document.getElementById('pro-options-grid'); grid.innerHTML = "";
+    const distractors = PROSIGNS.filter(x => x.code !== q.code).sort(() => Math.random() - 0.5).slice(0, 3); const opts = [q, ...distractors].sort(() => Math.random() - 0.5);
+    opts.forEach(opt => { const btn = document.createElement('div'); btn.className = 'option-btn'; btn.innerText = opt.meaning; btn.onclick = () => checkProsign(opt, btn); grid.appendChild(btn); });
+}
+function checkProsign(selected, btn) {
+    if(appState.prosigns.waiting) return; const correct = appState.prosigns.qList[appState.prosigns.currIdx]; const isCorrect = (selected.code === correct.code);
+    appState.prosigns.history.push({ q: correct, correct: isCorrect, userAns: selected.meaning, realAns: correct.meaning });
+    if(isCorrect) { btn.classList.add('correct'); appState.prosigns.score++; appState.prosigns.streak++; appState.prosigns.waiting = true; setTimeout(nextProsignQ, 1000); }
+    else { btn.classList.add('wrong'); appState.prosigns.streak = 0; Array.from(document.getElementById('pro-options-grid').children).forEach(child => { if(child.innerText === correct.meaning) child.classList.add('correct'); }); document.getElementById('pro-controls').classList.remove('hidden'); }
+}
+function nextProsignQ() { appState.prosigns.currIdx++; loadProsignQ(); }
+
+// ==========================================
+//              EXAM LOGIC (MERGED)
+// ==========================================
+function goToExam() { hideAllScreens(); document.getElementById('screen-exam').classList.remove('hidden'); initExam(); }
+function initExam() { loadExamSection(1); }
+function loadExamSection(n) {
+    appState.exam.section = n; appState.exam.skipped = false; updateExamProgress();
+    if(n > 4) document.querySelector('.skip-btn-container').classList.add('hidden');
+    const content = document.getElementById('exam-content'); content.innerHTML = ''; 
+    if (n === 1) setupSection1(content); else if (n === 2) setupSection2(content); else if (n === 3) setupSection3(content); else if (n === 4) setupSection4(content); else showExamFinalResults(content);
+}
+function updateExamProgress() { const pct = ((appState.exam.section - 1) / 4) * 100; document.getElementById('exam-main-progress').style.width = pct + "%"; document.getElementById('exam-status').innerText = appState.exam.section <= 4 ? `Section ${appState.exam.section} of 4` : "Exam Complete"; }
+function skipExamSection() { appState.exam.scores[appState.exam.section] = 0; appState.exam.skipped = true; nextExamSection(appState.exam.section); }
+function nextExamSection(current) { loadExamSection(current + 1); }
+
+// EXAM S1: VISUAL MORSE
+function setupSection1(container) {
+    const sequence = []; const ALL_CHARS_EXAM = [...Object.keys(DATA_LETTERS), ...NUMBERS_ARR];
+    for(let i=0; i<20; i++) sequence.push(ALL_CHARS_EXAM[Math.floor(Math.random()*ALL_CHARS_EXAM.length)]);
+    appState.exam.sectionData.sequence = sequence;
+    container.innerHTML = `<div class="exam-section-title">Section 1: Visual Morse Reception (20 Marks)</div><div class="signal-light" id="signal-light"></div><p style="text-align:center; margin-bottom:20px;">Watch the light. 20 Characters. 4s Gap.</p><div style="text-align:center;"><button class="btn" id="btn-start-flash" onclick="startFlashSequence()">Start Sequence</button></div><div id="sec1-input-area" class="hidden" style="margin-top:20px;"><label>Type chars as they appear:</label><input type="text" id="input-sec1" placeholder="Type letters..." autocomplete="off" oninput="handleInputCase(event)"><div style="text-align:center; margin-top:15px;"><button class="btn btn-success" onclick="gradeSection1()">Submit Section 1</button></div></div><div id="sec1-feedback" class="feedback-box hidden"></div>`;
+}
+function startFlashSequence() {
+    const btn = document.getElementById('btn-start-flash'); btn.disabled = true; const light = document.getElementById('signal-light'); const seq = appState.exam.sectionData.sequence;
+    const inputArea = document.getElementById('sec1-input-area'); const inputField = document.getElementById('input-sec1');
+    inputArea.classList.remove('hidden'); inputField.value = ""; inputField.focus();
+    
+    // UPDATED TIMING (A bit shorter dot)
+    const DOT = 600; // was 800
+    const DASH = 2000;
+    const INTRA_GAP = 600; // Keep rhythm consistent
+    const INTER_GAP = 4000; 
+    let timeline = [], currentTime = 500;
+    
+    timeline.push({ time: currentTime, on: true }); currentTime += 3000; timeline.push({ time: currentTime, on: false }); currentTime += 2000; 
+    seq.forEach(char => { const code = MORSE_MAP[char]; code.split('').forEach((symbol, idx) => { const duration = symbol === '.' ? DOT : DASH; timeline.push({ time: currentTime, on: true }); currentTime += duration; timeline.push({ time: currentTime, on: false }); if (idx < code.length - 1) currentTime += INTRA_GAP; }); currentTime += INTER_GAP; });
+    timeline.forEach(event => { setTimeout(() => { if(event.on) light.classList.add('lit'); else light.classList.remove('lit'); }, event.time); });
+}
+function gradeSection1() {
+    const userAns = document.getElementById('input-sec1').value.toUpperCase().replace(/\s/g, '').split(''); const realAns = appState.exam.sectionData.sequence; let correct = 0;
+    let compHTML = `<div class="comparison-container"><div class="label-row">Input:</div><div class="comp-row">`;
+    for(let i=0; i<Math.max(realAns.length, userAns.length); i++) { const u = userAns[i]||'', r = realAns[i]||''; let cls='char-miss'; if(u===r && u!==''){ cls='char-correct'; correct++; } else if(u!=='') cls='char-wrong'; compHTML += `<div class="char-box ${cls}">${u||'?'}</div>`; }
+    compHTML += `</div><div class="label-row" style="margin-top:10px;">Correct:</div><div class="comp-row">`; realAns.forEach(c => compHTML += `<div class="char-box">${c}</div>`); compHTML += `</div></div>`;
+    appState.exam.scores[1] = correct; showExamFeedback(1, correct >= 18, correct, 20, compHTML, true);
+}
+
+// EXAM S2: THEORY
+function setupSection2(container) {
+    const shuffled = [...THEORY_POOL].sort(() => 0.5 - Math.random()); const selectedQs = shuffled.slice(0, 10); appState.exam.sectionData.theoryQs = selectedQs;
+    let html = `<div class="exam-section-title">Section 2: Written Theory (10 Marks)</div><div style="text-align:left;">`;
+    selectedQs.forEach((q, idx) => { html += `<div class="theory-q" id="wrapper-q2-${idx}"><label>${idx+1}. ${q.q}</label><div class="input-wrapper"><input type="text" id="q2-${idx}" placeholder="Answer..."><div id="icon-q2-${idx}" class="status-icon"></div></div><div id="feedback-q2-${idx}" class="feedback-msg hidden"></div></div>`; });
+    html += `</div><div style="text-align:center;"><button class="btn btn-success" onclick="gradeSection2()">Submit Section 2</button></div><div id="sec2-feedback" class="feedback-box hidden"></div>`;
+    container.innerHTML = html;
+}
+function gradeSection2() {
+    let correct = 0;
+    appState.exam.sectionData.theoryQs.forEach((q, idx) => {
+        const input = document.getElementById(`q2-${idx}`); const icon = document.getElementById(`icon-q2-${idx}`); const feedback = document.getElementById(`feedback-q2-${idx}`);
+        input.disabled = true; const normVal = normalize(input.value); const hit = q.a.some(ans => normVal.includes(ans));
+        if(hit) { correct++; input.classList.add('border-correct'); icon.innerHTML = "✅"; } else { input.classList.add('border-wrong'); icon.innerHTML = "❌"; feedback.innerHTML = `Correct Answer: ${q.display}`; feedback.classList.remove('hidden'); }
+    });
+    appState.exam.scores[2] = correct; showExamFeedback(2, correct >= 9, correct, 10, "", false);
+}
+
+// EXAM S3: FLAGS
+function setupSection3(container) {
+    const pool = Object.keys(DATA_LETTERS); const questions = []; for(let i=0; i<10; i++) questions.push(pool[Math.floor(Math.random() * pool.length)]); appState.exam.sectionData.flags = questions;
+    let html = `<div class="exam-section-title">Section 3: Flag Meanings (10 Marks)</div>`;
+    questions.forEach((flag, idx) => { html += `<div class="theory-q" style="text-align:center;" id="wrapper-q3-${idx}"><div class="flag-stage">${renderFlag(flag)}</div><label style="text-align:left;">Meaning of Flag ${flag}:</label><div class="input-wrapper"><input type="text" id="q3-${idx}" placeholder="Meaning..."><div id="icon-q3-${idx}" class="status-icon"></div></div><div id="feedback-q3-${idx}" class="feedback-msg hidden" style="text-align:left;"></div></div>`; });
+    html += `<div style="text-align:center;"><button class="btn btn-success" onclick="gradeSection3()">Submit Section 3</button></div><div id="sec3-feedback" class="feedback-box hidden"></div>`;
+    container.innerHTML = html;
+}
+function gradeSection3() {
+    let correct = 0;
+    appState.exam.sectionData.flags.forEach((flag, idx) => {
+        const input = document.getElementById(`q3-${idx}`); const icon = document.getElementById(`icon-q3-${idx}`); const feedback = document.getElementById(`feedback-q3-${idx}`);
+        input.disabled = true; const normVal = normalize(input.value); const realStr = DATA_LETTERS[flag].primary; const normReal = normalize(realStr); let hit = false;
+        if (flag === 'C') { if (normVal.includes('yes') || normVal.includes('affirmative')) hit = true; } else if (flag === 'N') { if (normVal.includes('no') || normVal.includes('negative')) hit = true; } else { const keywords = realStr.toLowerCase().split(/[^a-z]+/).filter(w => w.length > 3); if (normVal === normReal) hit = true; else if (keywords.length > 0 && keywords.some(k => normVal.includes(k))) hit = true; }
+        if(hit) { correct++; input.classList.add('border-correct'); icon.innerHTML = "✅"; } else { input.classList.add('border-wrong'); icon.innerHTML = "❌"; feedback.innerHTML = `Correct Answer: ${realStr}`; feedback.classList.remove('hidden'); }
+    });
+    appState.exam.scores[3] = correct; showExamFeedback(3, correct >= 9, correct, 10, "", false);
+}
+
+// EXAM S4: MORSE TX
+function setupSection4(container) {
+    const chars = []; const ALL_CHARS_EXAM = [...Object.keys(DATA_LETTERS), ...NUMBERS_ARR];
+    for(let i=0; i<10; i++) chars.push(ALL_CHARS_EXAM[Math.floor(Math.random()*ALL_CHARS_EXAM.length)]);
+    const targetString = chars.join(''); appState.exam.sectionData.sendTarget = targetString; appState.exam.sectionData.sendInputDecoded = ""; appState.exam.sectionData.sendCurrentBuffer = "";
+    container.innerHTML = `<div class="exam-section-title">Section 4: Morse Sending (10 Marks)</div><p style="text-align:center; font-size:1.2rem; margin-bottom:20px;">Send this sequence:</p><div style="background:rgba(255,255,255,0.1); padding:15px; border-radius:8px; text-align:center; font-family:monospace; font-size:2rem; letter-spacing:5px; margin-bottom:20px;">${targetString}</div><div id="exam-keyer-btn" class="keyer-btn-base">TAP KEY</div><div style="text-align:center; margin-top:20px; color:var(--text-muted);">Decoded Output:</div><div id="send-display" class="send-display-box"></div><div class="live-dots" id="live-dots"></div><div style="text-align:center; margin-top:30px;"><button class="btn" onclick="clearExamSend()">Clear All</button><button class="btn btn-success" onclick="gradeSection4()">Submit Section 4</button></div><div id="sec4-feedback" class="feedback-box hidden"></div>`;
+    setupExamKeyer();
+}
+let examPressStart=0; let examSegTimer=null;
+function setupExamKeyer() {
+    const btn = document.getElementById('exam-keyer-btn'); if(!btn) return;
+    const handleDown = (e) => { e.preventDefault(); clearTimeout(examSegTimer); btn.classList.add('pressed'); examPressStart = performance.now(); playTone(); };
+    const handleUp = (e) => {
+        e.preventDefault(); btn.classList.remove('pressed'); stopTone();
+        const dur = performance.now() - examPressStart;
+        const sym = dur > 250 ? '-' : '.';
+        processExamInputSymbol(sym);
+        examSegTimer = setTimeout(() => { finishExamCharacter(); }, 1500);
+    };
+    btn.addEventListener('mousedown', handleDown);
+    btn.addEventListener('touchstart', handleDown);
+    btn.addEventListener('mouseup', handleUp);
+    btn.addEventListener('touchend', handleUp);
+}
+function processExamInputSymbol(sym) { appState.exam.sectionData.sendCurrentBuffer += sym; document.getElementById('live-dots').innerText = appState.exam.sectionData.sendCurrentBuffer; if (appState.exam.sectionData.sendCurrentBuffer.endsWith(".......")) triggerExamErrorSignal(); }
+function triggerExamErrorSignal() { clearTimeout(examSegTimer); appState.exam.sectionData.sendCurrentBuffer = ""; document.getElementById('live-dots').innerText = ""; let cur = appState.exam.sectionData.sendInputDecoded; if (cur.length > 0) appState.exam.sectionData.sendInputDecoded = cur.slice(0, -1); updateExamDecodedDisplay(); const box = document.getElementById('send-display'); box.classList.add('flash-red'); setTimeout(() => box.classList.remove('flash-red'), 300); }
+function finishExamCharacter() { const code = appState.exam.sectionData.sendCurrentBuffer; if (!code) return; const REVERSE_MORSE = Object.fromEntries(Object.entries(MORSE_MAP).map(a => a.reverse())); const char = REVERSE_MORSE[code]; if (char) appState.exam.sectionData.sendInputDecoded += char; else appState.exam.sectionData.sendInputDecoded += "?"; appState.exam.sectionData.sendCurrentBuffer = ""; document.getElementById('live-dots').innerText = ""; updateExamDecodedDisplay(); }
+function updateExamDecodedDisplay() { document.getElementById('send-display').innerText = appState.exam.sectionData.sendInputDecoded; }
+function clearExamSend() { appState.exam.sectionData.sendInputDecoded = ""; appState.exam.sectionData.sendCurrentBuffer = ""; document.getElementById('live-dots').innerText = ""; updateExamDecodedDisplay(); }
+function gradeSection4() {
+    let targetCode = ""; appState.exam.sectionData.sendTarget.split('').forEach(c => targetCode += MORSE_MAP[c]);
+    const input = appState.exam.sectionData.sendInputDecoded.replace(/ /g, ''); const target = appState.exam.sectionData.sendTarget;
+    let correct = 0;
+    let compHTML = `<div class="comparison-container"><div class="label-row">You Sent:</div><div class="comp-row">`;
+    for(let i=0; i<Math.max(target.length, input.length); i++) {
+        const u = input[i] || '', r = target[i] || '';
+        let cls = 'char-miss';
+        if (u === r && u !== '') { cls = 'char-correct'; correct++; } else if (u !== '') { cls = 'char-wrong'; }
+        compHTML += `<div class="char-box ${cls}">${u || '?'}</div>`;
+    }
+    compHTML += `</div><div class="label-row" style="margin-top:10px;">Target:</div><div class="comp-row">`; target.split('').forEach(c => { compHTML += `<div class="char-box">${c}</div>`; });
+    compHTML += `</div></div>`;
+    appState.exam.scores[4] = correct; showExamFeedback(4, correct >= 9, correct, 10, compHTML, true);
+}
+
+// EXAM COMMON
+function showExamFeedback(secNum, passed, score, total, htmlContent, isHTML = false) {
+    const box = document.getElementById(`sec${secNum}-feedback`); box.classList.remove('hidden'); const msg = passed ? `<div class="pass-text">PASSED (${score}/${total})</div>` : `<div class="fail-text">FAILED (${score}/${total})</div>`; let content = msg; if (htmlContent) content += (isHTML ? htmlContent : `<div>Correct Answer: ${htmlContent}</div>`);
+    if(passed) content += `<div style="margin-top:15px;"><button class="btn" onclick="nextExamSection(${secNum})">Next Section</button></div>`; else content += `<div style="margin-top:15px;"><button class="btn btn-danger" onclick="loadExamSection(${secNum})">Retry Section</button></div>`; box.innerHTML = content;
+}
+function showExamFinalResults(container) {
+    const s = appState.exam.scores; const total = s[1] + s[2] + s[3] + s[4]; const pct = Math.round((total / 50) * 100);
+    container.innerHTML = `<div style="text-align:center; padding:40px;"><div style="font-size:4rem; margin-bottom:10px;">🏆</div><h2 style="color:var(--accent);">EXAM RESULTS</h2><div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:20px; margin:30px 0;"><div style="font-size:3rem; font-weight:800; color:${pct>=90?'var(--success)':'var(--gold)'};">${pct}%</div><div style="color:var(--text-muted);">Total Score: ${total} / 50</div></div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; text-align:left; font-size:0.9rem; color:var(--text-muted);"><div>Morse Rx: ${s[1]}/20</div><div>Theory: ${s[2]}/10</div><div>Flags: ${s[3]}/10</div><div>Morse Tx: ${s[4]}/10</div></div><button class="btn" style="margin-top:30px;" onclick="initExam()">Take Exam Again</button></div>`;
+}
+
+// --- RESULTS (GENERAL) ---
+function endGame(mode) {
+    hideAllScreens(); document.getElementById('screen-results').classList.remove('hidden');
+    let total = 0, correct = 0, history = [];
+    if (mode === 'flags') history = appState.flags.history; else if (mode === 'morse') history = appState.morse.history; else history = appState.prosigns.history;
+    total = history.length; correct = history.filter(h => h.correct).length; const p = total === 0 ? 0 : Math.round((correct / total) * 100);
+    document.getElementById('final-score-percent').innerText = `${p}%`; document.getElementById('final-score-text').innerText = `${correct} out of ${total} correct`;
+    const list = document.getElementById('review-list'); list.innerHTML = "";
+    history.forEach(item => {
+        const div = document.createElement('div'); div.className = `result-item ${item.correct ? 'r-correct' : 'r-wrong'}`;
+        if (mode === 'flags') { const flagKey = item.q.type === 'secondary' ? item.q.letter : item.q.id; div.innerHTML = `<div class="result-mini-flag">${renderFlag(flagKey)}</div><div class="result-info"><div>${item.q.labelShort || item.q.letter}</div>${!item.correct ? `<div class="user-ans">You: ${item.userAns}</div>` : ''}<div class="real-ans">${item.realAns}</div></div>`; }
+        else if (mode === 'morse') { div.innerHTML = `<div class="result-mini-morse">${item.target}</div><div class="result-info"><div style="letter-spacing:2px; font-weight:bold;">${item.correctCode}</div>${!item.correct ? `<div class="user-ans">You: ${item.userCode || '(empty)'}</div>` : ''}</div>`; }
+        else { const codeDisplay = item.q.bar ? `<span class="overbar">${item.q.code}</span>` : item.q.code; div.innerHTML = `<div class="result-mini-prosign">${codeDisplay}</div><div class="result-info"><div style="font-weight:bold;">${item.q.meaning}</div>${!item.correct ? `<div class="user-ans">You: ${item.userAns}</div>` : ''}</div>`; }
+        list.appendChild(div);
+    });
+}
+
+function updatePills(parentId, activeIdx) { const p = document.getElementById(parentId).children; for(let i=0; i<p.length; i++) p[i].classList.remove('active'); p[activeIdx].classList.add('active'); }
 
 </script>
 </body>

@@ -60,7 +60,7 @@ h1 {
 
 h3 { margin-bottom: 1rem; text-align: center; }
 
-/* --- CARDS --- */
+/* --- GLASS CARDS --- */
 .card {
     background: var(--glass-bg);
     backdrop-filter: blur(var(--glass-blur));
@@ -92,6 +92,7 @@ h3 { margin-bottom: 1rem; text-align: center; }
     flex-direction: column;
     align-items: center;
     gap: 15px;
+    position: relative;
 }
 .big-mode-btn:hover {
     transform: translateY(-5px);
@@ -103,6 +104,16 @@ h3 { margin-bottom: 1rem; text-align: center; }
 .big-mode-icon { font-size: 3rem; margin-bottom: 10px; }
 .big-mode-title { font-size: 1.5rem; font-weight: 800; color: var(--accent); }
 .big-mode-desc { color: var(--text-muted); font-size: 0.9rem; }
+.pass-mark-badge {
+    background: rgba(14, 165, 233, 0.2);
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 12px;
+    margin-top: 5px;
+    border: 1px solid rgba(14, 165, 233, 0.3);
+}
 
 .footer-credit {
     margin-top: 30px;
@@ -480,6 +491,7 @@ input[type="text"]:disabled { background: rgba(0,0,0,0.5); color: #aaa; }
                 <div class="big-mode-icon">🎓</div>
                 <div class="big-mode-title">Final Exam</div>
                 <div class="big-mode-desc">Comprehensive Test</div>
+                <div class="pass-mark-badge">Pass Mark: 90%</div>
             </div>
         </div>
 
@@ -828,14 +840,15 @@ const THEORY_POOL = [
     { q: "The following code message has been received ‘CY….C’. What is the significance of the group ‘C’?", a: ["affirmative", "significanceofpreviousgroupshouldbereadintheaffirmative"], display: "Affirmative (Significance of previous group should be read in the affirmative)" },
     { q: "What is the significance of the procedure group ‘RPT BN’?", a: ["repeatallbetween"], display: "Repeat all between" },
     { q: "You have called another vessel by aldis lamp and they respond with ‘AS15’, what does this mean?", a: ["wait15minutes", "wait15mins", "wait15"], display: "Wait 15 minutes" },
-    { q: "Decode the following flag hoist: A, 2, 5, 0, Code Pendant, 2nd Sub.", a: ["a250.0", "azimuth250.0"], display: "Azimuth 250° (or Bearing)" },
+    { q: "Decode the following flag hoist: A, 2, 5, 0, Code Pendant, 2nd Sub.", a: ["a250.2", "azimuth250.2"], display: "Azimuth 250.2°" },
     { q: "Decode the following flag hoist: S, 1, 2, Code Pendant, 1st Sub.", a: ["s12.1", "speed12.1"], display: "Speed 12.1 knots" },
     { q: "Decode the following flag hoist: G, 1, 1st Sub, 2, 3rd Sub.", a: ["g1122", "longitude1122"], display: "Longitude 1122" },
     { q: "A warship has the code & signal pendant hoisted above a flag group. What does this mean?", a: ["communicatingusingtheinternationalcodeofsignals", "communicatingusingics"], display: "Communicating using the International Code of Signals" },
     { q: "You see a group of flags consisting of ‘NC’. What does this mean?", a: ["iamindistress", "distress"], display: "I am in distress" },
     { q: "How long should a tackline be?", a: ["2metres", "2meters", "2m"], display: "2 metres" },
     { q: "In general terms, how is a medical sign indicated by a flag group?", a: ["threelettersstartingwithm", "3lettersstartingwithm"], display: "Three letters starting with M" },
-    { q: "What does the term ‘Close up’ mean?", a: ["hoistedtothefullextentofthehalyards"], display: "Hoisted to the full extent of the halyards" }
+    { q: "What does the term ‘Close up’ mean?", a: ["hoistedtothefullextentofthehalyards"], display: "Hoisted to the full extent of the halyards" },
+    { q: "How is flag signalling concluded?", a: ["hoistthecodependantcloseup", "codependantcloseup"], display: "Hoist the Code Pendant close up" }
 ];
 
 // --- UTILS ---
@@ -1079,10 +1092,10 @@ function startFlashSequence() {
     const inputArea = document.getElementById('sec1-input-area'); const inputField = document.getElementById('input-sec1');
     inputArea.classList.remove('hidden'); inputField.value = ""; inputField.focus();
     
-    // UPDATED TIMING: Dot 600ms, Gap 600ms
+    // UPDATED TIMING (A bit shorter dot)
     const DOT = 600; // Was 800
     const DASH = 2000;
-    const INTRA_GAP = 600; 
+    const INTRA_GAP = 600; // Keep rhythm consistent
     const INTER_GAP = 4000; 
     let timeline = [], currentTime = 500;
     
@@ -1100,7 +1113,22 @@ function gradeSection1() {
 
 // EXAM S2: THEORY
 function setupSection2(container) {
-    const shuffled = [...THEORY_POOL].sort(() => 0.5 - Math.random()); const selectedQs = shuffled.slice(0, 10); appState.exam.sectionData.theoryQs = selectedQs;
+    const shuffled = [...THEORY_POOL].sort(() => 0.5 - Math.random());
+    const selectedQs = [];
+    let distressCount = 0;
+    
+    // DISTRESS LIMITER LOGIC
+    for(let q of shuffled) {
+        if(selectedQs.length >= 10) break;
+        const isDistress = q.a.some(ans => ans.includes('distress'));
+        if(isDistress) {
+            if(distressCount < 1) { selectedQs.push(q); distressCount++; }
+        } else {
+            selectedQs.push(q);
+        }
+    }
+    
+    appState.exam.sectionData.theoryQs = selectedQs;
     let html = `<div class="exam-section-title">Section 2: Written Theory (10 Marks)</div><div style="text-align:left;">`;
     selectedQs.forEach((q, idx) => { html += `<div class="theory-q" id="wrapper-q2-${idx}"><label>${idx+1}. ${q.q}</label><div class="input-wrapper"><input type="text" id="q2-${idx}" placeholder="Answer..."><div id="icon-q2-${idx}" class="status-icon"></div></div><div id="feedback-q2-${idx}" class="feedback-msg hidden"></div></div>`; });
     html += `</div><div style="text-align:center;"><button class="btn btn-success" onclick="gradeSection2()">Submit Section 2</button></div><div id="sec2-feedback" class="feedback-box hidden"></div>`;

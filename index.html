@@ -102,7 +102,7 @@ h3 { margin-bottom: 1rem; text-align: center; }
 }
 
 .big-mode-icon { font-size: 3rem; margin-bottom: 10px; }
-.big-mode-title { font-size: 1.5rem; font-weight: 800; color: var(--accent); }
+.big-mode-title { font-size: 1.3rem; font-weight: 800; color: var(--accent); }
 .big-mode-desc { color: var(--text-muted); font-size: 0.9rem; }
 .pass-mark-badge {
     background: rgba(14, 165, 233, 0.2);
@@ -179,6 +179,62 @@ h3 { margin-bottom: 1rem; text-align: center; }
     font-size: 0.9rem; font-weight: bold; color: var(--gold); border: 1px solid rgba(255,255,255,0.1);
 }
 
+/* --- FLAG REFERENCE GRID --- */
+.flag-ref-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+.flag-ref-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.2s;
+}
+.flag-ref-card:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); }
+.flag-ref-card svg {
+    height: 70px;
+    width: auto;
+    margin-bottom: 12px;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
+}
+.flag-ref-title { font-weight: 800; color: var(--accent); margin-bottom: 5px; font-size: 1.1rem; }
+.flag-ref-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.3; }
+
+/* --- MORSE REFERENCE GRID --- */
+.morse-ref-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+}
+.morse-ref-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+.morse-ref-card:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); border-color: rgba(255,255,255,0.2); }
+.morse-ref-card.selected-char {
+    background: rgba(14, 165, 233, 0.15);
+    border-color: var(--accent);
+    box-shadow: inset 0 0 10px rgba(14, 165, 233, 0.2);
+}
+.morse-ref-char { font-weight: 900; color: var(--text-main); font-size: 1.5rem; margin-bottom: 5px; }
+.morse-ref-code { font-size: 1.2rem; color: var(--accent); font-family: monospace; font-weight: bold; letter-spacing: 2px;}
+
 /* --- MORSE STAGE --- */
 .morse-stage {
     display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -233,14 +289,12 @@ h3 { margin-bottom: 1rem; text-align: center; }
     border-bottom-right-radius: 10px;
     color: var(--text-main);
 }
-
 .overbar {
     text-decoration: overline;
     text-decoration-thickness: 2px;
     text-decoration-color: var(--accent);
 }
 
-/* Prosigns Game Specifics */
 .prosign-stage {
     display: flex; justify-content: center; align-items: center;
     margin: 1rem 0 2rem 0; min-height: 240px;
@@ -460,6 +514,11 @@ input[type="text"]:disabled { background: rgba(0,0,0,0.5); color: #aaa; }
     .stat-chip { padding: 6px 10px; font-size: 0.85rem; }
     .grid-options { grid-template-columns: 1fr; } 
     .option-btn { padding: 12px 15px; font-size: 0.95rem; }
+    
+    .flag-ref-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+    .flag-ref-card svg { height: 50px; }
+    
+    .morse-ref-grid { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); }
 }
 </style>
 </head>
@@ -471,20 +530,22 @@ input[type="text"]:disabled { background: rgba(0,0,0,0.5); color: #aaa; }
         <h1>Maritime Mastery</h1>
         <p style="text-align:center; color: var(--text-muted); margin-bottom:10px;">Learn International Signals</p>
         
+        <div id="home-high-score" style="text-align:center; font-weight:bold; color:var(--gold); margin-bottom:15px; margin-top: 10px;">🏆 Exam High Score: 0 / 50</div>
+
         <div class="mode-select-grid">
             <div class="big-mode-btn" onclick="goToFlagSetup()">
                 <div class="big-mode-icon">🚩</div>
-                <div class="big-mode-title">Flags</div>
+                <div class="big-mode-title">Learn Nautical Flags</div>
                 <div class="big-mode-desc">Visual quiz</div>
             </div>
             <div class="big-mode-btn" onclick="goToMorseSetup()">
                 <div class="big-mode-icon">📡</div>
-                <div class="big-mode-title">Morse</div>
+                <div class="big-mode-title">Learn Morse</div>
                 <div class="big-mode-desc">Tap & Keyer</div>
             </div>
             <div class="big-mode-btn" onclick="goToProsigns()">
                 <div class="big-mode-icon">📖</div>
-                <div class="big-mode-title">Prosigns</div>
+                <div class="big-mode-title">Learn Prosigns</div>
                 <div class="big-mode-desc">Procedure Reference</div>
             </div>
             <div class="big-mode-btn" onclick="goToExam()">
@@ -498,45 +559,56 @@ input[type="text"]:disabled { background: rgba(0,0,0,0.5); color: #aaa; }
         <div class="footer-credit">MADE BY GEORGE</div>
     </div>
 
-    <div id="screen-flags-setup" class="card hidden">
-        <h3>Flag Quiz Setup</h3>
-        <div class="settings-group">
-            <label>Mode</label>
-            <div class="pill-selector" id="flag-mode-selector">
-                <div class="pill active" onclick="setFlagMode('CHAR')">Identify Flag</div>
-                <div class="pill" onclick="setFlagMode('MEANING_MC')">Meaning (MC)</div>
-                <div class="pill" onclick="setFlagMode('MEANING_TYPE')">Meaning (Type)</div>
-                <div class="pill" onclick="setFlagMode('SECONDARY')">Secondary Meanings</div>
+    <!-- FLAGS SETUP SCREEN -->
+    <div id="screen-flags-setup" class="hidden">
+        <div class="card">
+            <h3>Flag Quiz Setup</h3>
+            <div class="settings-group">
+                <label>Mode</label>
+                <div class="pill-selector" id="flag-mode-selector">
+                    <div class="pill active" onclick="setFlagMode('CHAR')">Identify Flag</div>
+                    <div class="pill" onclick="setFlagMode('MEANING_MC')">Meaning (MC)</div>
+                    <div class="pill" onclick="setFlagMode('MEANING_TYPE')">Meaning (Type)</div>
+                    <div class="pill" onclick="setFlagMode('SECONDARY')">Secondary Meanings</div>
+                </div>
+            </div>
+            <div class="settings-group" id="flag-cats-group">
+                <label>Categories</label>
+                <div class="pill-selector">
+                    <div class="pill active pill-check" onclick="toggleFlagCat('letters', this)">Letters</div>
+                    <div class="pill pill-check" onclick="toggleFlagCat('numerals', this)">Numerals</div>
+                    <div class="pill pill-check" onclick="toggleFlagCat('subs', this)">Substitutes</div>
+                </div>
+            </div>
+            <div class="settings-group">
+                <label>Options</label>
+                <div class="pill-selector">
+                    <div id="btn-flag-autonext" class="pill" onclick="toggleFlagAutoNext()">Auto-Next: OFF</div>
+                </div>
+            </div>
+            <div class="settings-group">
+                <label>Count</label>
+                <div class="pill-selector" id="flag-count-selector">
+                    <div class="pill active" onclick="setFlagCount(10)">10</div>
+                    <div class="pill" onclick="setFlagCount(20)">20</div>
+                    <div class="pill" onclick="setFlagCount(999)">Endless</div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 40px; display:flex; justify-content:center; gap:15px;">
+                <button class="btn btn-outline" onclick="goHome()">Back</button>
+                <button class="btn" onclick="startFlagGame()">Start Quiz</button>
             </div>
         </div>
-        <div class="settings-group" id="flag-cats-group">
-            <label>Categories</label>
-            <div class="pill-selector">
-                <div class="pill active pill-check" onclick="toggleFlagCat('letters', this)">Letters</div>
-                <div class="pill pill-check" onclick="toggleFlagCat('numerals', this)">Numerals</div>
-                <div class="pill pill-check" onclick="toggleFlagCat('subs', this)">Substitutes</div>
-            </div>
-        </div>
-        <div class="settings-group">
-            <label>Options</label>
-            <div class="pill-selector">
-                <div id="btn-flag-autonext" class="pill" onclick="toggleFlagAutoNext()">Auto-Next: OFF</div>
-            </div>
-        </div>
-        <div class="settings-group">
-            <label>Count</label>
-            <div class="pill-selector" id="flag-count-selector">
-                <div class="pill active" onclick="setFlagCount(10)">10</div>
-                <div class="pill" onclick="setFlagCount(20)">20</div>
-                <div class="pill" onclick="setFlagCount(999)">Endless</div>
-            </div>
-        </div>
-        <div style="text-align: center; margin-top: 40px; display:flex; justify-content:center; gap:15px;">
-            <button class="btn btn-outline" onclick="goHome()">Back</button>
-            <button class="btn" onclick="startFlagGame()">Start Quiz</button>
+        
+        <!-- FLAG REFERENCE LIST -->
+        <div class="card">
+            <h3 style="color: var(--accent);">Flag Reference</h3>
+            <p style="text-align:center; color:var(--text-muted); font-size:0.9rem; margin-bottom:20px;">Review the International Code of Signals before starting the quiz.</p>
+            <div id="flag-ref-container" class="flag-ref-grid"></div>
         </div>
     </div>
 
+    <!-- FLAGS GAME SCREEN -->
     <div id="screen-flags-game" class="hidden">
         <div class="hud-dashboard">
             <div class="hud-top-row">
@@ -570,40 +642,61 @@ input[type="text"]:disabled { background: rgba(0,0,0,0.5); color: #aaa; }
         </div>
     </div>
 
-    <div id="screen-morse-setup" class="card hidden">
-        <h3>Morse Trainer Setup</h3>
-        <div class="settings-group">
-            <label>Input Mode</label>
-            <div class="pill-selector" id="morse-mode-selector">
-                <div class="pill active" onclick="setMorseMode('tap')">Tap Buttons</div>
-                <div class="pill" onclick="setMorseMode('send')">Send (Keyer)</div>
+    <!-- MORSE SETUP SCREEN -->
+    <div id="screen-morse-setup" class="hidden">
+        <div class="card">
+            <h3>Morse Trainer Setup</h3>
+            <div class="settings-group">
+                <label>Input Mode</label>
+                <div class="pill-selector" id="morse-mode-selector">
+                    <div class="pill active" onclick="setMorseMode('tap')">Tap Buttons</div>
+                    <div class="pill" onclick="setMorseMode('send')">Send (Keyer)</div>
+                </div>
+            </div>
+            <div class="settings-group">
+                <label>Character Set</label>
+                <div class="pill-selector" id="morse-set-selector">
+                    <div class="pill active" onclick="setMorseSet('nums')">Numbers</div>
+                    <div class="pill" onclick="setMorseSet('all')">All Letters</div>
+                    <div class="pill" onclick="setMorseSet('choose')">Choose</div>
+                </div>
+            </div>
+            <div class="settings-group">
+                <label>Options</label>
+                <div class="pill-selector">
+                    <div id="btn-morse-autonext" class="pill" onclick="toggleMorseAutoNext()">Auto-Next: OFF</div>
+                    <div id="btn-morse-sound" class="pill active" onclick="toggleMorseSound()">Sound: ON</div>
+                    <div id="btn-global-vibration" class="pill active" onclick="toggleVibration()">Vibration: ON</div>
+                </div>
+            </div>
+            <div class="settings-group">
+                <label>Count</label>
+                <div class="pill-selector" id="morse-count-selector">
+                    <div class="pill active" onclick="setMorseCount(10)">10</div>
+                    <div class="pill" onclick="setMorseCount(20)">20</div>
+                    <div class="pill" onclick="setMorseCount(999)">Endless</div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 40px; display:flex; justify-content:center; gap:15px;">
+                <button class="btn btn-outline" onclick="goHome()">Back</button>
+                <button class="btn" onclick="startMorseGame()">Start Practice</button>
             </div>
         </div>
-        <div class="settings-group">
-            <label>Character Set</label>
-            <div class="pill-selector" id="morse-set-selector">
-                <div class="pill active" onclick="setMorseSet('limited')">Easy (X Y Z F Q L J)</div>
-                <div class="pill" onclick="setMorseSet('nums')">Numbers</div>
-                <div class="pill" onclick="setMorseSet('all')">All Letters</div>
-            </div>
-        </div>
-        <div class="settings-group">
-            <label>Options</label>
-            <div class="pill-selector">
-                <div id="btn-morse-autonext" class="pill" onclick="toggleMorseAutoNext()">Auto-Next: OFF</div>
-                <div id="btn-morse-sound" class="pill active" onclick="toggleMorseSound()">Sound: ON</div>
-            </div>
-        </div>
-        <div style="text-align: center; margin-top: 40px; display:flex; justify-content:center; gap:15px;">
-            <button class="btn btn-outline" onclick="goHome()">Back</button>
-            <button class="btn" onclick="startMorseGame()">Start Practice</button>
+        
+        <!-- MORSE REFERENCE LIST -->
+        <div class="card">
+            <h3 style="color: var(--accent);">Morse Reference</h3>
+            <p style="text-align:center; color:var(--text-muted); font-size:0.9rem; margin-bottom:10px;">Review the Morse code alphabet and numbers before starting the practice.</p>
+            <p id="morse-choose-prompt" class="hidden" style="text-align:center; color:var(--gold); font-weight:bold; margin-bottom:15px; font-size:1.1rem; animation: pulse-gold 2s infinite;">Pick from the characters below:</p>
+            <div id="morse-ref-container" class="morse-ref-grid"></div>
         </div>
     </div>
 
+    <!-- MORSE GAME SCREEN -->
     <div id="screen-morse-game" class="hidden">
         <div class="hud-dashboard">
             <div class="hud-top-row">
-                <span>MORSE PRACTICE</span>
+                <span id="morse-hud-progress">MORSE PRACTICE</span>
                 <span id="morse-mode-label" style="color:var(--accent);">TAP MODE</span>
             </div>
             <div class="hud-stats-row">
@@ -641,6 +734,7 @@ input[type="text"]:disabled { background: rgba(0,0,0,0.5); color: #aaa; }
         </div>
     </div>
 
+    <!-- PROSIGNS SCREEN -->
     <div id="screen-prosigns" class="card hidden">
         <h3>Procedure Signals</h3>
         <table class="prosigns-table" id="prosigns-table">
@@ -655,6 +749,7 @@ input[type="text"]:disabled { background: rgba(0,0,0,0.5); color: #aaa; }
         </div>
     </div>
 
+    <!-- PROSIGNS GAME SCREEN -->
     <div id="screen-prosigns-game" class="hidden">
         <div class="hud-dashboard">
             <div class="hud-top-row">
@@ -682,6 +777,7 @@ input[type="text"]:disabled { background: rgba(0,0,0,0.5); color: #aaa; }
         </div>
     </div>
 
+    <!-- EXAM SCREEN -->
     <div id="screen-exam" class="hidden">
         <div class="card">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -699,6 +795,7 @@ input[type="text"]:disabled { background: rgba(0,0,0,0.5); color: #aaa; }
         </div>
     </div>
 
+    <!-- RESULTS SCREEN -->
     <div id="screen-results" class="card hidden">
         <h1>Results</h1>
         <div style="text-align: center; margin-bottom: 30px;">
@@ -715,7 +812,7 @@ input[type="text"]:disabled { background: rgba(0,0,0,0.5); color: #aaa; }
 </div>
 
 <script>
-// --- AUDIO ENGINE ---
+// --- AUDIO & HAPTICS ENGINE ---
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 let audioCtx;
 let osc = null;
@@ -727,7 +824,7 @@ function initAudio() {
 }
 
 function playTone() {
-    if (!appState.morse.soundEnabled) return;
+    if (!appState.settings.morseSound) return;
     initAudio();
     if (osc) return; 
     osc = audioCtx.createOscillator();
@@ -753,7 +850,7 @@ function stopTone() {
 }
 
 function playBeep(duration) {
-    if (!appState.morse.soundEnabled) return;
+    if (!appState.settings.morseSound) return;
     initAudio();
     const o = audioCtx.createOscillator();
     const g = audioCtx.createGain();
@@ -766,14 +863,124 @@ function playBeep(duration) {
     o.stop(audioCtx.currentTime + (duration / 1000));
 }
 
-// --- GLOBAL STATE ---
+function triggerVibration(pattern) {
+    if (appState.settings.haptics && navigator.vibrate) {
+        navigator.vibrate(pattern);
+    }
+}
+
+// --- DATA ---
+const DATA_LETTERS = { "A": { labelLong: "A — Alpha", labelShort: "Alpha", primary: "I have a diver down; keep well clear at slow speed." }, "B": { labelLong: "B — Bravo", labelShort: "Bravo", primary: "I am taking in, or discharging or carrying dangerous goods." }, "C": { labelLong: "C — Charlie", labelShort: "Charlie", primary: "Yes (Affirmative)." }, "D": { labelLong: "D — Delta", labelShort: "Delta", primary: "Keep clear of me; I am manoeuvring with difficulty." }, "E": { labelLong: "E — Echo", labelShort: "Echo", primary: "I am altering my course to Starboard." }, "F": { labelLong: "F — Foxtrot", labelShort: "Foxtrot", primary: "I am disabled; communicate with me." }, "G": { labelLong: "G — Golf", labelShort: "Golf", primary: "I require a pilot. (Fishing: I am hauling nets)." }, "H": { labelLong: "H — Hotel", labelShort: "Hotel", primary: "I have a pilot on board." }, "I": { labelLong: "I — India", labelShort: "India", primary: "I am altering my course to Port." }, "J": { labelLong: "J — Juliet", labelShort: "Juliet", primary: "Keep clear of me. I am on fire and have dangerous cargo on board." }, "K": { labelLong: "K — Kilo", labelShort: "Kilo", primary: "I wish to communicate with you." }, "L": { labelLong: "L — Lima", labelShort: "Lima", primary: "You should stop your vessel instantly." }, "M": { labelLong: "M — Mike", labelShort: "Mike", primary: "My vessel is stopped and making no way through the water." }, "N": { labelLong: "N — November", labelShort: "November", primary: "No (Negative)." }, "O": { labelLong: "O — Oscar", labelShort: "Oscar", primary: "Man overboard." }, "P": { labelLong: "P — Papa", labelShort: "Papa", primary: "In Harbour: All persons should report on board. (Fishing: Nets caught)." }, "Q": { labelLong: "Q — Quebec", labelShort: "Quebec", primary: "My vessel is healthy and I request free pratique." }, "R": { labelLong: "R — Romeo", labelShort: "Romeo", primary: "No single letter meaning." }, "S": { labelLong: "S — Sierra", labelShort: "Sierra", primary: "I am operating astern propulsion." }, "T": { labelLong: "T — Tango", labelShort: "Tango", primary: "Keep clear of me; I am engaged in pair trawling." }, "U": { labelLong: "U — Uniform", labelShort: "Uniform", primary: "You are running into danger." }, "V": { labelLong: "V — Victor", labelShort: "Victor", primary: "I require assistance." }, "W": { labelLong: "W — Whiskey", labelShort: "Whiskey", primary: "I require medical assistance." }, "X": { labelLong: "X — X-ray", labelShort: "X-ray", primary: "Stop carrying out your intentions and watch for my signals." }, "Y": { labelLong: "Y — Yankee", labelShort: "Yankee", primary: "I am dragging my anchor." }, "Z": { labelLong: "Z — Zulu", labelShort: "Zulu", primary: "I require a tug. (Fishing: I am shooting nets)." } };
+const DATA_NUMERALS = { "0": { labelLong: "0 — Numeral Zero", labelShort: "Zero", primary: "Numeral 0" }, "1": { labelLong: "1 — Numeral One", labelShort: "One", primary: "Numeral 1" }, "2": { labelLong: "2 — Numeral Two", labelShort: "Two", primary: "Numeral 2" }, "3": { labelLong: "3 — Numeral Three", labelShort: "Three", primary: "Numeral 3" }, "4": { labelLong: "4 — Numeral Four", labelShort: "Four", primary: "Numeral 4" }, "5": { labelLong: "5 — Numeral Five", labelShort: "Five", primary: "Numeral 5" }, "6": { labelLong: "6 — Numeral Six", labelShort: "Six", primary: "Numeral 6" }, "7": { labelLong: "7 — Numeral Seven", labelShort: "Seven", primary: "Numeral 7" }, "8": { labelLong: "8 — Numeral Eight", labelShort: "Eight", primary: "Numeral 8" }, "9": { labelLong: "9 — Numeral Nine", labelShort: "Nine", primary: "Numeral 9" } };
+const DATA_SUBS = { "SUB1": { labelLong: "1st Substitute", labelShort: "1st Sub", primary: "Repeats the uppermost signal flag of that class." }, "SUB2": { labelLong: "2nd Substitute", labelShort: "2nd Sub", primary: "Repeats the second flag of that class." }, "SUB3": { labelLong: "3rd Substitute", labelShort: "3rd Sub", primary: "Repeats the third flag of that class." }, "ANS": { labelLong: "Code and Answering Pendant", labelShort: "Ans Pendant", primary: "Decimal point or End of message." } };
+const DATA_SECONDARY = [ { id: "A_sec", letter: "A", complement: "With 3 numerals", meaning: "AZIMUTH or BEARING" }, { id: "C_sec", letter: "C", complement: "(Alone)", meaning: "COURSE" }, { id: "D_sec", letter: "D", complement: "With 2, 4, or 6 numerals", meaning: "DATE" }, { id: "G_sec", letter: "G", complement: "With 4 or 5 numerals", meaning: "LONGITUDE" }, { id: "L_sec", letter: "L", complement: "With 4 numerals", meaning: "LATITUDE" }, { id: "R_sec", letter: "R", complement: "With 1 or more numerals", meaning: "DISTANCE (NM)" }, { id: "S_sec", letter: "S", complement: "With 1 or more numerals", meaning: "SPEED (Knots)" }, { id: "T_sec", letter: "T", complement: "With 4 numerals", meaning: "TIME (Local)" }, { id: "V_sec", letter: "V", complement: "With 1 or more numerals", meaning: "SPEED (Kph)" }, { id: "Z_sec", letter: "Z", complement: "With 4 numerals", meaning: "TIME (UTC/GMT)" }, { id: "G_fish", letter: "G", complement: "(Fishing)", meaning: "I am hauling nets" }, { id: "P_fish", letter: "P", complement: "(Fishing)", meaning: "My nets are caught fast" }, { id: "Z_fish", letter: "Z", complement: "(Fishing)", meaning: "I am shooting nets" } ];
+const ALL_FLAGS = { ...DATA_LETTERS, ...DATA_NUMERALS, ...DATA_SUBS };
+const MORSE_MAP = { "A": ".-", "B": "-...", "C": "-.-.", "D": "-..", "E": ".", "F": "..-.", "G": "--.", "H": "....", "I": "..", "J": ".---", "K": "-.-", "L": ".-..", "M": "--", "N": "-.", "O": "---", "P": ".--.", "Q": "--.-", "R": ".-.", "S": "...", "T": "-", "U": "..-", "V": "...-", "W": ".--", "X": "-..-", "Y": "-.--", "Z": "--..", "0": "-----", "1": ".----", "2": "..---", "3": "...--", "4": "....-", "5": ".....", "6": "-....", "7": "--...", "8": "---..", "9": "----." };
+const NUMBERS_ARR = ["0","1","2","3","4","5","6","7","8","9"];
+const ALL_LETTERS_ARR = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+const PROSIGNS = [ { code: "AA", bar: true, meaning: "Unknown station call / General call" }, { code: "EEEE", bar: false, meaning: "Erase (error)" }, { code: "AAA", bar: false, meaning: "Full stop / Decimal point" }, { code: "TTTT", bar: false, meaning: "Answering signal" }, { code: "T", bar: false, meaning: "Word or group received" }, { code: "AR", bar: true, meaning: "Ending signal / End of transmission" }, { code: "AS", bar: true, meaning: "Wait" }, { code: "DE", bar: false, meaning: "From... / This is..." }, { code: "K", bar: false, meaning: "Invitation to transmit" }, { code: "OK", bar: false, meaning: "It is correct" }, { code: "R", bar: false, meaning: "Received" }, { code: "RQ", bar: false, meaning: "Request / Question" }, { code: "RPT", bar: false, meaning: "Repeat (whole signal)" }, { code: "RPT AA", bar: false, meaning: "Repeat All After..." }, { code: "RPT AB", bar: false, meaning: "Repeat All Before..." }, { code: "RPT BN", bar: false, meaning: "Repeat All Between..." }, { code: "RPT WA", bar: false, meaning: "Repeat Word After..." }, { code: "RPT WB", bar: false, meaning: "Repeat Word Before..." } ];
+const THEORY_POOL = [ { q: "You sight flag Quebec with a ball above it. What does this mean?", a: ["distress"], display: "Distress" }, { q: "You see flag Sierra with a ball underneath. What does this mean?", a: ["distress"], display: "Distress" }, { q: "Decode: Z, 2, 1, 1st Sub, 2nd Sub.", a: ["z2121", "time2121", "2121"], display: "Z2121 (Time)" }, { q: "In general terms, what is the code group ‘MCR’ concerned with?", a: ["medical", "medicalsignalcode"], display: "Medical Signal Code" }, { q: "What is a decimal point in Morse code?", a: ["aaa", ".-.-.-"], display: "AAA (or .-.-.-)" }, { q: "What is the significance of the procedure signal ‘DE’?", a: ["from", "thisis"], display: "From (or This is)" }, { q: "A fishing vessel has the Golf flag hoisted. What does this mean?", a: ["haulingnets", "hauling"], display: "Hauling nets" }, { q: "What is the significance of the procedure group ‘RPT AB’?", a: ["repeatallbefore"], display: "Repeat all before" }, { q: "Decode: D, 0, 2, 1st Sub, 3, 2nd Sub, 1.", a: ["d020321", "date020321", "020321"], display: "D020321 (Date)" }, { q: "The following code message has been received ‘CY….N’. What is the significance of the group ‘N’?", a: ["negative", "significanceofpreviousgroupshouldbereadinthenegative"], display: "Negative (Significance of previous group should be read in the negative)" }, { q: "The following code message has been received ‘CY….C’. What is the significance of the group ‘C’?", a: ["affirmative", "significanceofpreviousgroupshouldbereadintheaffirmative"], display: "Affirmative (Significance of previous group should be read in the affirmative)" }, { q: "What is the significance of the procedure group ‘RPT BN’?", a: ["repeatallbetween"], display: "Repeat all between" }, { q: "You have called another vessel by aldis lamp and they respond with ‘AS15’, what does this mean?", a: ["wait15minutes", "wait15mins", "wait15"], display: "Wait 15 minutes" }, { q: "Decode the following flag hoist: A, 2, 5, 0, Code Pendant, 2nd Sub.", a: ["a250.2", "azimuth250.2"], display: "Azimuth 250.2°" }, { q: "Decode the following flag hoist: S, 1, 2, Code Pendant, 1st Sub.", a: ["s12.1", "speed12.1"], display: "Speed 12.1 knots" }, { q: "Decode the following flag hoist: G, 1, 1st Sub, 2, 3rd Sub.", a: ["g1122", "longitude1122"], display: "Longitude 1122" }, { q: "A warship has the code & signal pendant hoisted above a flag group. What does this mean?", a: ["communicatingusingtheinternationalcodeofsignals", "communicatingusingics"], display: "Communicating using the International Code of Signals" }, { q: "You see a group of flags consisting of ‘NC’. What does this mean?", a: ["iamindistress", "distress"], display: "I am in distress" }, { q: "How long should a tackline be?", a: ["2metres", "2meters", "2m"], display: "2 metres" }, { q: "In general terms, how is a medical sign indicated by a flag group?", a: ["threelettersstartingwithm", "3lettersstartingwithm"], display: "Three letters starting with M" }, { q: "What does the term ‘Close up’ mean?", a: ["hoistedtothefullextentofthehalyards"], display: "Hoisted to the full extent of the halyards" }, { q: "How is flag signalling concluded?", a: ["hoistthecodependantcloseup", "codependantcloseup"], display: "Hoist the Code Pendant close up" } ];
+
+// --- GLOBAL STATE & LOCAL STORAGE ---
 let appState = {
     screen: 'HOME',
-    flags: { mode: 'CHAR', cats: { letters: true, numerals: false, subs: false }, count: 10, autoNext: false, qList: [], currIdx: 0, score: 0, streak: 0, waiting: false, history: [] },
-    morse: { mode: 'tap', set: 'limited', autoNext: false, soundEnabled: true, pool: [], target: '', typed: '', streak: 0, ditEma: null, pressStart: 0, pressActive: false, waiting: false, history: [], correctCount: 0, wrongCount: 0 },
+    stats: { examHighScore: 0 },
+    settings: { 
+        haptics: true,
+        flagMode: 'CHAR',
+        flagCats: { letters: true, numerals: false, subs: false },
+        flagCount: 10,
+        flagAutoNext: false,
+        morseMode: 'tap',
+        morseSet: 'nums',
+        morseCustomChars: ['0','1','2','3','4','5','6','7','8','9'], 
+        morseAutoNext: false,
+        morseSound: true,
+        morseCount: 10
+    },
+    flags: { qList: [], currIdx: 0, score: 0, streak: 0, waiting: false, history: [] },
+    morse: { pool: [], target: '', typed: '', streak: 0, ditEma: null, pressStart: 0, pressActive: false, waiting: false, history: [], correctCount: 0, wrongCount: 0, currIdx: 0 },
     prosigns: { qList: [], currIdx: 0, score: 0, streak: 0, waiting: false, history: [] },
-    exam: { section: 1, scores: { 1:0, 2:0, 3:0, 4:0 }, maxScores: { 1:20, 2:10, 3:10, 4:10 }, sectionData: {}, skipped: false }
+    exam: { section: 1, scores: { 1:0, 2:0, 3:0, 4:0 }, sectionData: {}, skipped: false }
 };
+
+function loadAppData() {
+    const saved = localStorage.getItem('maritimeMasteryData');
+    if (saved) {
+        try {
+            const parsed = JSON.parse(saved);
+            if (parsed.stats) appState.stats = parsed.stats;
+            if (parsed.settings) appState.settings = { ...appState.settings, ...parsed.settings };
+        } catch(e) { console.error("Error loading save data"); }
+    }
+    
+    // Apply Settings to UI
+    const scoreDisplay = document.getElementById('home-high-score');
+    if (scoreDisplay) scoreDisplay.innerText = `🏆 Exam High Score: ${appState.stats.examHighScore} / 50`;
+
+    const vibBtn = document.getElementById('btn-global-vibration');
+    if (vibBtn) {
+        vibBtn.innerText = `Vibration: ${appState.settings.haptics ? 'ON' : 'OFF'}`;
+        if (appState.settings.haptics) vibBtn.classList.add('active'); else vibBtn.classList.remove('active');
+    }
+
+    // Flags UI Sync
+    const flagModeIdx = appState.settings.flagMode === 'CHAR' ? 0 : appState.settings.flagMode === 'MEANING_MC' ? 1 : appState.settings.flagMode === 'MEANING_TYPE' ? 2 : 3;
+    updatePillsSilently('flag-mode-selector', flagModeIdx);
+    
+    if(appState.settings.flagMode === 'SECONDARY') document.getElementById('flag-cats-group').classList.add('hidden');
+    else document.getElementById('flag-cats-group').classList.remove('hidden');
+    
+    const catPills = document.getElementById('flag-cats-group').querySelectorAll('.pill');
+    if(appState.settings.flagCats.letters) catPills[0].classList.add('active'); else catPills[0].classList.remove('active');
+    if(appState.settings.flagCats.numerals) catPills[1].classList.add('active'); else catPills[1].classList.remove('active');
+    if(appState.settings.flagCats.subs) catPills[2].classList.add('active'); else catPills[2].classList.remove('active');
+
+    const btnFlagAuto = document.getElementById('btn-flag-autonext');
+    btnFlagAuto.innerText = `Auto-Next: ${appState.settings.flagAutoNext ? 'ON' : 'OFF'}`;
+    if(appState.settings.flagAutoNext) btnFlagAuto.classList.add('active'); else btnFlagAuto.classList.remove('active');
+
+    const flagCountIdx = appState.settings.flagCount === 10 ? 0 : appState.settings.flagCount === 20 ? 1 : 2;
+    updatePillsSilently('flag-count-selector', flagCountIdx);
+
+    // Morse UI Sync
+    updatePillsSilently('morse-mode-selector', appState.settings.morseMode === 'tap' ? 0 : 1);
+    updatePillsSilently('morse-set-selector', appState.settings.morseSet === 'nums' ? 0 : appState.settings.morseSet === 'all' ? 1 : 2);
+    
+    const btnMorseAuto = document.getElementById('btn-morse-autonext');
+    btnMorseAuto.innerText = `Auto-Next: ${appState.settings.morseAutoNext ? 'ON' : 'OFF'}`;
+    if(appState.settings.morseAutoNext) btnMorseAuto.classList.add('active'); else btnMorseAuto.classList.remove('active');
+
+    const btnMorseSound = document.getElementById('btn-morse-sound');
+    btnMorseSound.innerText = `Sound: ${appState.settings.morseSound ? 'ON' : 'OFF'}`;
+    if(appState.settings.morseSound) btnMorseSound.classList.add('active'); else btnMorseSound.classList.remove('active');
+
+    const morseCountIdx = appState.settings.morseCount === 10 ? 0 : appState.settings.morseCount === 20 ? 1 : 2;
+    updatePillsSilently('morse-count-selector', morseCountIdx);
+
+    toggleChoosePrompt();
+}
+
+function updatePillsSilently(parentId, activeIdx) { 
+    const parent = document.getElementById(parentId);
+    if(!parent) return;
+    const p = parent.children; 
+    for(let i=0; i<p.length; i++) p[i].classList.remove('active'); 
+    if(p[activeIdx]) p[activeIdx].classList.add('active'); 
+}
+
+function saveAppData() {
+    const dataToSave = { stats: appState.stats, settings: appState.settings };
+    localStorage.setItem('maritimeMasteryData', JSON.stringify(dataToSave));
+}
+
+function toggleVibration() {
+    appState.settings.haptics = !appState.settings.haptics;
+    const btn = document.getElementById('btn-global-vibration');
+    btn.innerText = `Vibration: ${appState.settings.haptics ? 'ON' : 'OFF'}`;
+    if(appState.settings.haptics) btn.classList.add('active'); else btn.classList.remove('active');
+    saveAppData();
+}
 
 function hideAllScreens() {
     ['screen-home', 'screen-flags-setup', 'screen-flags-game', 'screen-morse-setup', 'screen-morse-game', 'screen-prosigns', 'screen-prosigns-game', 'screen-results', 'screen-exam'].forEach(id => {
@@ -788,73 +995,9 @@ function goHome() {
     stopTone();
 }
 
-// --- DATA ---
-const DATA_LETTERS = {
-    "A": { labelLong: "A — Alpha", labelShort: "Alpha", primary: "I have a diver down; keep well clear at slow speed." },
-    "B": { labelLong: "B — Bravo", labelShort: "Bravo", primary: "I am taking in, or discharging or carrying dangerous goods." },
-    "C": { labelLong: "C — Charlie", labelShort: "Charlie", primary: "Yes (Affirmative)." },
-    "D": { labelLong: "D — Delta", labelShort: "Delta", primary: "Keep clear of me; I am manoeuvring with difficulty." },
-    "E": { labelLong: "E — Echo", labelShort: "Echo", primary: "I am altering my course to Starboard." },
-    "F": { labelLong: "F — Foxtrot", labelShort: "Foxtrot", primary: "I am disabled; communicate with me." },
-    "G": { labelLong: "G — Golf", labelShort: "Golf", primary: "I require a pilot. (Fishing: I am hauling nets)." },
-    "H": { labelLong: "H — Hotel", labelShort: "Hotel", primary: "I have a pilot on board." },
-    "I": { labelLong: "I — India", labelShort: "India", primary: "I am altering my course to Port." },
-    "J": { labelLong: "J — Juliet", labelShort: "Juliet", primary: "Keep clear of me. I am on fire and have dangerous cargo on board." },
-    "K": { labelLong: "K — Kilo", labelShort: "Kilo", primary: "I wish to communicate with you." },
-    "L": { labelLong: "L — Lima", labelShort: "Lima", primary: "You should stop your vessel instantly." },
-    "M": { labelLong: "M — Mike", labelShort: "Mike", primary: "My vessel is stopped and making no way through the water." },
-    "N": { labelLong: "N — November", labelShort: "November", primary: "No (Negative)." },
-    "O": { labelLong: "O — Oscar", labelShort: "Oscar", primary: "Man overboard." },
-    "P": { labelLong: "P — Papa", labelShort: "Papa", primary: "In Harbour: All persons should report on board. (Fishing: Nets caught)." },
-    "Q": { labelLong: "Q — Quebec", labelShort: "Quebec", primary: "My vessel is healthy and I request free pratique." },
-    "R": { labelLong: "R — Romeo", labelShort: "Romeo", primary: "No single letter meaning." },
-    "S": { labelLong: "S — Sierra", labelShort: "Sierra", primary: "I am operating astern propulsion." },
-    "T": { labelLong: "T — Tango", labelShort: "Tango", primary: "Keep clear of me; I am engaged in pair trawling." },
-    "U": { labelLong: "U — Uniform", labelShort: "Uniform", primary: "You are running into danger." },
-    "V": { labelLong: "V — Victor", labelShort: "Victor", primary: "I require assistance." },
-    "W": { labelLong: "W — Whiskey", labelShort: "Whiskey", primary: "I require medical assistance." },
-    "X": { labelLong: "X — X-ray", labelShort: "X-ray", primary: "Stop carrying out your intentions and watch for my signals." },
-    "Y": { labelLong: "Y — Yankee", labelShort: "Yankee", primary: "I am dragging my anchor." },
-    "Z": { labelLong: "Z — Zulu", labelShort: "Zulu", primary: "I require a tug. (Fishing: I am shooting nets)." }
-};
-const DATA_NUMERALS = { "0": { labelLong: "0 — Numeral Zero", labelShort: "Zero", primary: "Numeral 0" }, "1": { labelLong: "1 — Numeral One", labelShort: "One", primary: "Numeral 1" }, "2": { labelLong: "2 — Numeral Two", labelShort: "Two", primary: "Numeral 2" }, "3": { labelLong: "3 — Numeral Three", labelShort: "Three", primary: "Numeral 3" }, "4": { labelLong: "4 — Numeral Four", labelShort: "Four", primary: "Numeral 4" }, "5": { labelLong: "5 — Numeral Five", labelShort: "Five", primary: "Numeral 5" }, "6": { labelLong: "6 — Numeral Six", labelShort: "Six", primary: "Numeral 6" }, "7": { labelLong: "7 — Numeral Seven", labelShort: "Seven", primary: "Numeral 7" }, "8": { labelLong: "8 — Numeral Eight", labelShort: "Eight", primary: "Numeral 8" }, "9": { labelLong: "9 — Numeral Nine", labelShort: "Nine", primary: "Numeral 9" } };
-const DATA_SUBS = { "SUB1": { labelLong: "1st Substitute", labelShort: "1st Sub", primary: "Repeats the uppermost signal flag of that class." }, "SUB2": { labelLong: "2nd Substitute", labelShort: "2nd Sub", primary: "Repeats the second flag of that class." }, "SUB3": { labelLong: "3rd Substitute", labelShort: "3rd Sub", primary: "Repeats the third flag of that class." }, "ANS": { labelLong: "Code and Answering Pendant", labelShort: "Ans Pendant", primary: "Decimal point or End of message." } };
-const DATA_SECONDARY = [ { id: "A_sec", letter: "A", complement: "With 3 numerals", meaning: "AZIMUTH or BEARING" }, { id: "C_sec", letter: "C", complement: "(Alone)", meaning: "COURSE" }, { id: "D_sec", letter: "D", complement: "With 2, 4, or 6 numerals", meaning: "DATE" }, { id: "G_sec", letter: "G", complement: "With 4 or 5 numerals", meaning: "LONGITUDE" }, { id: "L_sec", letter: "L", complement: "With 4 numerals", meaning: "LATITUDE" }, { id: "R_sec", letter: "R", complement: "With 1 or more numerals", meaning: "DISTANCE (NM)" }, { id: "S_sec", letter: "S", complement: "With 1 or more numerals", meaning: "SPEED (Knots)" }, { id: "T_sec", letter: "T", complement: "With 4 numerals", meaning: "TIME (Local)" }, { id: "V_sec", letter: "V", complement: "With 1 or more numerals", meaning: "SPEED (Kph)" }, { id: "Z_sec", letter: "Z", complement: "With 4 numerals", meaning: "TIME (UTC/GMT)" }, { id: "G_fish", letter: "G", complement: "(Fishing)", meaning: "I am hauling nets" }, { id: "P_fish", letter: "P", complement: "(Fishing)", meaning: "My nets are caught fast" }, { id: "Z_fish", letter: "Z", complement: "(Fishing)", meaning: "I am shooting nets" } ];
-const ALL_FLAGS = { ...DATA_LETTERS, ...DATA_NUMERALS, ...DATA_SUBS };
-const MORSE_MAP = { "A": ".-", "B": "-...", "C": "-.-.", "D": "-..", "E": ".", "F": "..-.", "G": "--.", "H": "....", "I": "..", "J": ".---", "K": "-.-", "L": ".-..", "M": "--", "N": "-.", "O": "---", "P": ".--.", "Q": "--.-", "R": ".-.", "S": "...", "T": "-", "U": "..-", "V": "...-", "W": ".--", "X": "-..-", "Y": "-.--", "Z": "--..", "0": "-----", "1": ".----", "2": "..---", "3": "...--", "4": "....-", "5": ".....", "6": "-....", "7": "--...", "8": "---..", "9": "----." };
-const LIMITED_LETTERS = ["X","Y","Z","F","Q","L","J"];
-const NUMBERS_ARR = ["0","1","2","3","4","5","6","7","8","9"];
-const ALL_LETTERS_ARR = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-const PROSIGNS = [ { code: "AA", bar: true, meaning: "Unknown station call / General call" }, { code: "EEEE", bar: false, meaning: "Erase (error)" }, { code: "AAA", bar: false, meaning: "Full stop / Decimal point" }, { code: "TTTT", bar: false, meaning: "Answering signal" }, { code: "T", bar: false, meaning: "Word or group received" }, { code: "AR", bar: true, meaning: "Ending signal / End of transmission" }, { code: "AS", bar: true, meaning: "Wait" }, { code: "DE", bar: false, meaning: "From... / This is..." }, { code: "K", bar: false, meaning: "Invitation to transmit" }, { code: "OK", bar: false, meaning: "It is correct" }, { code: "R", bar: false, meaning: "Received" }, { code: "RQ", bar: false, meaning: "Request / Question" }, { code: "RPT", bar: false, meaning: "Repeat (whole signal)" }, { code: "RPT AA", bar: false, meaning: "Repeat All After..." }, { code: "RPT AB", bar: false, meaning: "Repeat All Before..." }, { code: "RPT BN", bar: false, meaning: "Repeat All Between..." }, { code: "RPT WA", bar: false, meaning: "Repeat Word After..." }, { code: "RPT WB", bar: false, meaning: "Repeat Word Before..." } ];
-const THEORY_POOL = [
-    { q: "You sight flag Quebec with a ball above it. What does this mean?", a: ["distress"], display: "Distress" },
-    { q: "You see flag Sierra with a ball underneath. What does this mean?", a: ["distress"], display: "Distress" },
-    { q: "Decode: Z, 2, 1, 1st Sub, 2nd Sub.", a: ["z2121", "time2121", "2121"], display: "Z2121 (Time)" },
-    { q: "In general terms, what is the code group ‘MCR’ concerned with?", a: ["medical", "medicalsignalcode"], display: "Medical Signal Code" },
-    { q: "What is a decimal point in Morse code?", a: ["aaa", ".-.-.-"], display: "AAA (or .-.-.-)" },
-    { q: "What is the significance of the procedure signal ‘DE’?", a: ["from", "thisis"], display: "From (or This is)" },
-    { q: "A fishing vessel has the Golf flag hoisted. What does this mean?", a: ["haulingnets", "hauling"], display: "Hauling nets" },
-    { q: "What is the significance of the procedure group ‘RPT AB’?", a: ["repeatallbefore"], display: "Repeat all before" },
-    { q: "Decode: D, 0, 2, 1st Sub, 3, 2nd Sub, 1.", a: ["d020321", "date020321", "020321"], display: "D020321 (Date)" },
-    { q: "The following code message has been received ‘CY….N’. What is the significance of the group ‘N’?", a: ["negative", "significanceofpreviousgroupshouldbereadinthenegative"], display: "Negative (Significance of previous group should be read in the negative)" },
-    { q: "The following code message has been received ‘CY….C’. What is the significance of the group ‘C’?", a: ["affirmative", "significanceofpreviousgroupshouldbereadintheaffirmative"], display: "Affirmative (Significance of previous group should be read in the affirmative)" },
-    { q: "What is the significance of the procedure group ‘RPT BN’?", a: ["repeatallbetween"], display: "Repeat all between" },
-    { q: "You have called another vessel by aldis lamp and they respond with ‘AS15’, what does this mean?", a: ["wait15minutes", "wait15mins", "wait15"], display: "Wait 15 minutes" },
-    { q: "Decode the following flag hoist: A, 2, 5, 0, Code Pendant, 2nd Sub.", a: ["a250.2", "azimuth250.2"], display: "Azimuth 250.2°" },
-    { q: "Decode the following flag hoist: S, 1, 2, Code Pendant, 1st Sub.", a: ["s12.1", "speed12.1"], display: "Speed 12.1 knots" },
-    { q: "Decode the following flag hoist: G, 1, 1st Sub, 2, 3rd Sub.", a: ["g1122", "longitude1122"], display: "Longitude 1122" },
-    { q: "A warship has the code & signal pendant hoisted above a flag group. What does this mean?", a: ["communicatingusingtheinternationalcodeofsignals", "communicatingusingics"], display: "Communicating using the International Code of Signals" },
-    { q: "You see a group of flags consisting of ‘NC’. What does this mean?", a: ["iamindistress", "distress"], display: "I am in distress" },
-    { q: "How long should a tackline be?", a: ["2metres", "2meters", "2m"], display: "2 metres" },
-    { q: "In general terms, how is a medical sign indicated by a flag group?", a: ["threelettersstartingwithm", "3lettersstartingwithm"], display: "Three letters starting with M" },
-    { q: "What does the term ‘Close up’ mean?", a: ["hoistedtothefullextentofthehalyards"], display: "Hoisted to the full extent of the halyards" },
-    { q: "How is flag signalling concluded?", a: ["hoistthecodependantcloseup", "codependantcloseup"], display: "Hoist the Code Pendant close up" }
-];
-
 // --- UTILS ---
 function normalize(str) { return str.toLowerCase().replace(/[^a-z0-9]/g, ""); }
 function handleInputCase(e) { e.target.value = e.target.value.toUpperCase(); }
-function levenshtein(a, b) { const matrix = []; for(let i=0; i<=b.length; i++) matrix[i] = [i]; for(let j=0; j<=a.length; j++) matrix[0][j] = j; for(let i=1; i<=b.length; i++) { for(let j=1; j<=a.length; j++) { if(b.charAt(i-1) == a.charAt(j-1)) matrix[i][j] = matrix[i-1][j-1]; else matrix[i][j] = Math.min(matrix[i-1][j-1]+1, matrix[i][j-1]+1, matrix[i-1][j]+1); } } return matrix[b.length][a.length]; }
 
 // --- RENDER FLAG ---
 function renderFlag(key) {
@@ -916,32 +1059,111 @@ function renderFlag(key) {
     return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${clipDef}${content}${stroke}</svg>`;
 }
 
+// --- RENDER FLAG REFERENCE LIST ---
+function renderFlagReference() {
+    const container = document.getElementById('flag-ref-container');
+    if (!container) return;
+    let html = '';
+    const all = { ...DATA_LETTERS, ...DATA_NUMERALS, ...DATA_SUBS };
+    for (const key in all) {
+        const item = all[key];
+        html += `
+        <div class="flag-ref-card">
+            ${renderFlag(key)}
+            <div class="flag-ref-title">${item.labelLong}</div>
+            <div class="flag-ref-desc">${item.primary}</div>
+        </div>`;
+    }
+    container.innerHTML = html;
+}
+
+// --- RENDER MORSE REFERENCE LIST ---
+function renderMorseReference() {
+    const container = document.getElementById('morse-ref-container');
+    if (!container) return;
+    let html = '';
+    
+    const renderCard = (char) => {
+        let isSelected = false;
+        if (appState.settings.morseSet === 'all') {
+            isSelected = true;
+        } else if (appState.settings.morseSet === 'nums') {
+            isSelected = NUMBERS_ARR.includes(char);
+        } else if (appState.settings.morseSet === 'choose') {
+            isSelected = appState.settings.morseCustomChars.includes(char);
+        }
+        
+        return `
+        <div class="morse-ref-card ${isSelected ? 'selected-char' : ''}" onclick="toggleMorseCharSelect('${char}')">
+            <div class="morse-ref-char">${char}</div>
+            <div class="morse-ref-code">${MORSE_MAP[char]}</div>
+        </div>`;
+    };
+
+    ALL_LETTERS_ARR.forEach(char => html += renderCard(char));
+    NUMBERS_ARR.forEach(char => html += renderCard(char));
+    
+    container.innerHTML = html;
+}
+
+// Initialize on page load
+loadAppData();
+renderFlagReference();
+renderMorseReference();
+
 // ==========================================
 //              FLAGS FUNCTIONS
 // ==========================================
 function goToFlagSetup() { hideAllScreens(); document.getElementById('screen-flags-setup').classList.remove('hidden'); }
-function setFlagMode(m) { appState.flags.mode = m; updatePills('flag-mode-selector', m === 'CHAR' ? 0 : m === 'MEANING_MC' ? 1 : m === 'MEANING_TYPE' ? 2 : 3); const catGroup = document.getElementById('flag-cats-group'); if (m === 'SECONDARY') catGroup.classList.add('hidden'); else catGroup.classList.remove('hidden'); }
-function toggleFlagCat(cat, el) { appState.flags.cats[cat] = !appState.flags.cats[cat]; if(!appState.flags.cats.letters && !appState.flags.cats.numerals && !appState.flags.cats.subs) appState.flags.cats[cat] = true; el.classList.toggle('active'); }
-function toggleFlagAutoNext() { appState.flags.autoNext = !appState.flags.autoNext; const btn = document.getElementById('btn-flag-autonext'); btn.innerText = `Auto-Next: ${appState.flags.autoNext ? 'ON' : 'OFF'}`; btn.classList.toggle('active'); }
-function setFlagCount(c) { appState.flags.count = c; const pills = document.getElementById('flag-count-selector').children; for(let p of pills) p.classList.remove('active'); event.target.classList.add('active'); }
+function setFlagMode(m) { 
+    appState.settings.flagMode = m; 
+    updatePills('flag-mode-selector', m === 'CHAR' ? 0 : m === 'MEANING_MC' ? 1 : m === 'MEANING_TYPE' ? 2 : 3); 
+    const catGroup = document.getElementById('flag-cats-group'); 
+    if (m === 'SECONDARY') catGroup.classList.add('hidden'); else catGroup.classList.remove('hidden'); 
+    saveAppData();
+}
+function toggleFlagCat(cat, el) { 
+    appState.settings.flagCats[cat] = !appState.settings.flagCats[cat]; 
+    if(!appState.settings.flagCats.letters && !appState.settings.flagCats.numerals && !appState.settings.flagCats.subs) {
+        appState.settings.flagCats[cat] = true; 
+    }
+    
+    const catPills = document.getElementById('flag-cats-group').querySelectorAll('.pill');
+    if(appState.settings.flagCats.letters) catPills[0].classList.add('active'); else catPills[0].classList.remove('active');
+    if(appState.settings.flagCats.numerals) catPills[1].classList.add('active'); else catPills[1].classList.remove('active');
+    if(appState.settings.flagCats.subs) catPills[2].classList.add('active'); else catPills[2].classList.remove('active');
+    saveAppData();
+}
+function toggleFlagAutoNext() { 
+    appState.settings.flagAutoNext = !appState.settings.flagAutoNext; 
+    const btn = document.getElementById('btn-flag-autonext'); 
+    btn.innerText = `Auto-Next: ${appState.settings.flagAutoNext ? 'ON' : 'OFF'}`; 
+    if(appState.settings.flagAutoNext) btn.classList.add('active'); else btn.classList.remove('active');
+    saveAppData();
+}
+function setFlagCount(c) { 
+    appState.settings.flagCount = c; 
+    updatePills('flag-count-selector', c === 10 ? 0 : c === 20 ? 1 : 2); 
+    saveAppData();
+}
 function startFlagGame() {
     let pool = [];
-    if (appState.flags.mode === 'SECONDARY') pool = DATA_SECONDARY.map(item => ({...item, type: 'secondary'}));
+    if (appState.settings.flagMode === 'SECONDARY') pool = DATA_SECONDARY.map(item => ({...item, type: 'secondary'}));
     else {
-        if (appState.flags.cats.letters) pool.push(...Object.keys(DATA_LETTERS).map(k => ({id: k, ...DATA_LETTERS[k]})));
-        if (appState.flags.cats.numerals) pool.push(...Object.keys(DATA_NUMERALS).map(k => ({id: k, ...DATA_NUMERALS[k]})));
-        if (appState.flags.cats.subs) pool.push(...Object.keys(DATA_SUBS).map(k => ({id: k, ...DATA_SUBS[k]})));
+        if (appState.settings.flagCats.letters) pool.push(...Object.keys(DATA_LETTERS).map(k => ({id: k, ...DATA_LETTERS[k]})));
+        if (appState.settings.flagCats.numerals) pool.push(...Object.keys(DATA_NUMERALS).map(k => ({id: k, ...DATA_NUMERALS[k]})));
+        if (appState.settings.flagCats.subs) pool.push(...Object.keys(DATA_SUBS).map(k => ({id: k, ...DATA_SUBS[k]})));
     }
     pool.sort(() => Math.random() - 0.5);
-    if(appState.flags.count !== 999) pool = pool.slice(0, appState.flags.count);
+    if(appState.settings.flagCount !== 999) pool = pool.slice(0, appState.settings.flagCount);
     appState.flags.qList = pool; appState.flags.currIdx = 0; appState.flags.score = 0; appState.flags.streak = 0; appState.flags.waiting = false; appState.flags.history = [];
     hideAllScreens(); document.getElementById('screen-flags-game').classList.remove('hidden'); loadFlagQ();
 }
 function loadFlagQ() {
-    if(appState.flags.currIdx >= appState.flags.qList.length && appState.flags.count !== 999) { endGame('flags'); return; }
+    if(appState.flags.currIdx >= appState.flags.qList.length && appState.settings.flagCount !== 999) { endGame('flags'); return; }
     appState.flags.waiting = false;
     const q = appState.flags.qList[appState.flags.currIdx % appState.flags.qList.length];
-    document.getElementById('flag-hud-progress').innerText = `Question ${appState.flags.currIdx + 1} / ${appState.flags.count === 999 ? '∞' : appState.flags.count}`;
+    document.getElementById('flag-hud-progress').innerText = `Question ${appState.flags.currIdx + 1} / ${appState.settings.flagCount === 999 ? '∞' : appState.settings.flagCount}`;
     document.getElementById('flag-val-streak').innerText = appState.flags.streak;
     document.getElementById('flag-val-acc').innerText = appState.flags.currIdx === 0 ? '100%' : Math.round((appState.flags.score / appState.flags.currIdx) * 100) + '%';
     if (appState.flags.streak >= 3) document.getElementById('flag-chip-streak').classList.add('hot'); else document.getElementById('flag-chip-streak').classList.remove('hot');
@@ -954,15 +1176,15 @@ function loadFlagQ() {
     document.getElementById('flag-controls').classList.add('hidden');
     document.getElementById('flag-feedback-box').classList.add('hidden');
     const qText = document.getElementById('flag-q-text');
-    if(appState.flags.mode === 'CHAR') { qText.innerText = "Identify this flag"; document.getElementById('flag-options-grid').classList.remove('hidden'); generateFlagOptions(q, 'labelShort'); }
-    else if(appState.flags.mode === 'MEANING_MC') { qText.innerText = `What is the meaning of ${q.labelShort}?`; document.getElementById('flag-options-grid').classList.remove('hidden'); generateFlagOptions(q, 'primary'); }
-    else if (appState.flags.mode === 'SECONDARY') { qText.innerText = `Meaning with complement: "${q.complement}"`; document.getElementById('flag-options-grid').classList.remove('hidden'); generateFlagOptions(q, 'meaning'); }
+    if(appState.settings.flagMode === 'CHAR') { qText.innerText = "Identify this flag"; document.getElementById('flag-options-grid').classList.remove('hidden'); generateFlagOptions(q, 'labelShort'); }
+    else if(appState.settings.flagMode === 'MEANING_MC') { qText.innerText = `What is the meaning of ${q.labelShort}?`; document.getElementById('flag-options-grid').classList.remove('hidden'); generateFlagOptions(q, 'primary'); }
+    else if (appState.settings.flagMode === 'SECONDARY') { qText.innerText = `Meaning with complement: "${q.complement}"`; document.getElementById('flag-options-grid').classList.remove('hidden'); generateFlagOptions(q, 'meaning'); }
     else { qText.innerText = `Type meaning of ${q.labelShort}`; document.getElementById('flag-typing-area').classList.remove('hidden'); document.getElementById('flag-type-input').value = ""; document.getElementById('flag-type-input').focus(); }
 }
 function generateFlagOptions(correct, field) {
     const grid = document.getElementById('flag-options-grid'); grid.innerHTML = "";
     let pool = [];
-    if (appState.flags.mode === 'SECONDARY') pool = DATA_SECONDARY.filter(x => x.id !== correct.id);
+    if (appState.settings.flagMode === 'SECONDARY') pool = DATA_SECONDARY.filter(x => x.id !== correct.id);
     else pool = Object.values(ALL_FLAGS).filter(x => x.labelLong !== correct.labelLong);
     pool.sort(() => Math.random() - 0.5);
     const opts = [correct, ...pool.slice(0, 3)].sort(() => Math.random() - 0.5);
@@ -971,12 +1193,12 @@ function generateFlagOptions(correct, field) {
 function checkFlagMC(selected, btn) {
     if (appState.flags.waiting) return;
     const correct = appState.flags.qList[appState.flags.currIdx % appState.flags.qList.length];
-    let isCorrect = appState.flags.mode === 'SECONDARY' ? selected.id === correct.id : selected.labelLong === correct.labelLong;
-    let realAnsText = appState.flags.mode === 'CHAR' ? correct.labelShort : (appState.flags.mode === 'SECONDARY' ? correct.meaning : correct.primary);
-    let userAnsText = appState.flags.mode === 'CHAR' ? selected.labelShort : (appState.flags.mode === 'SECONDARY' ? selected.meaning : selected.primary);
+    let isCorrect = appState.settings.flagMode === 'SECONDARY' ? selected.id === correct.id : selected.labelLong === correct.labelLong;
+    let realAnsText = appState.settings.flagMode === 'CHAR' ? correct.labelShort : (appState.settings.flagMode === 'SECONDARY' ? correct.meaning : correct.primary);
+    let userAnsText = appState.settings.flagMode === 'CHAR' ? selected.labelShort : (appState.settings.flagMode === 'SECONDARY' ? selected.meaning : selected.primary);
     appState.flags.history.push({ q: correct, correct: isCorrect, userAns: userAnsText, realAns: realAnsText });
-    if(isCorrect) { btn.classList.add('correct'); appState.flags.score++; appState.flags.streak++; if (appState.flags.autoNext) { appState.flags.waiting = true; setTimeout(nextFlagQ, 900); return; } }
-    else { btn.classList.add('wrong'); appState.flags.streak = 0; Array.from(document.getElementById('flag-options-grid').children).forEach(child => { if(child.innerText === realAnsText) child.classList.add('correct'); }); }
+    if(isCorrect) { btn.classList.add('correct'); appState.flags.score++; appState.flags.streak++; if (appState.settings.flagAutoNext) { appState.flags.waiting = true; setTimeout(nextFlagQ, 900); return; } }
+    else { triggerVibration([100, 50, 100]); btn.classList.add('wrong'); appState.flags.streak = 0; Array.from(document.getElementById('flag-options-grid').children).forEach(child => { if(child.innerText === realAnsText) child.classList.add('correct'); }); }
     document.getElementById('flag-controls').classList.remove('hidden');
 }
 function submitFlagType() {
@@ -988,8 +1210,8 @@ function submitFlagType() {
     const isCorrect = (match || input === correct.primary.toLowerCase());
     appState.flags.history.push({ q: correct, correct: isCorrect, userAns: input, realAns: correct.primary });
     const fb = document.getElementById('flag-feedback-box'); fb.classList.remove('hidden');
-    if(isCorrect) { fb.innerHTML = "<span style='color:var(--success)'>Correct!</span>"; appState.flags.score++; appState.flags.streak++; if (appState.flags.autoNext) { appState.flags.waiting = true; setTimeout(nextFlagQ, 1000); return; } }
-    else { fb.innerHTML = `<span style='color:var(--error)'>Incorrect.</span><br><small>${correct.primary}</small>`; appState.flags.streak = 0; }
+    if(isCorrect) { fb.innerHTML = "<span style='color:var(--success)'>Correct!</span>"; appState.flags.score++; appState.flags.streak++; if (appState.settings.flagAutoNext) { appState.flags.waiting = true; setTimeout(nextFlagQ, 1000); return; } }
+    else { triggerVibration([100, 50, 100]); fb.innerHTML = `<span style='color:var(--error)'>Incorrect.</span><br><small>${correct.primary}</small>`; appState.flags.streak = 0; }
     document.getElementById('flag-controls').classList.remove('hidden');
 }
 function nextFlagQ() { appState.flags.currIdx++; loadFlagQ(); }
@@ -998,43 +1220,114 @@ function nextFlagQ() { appState.flags.currIdx++; loadFlagQ(); }
 //              MORSE FUNCTIONS
 // ==========================================
 function goToMorseSetup() { hideAllScreens(); document.getElementById('screen-morse-setup').classList.remove('hidden'); }
-function setMorseMode(m) { appState.morse.mode = m; updatePills('morse-mode-selector', m === 'tap' ? 0 : 1); }
-function setMorseSet(s) { appState.morse.set = s; updatePills('morse-set-selector', s === 'limited' ? 0 : s === 'nums' ? 1 : 2); }
-function toggleMorseAutoNext() { appState.morse.autoNext = !appState.morse.autoNext; const btn = document.getElementById('btn-morse-autonext'); btn.innerText = `Auto-Next: ${appState.morse.autoNext ? 'ON' : 'OFF'}`; btn.classList.toggle('active'); }
-function toggleMorseSound() { appState.morse.soundEnabled = !appState.morse.soundEnabled; const btn = document.getElementById('btn-morse-sound'); btn.innerText = `Sound: ${appState.morse.soundEnabled ? 'ON' : 'OFF'}`; btn.classList.toggle('active'); }
+function setMorseMode(m) { 
+    appState.settings.morseMode = m; 
+    updatePills('morse-mode-selector', m === 'tap' ? 0 : 1); 
+    saveAppData();
+}
+function setMorseSet(s) { 
+    appState.settings.morseSet = s; 
+    updatePills('morse-set-selector', s === 'nums' ? 0 : s === 'all' ? 1 : 2); 
+    toggleChoosePrompt();
+    renderMorseReference();
+    saveAppData();
+}
+function toggleChoosePrompt() {
+    const prompt = document.getElementById('morse-choose-prompt');
+    if(appState.settings.morseSet === 'choose') {
+        prompt.classList.remove('hidden');
+    } else {
+        prompt.classList.add('hidden');
+    }
+}
+function toggleMorseCharSelect(char) {
+    if (appState.settings.morseSet !== 'choose') {
+        if (appState.settings.morseSet === 'all') {
+            appState.settings.morseCustomChars = [...ALL_LETTERS_ARR, ...NUMBERS_ARR];
+        } else if (appState.settings.morseSet === 'nums') {
+            appState.settings.morseCustomChars = [...NUMBERS_ARR];
+        }
+        appState.settings.morseSet = 'choose';
+        updatePills('morse-set-selector', 2);
+        toggleChoosePrompt();
+    }
+    
+    const idx = appState.settings.morseCustomChars.indexOf(char);
+    if (idx > -1) {
+        appState.settings.morseCustomChars.splice(idx, 1);
+    } else {
+        appState.settings.morseCustomChars.push(char);
+    }
+    saveAppData();
+    renderMorseReference();
+}
+function toggleMorseAutoNext() { 
+    appState.settings.morseAutoNext = !appState.settings.morseAutoNext; 
+    const btn = document.getElementById('btn-morse-autonext'); 
+    btn.innerText = `Auto-Next: ${appState.settings.morseAutoNext ? 'ON' : 'OFF'}`; 
+    if(appState.settings.morseAutoNext) btn.classList.add('active'); else btn.classList.remove('active');
+    saveAppData();
+}
+function toggleMorseSound() { 
+    appState.settings.morseSound = !appState.settings.morseSound; 
+    const btn = document.getElementById('btn-morse-sound'); 
+    btn.innerText = `Sound: ${appState.settings.morseSound ? 'ON' : 'OFF'}`; 
+    if(appState.settings.morseSound) btn.classList.add('active'); else btn.classList.remove('active');
+    saveAppData();
+}
+function setMorseCount(c) { 
+    appState.settings.morseCount = c; 
+    updatePills('morse-count-selector', c === 10 ? 0 : c === 20 ? 1 : 2); 
+    saveAppData();
+}
 function startMorseGame() {
-    let pool = []; if(appState.morse.set === 'limited') pool = LIMITED_LETTERS; else if(appState.morse.set === 'nums') pool = NUMBERS_ARR; else pool = [...ALL_LETTERS_ARR, ...NUMBERS_ARR];
-    appState.morse.pool = pool; appState.morse.streak = 0; appState.morse.ditEma = null; appState.morse.waiting = false; appState.morse.history = []; appState.morse.correctCount = 0; appState.morse.wrongCount = 0;
+    let pool = []; 
+    if(appState.settings.morseSet === 'nums') pool = NUMBERS_ARR; 
+    else if(appState.settings.morseSet === 'all') pool = [...ALL_LETTERS_ARR, ...NUMBERS_ARR]; 
+    else if(appState.settings.morseSet === 'choose') {
+        pool = [...appState.settings.morseCustomChars];
+        if (pool.length === 0) pool = ['A', 'B', 'C']; // Fallback
+    }
+
+    appState.morse.pool = pool; appState.morse.streak = 0; appState.morse.ditEma = null; appState.morse.waiting = false; appState.morse.history = []; appState.morse.correctCount = 0; appState.morse.wrongCount = 0; appState.morse.currIdx = 0;
     hideAllScreens(); document.getElementById('screen-morse-game').classList.remove('hidden');
-    document.getElementById('morse-mode-label').innerText = appState.morse.mode === 'tap' ? 'TAP MODE' : 'SEND MODE';
-    document.getElementById('morse-tap-controls').classList.toggle('hidden', appState.morse.mode !== 'tap');
-    document.getElementById('morse-send-controls').classList.toggle('hidden', appState.morse.mode !== 'send');
-    document.getElementById('morse-chip-wpm').classList.toggle('hidden', appState.morse.mode !== 'send');
+    document.getElementById('morse-mode-label').innerText = appState.settings.morseMode === 'tap' ? 'TAP MODE' : 'SEND MODE';
+    document.getElementById('morse-tap-controls').classList.toggle('hidden', appState.settings.morseMode !== 'tap');
+    document.getElementById('morse-send-controls').classList.toggle('hidden', appState.settings.morseMode !== 'send');
+    document.getElementById('morse-chip-wpm').classList.toggle('hidden', appState.settings.morseMode !== 'send');
     pickMorseChar();
 }
 function pickMorseChar() {
+    if (appState.settings.morseCount !== 999 && appState.morse.currIdx >= appState.settings.morseCount) { endGame('morse'); return; }
+    appState.morse.currIdx++;
+    
     const char = appState.morse.pool[Math.floor(Math.random() * appState.morse.pool.length)];
     appState.morse.target = char; appState.morse.typed = ""; appState.morse.waiting = false;
-    document.getElementById('morse-target-char').innerText = char; document.getElementById('morse-user-input').innerText = ""; document.getElementById('morse-feedback').innerText = ""; document.getElementById('morse-val-streak').innerText = appState.morse.streak;
+    document.getElementById('morse-target-char').innerText = char; 
+    document.getElementById('morse-user-input').innerText = ""; 
+    document.getElementById('morse-feedback').innerText = ""; 
+    document.getElementById('morse-val-streak').innerText = appState.morse.streak;
+    document.getElementById('morse-hud-progress').innerText = appState.settings.morseCount === 999 ? 'MORSE PRACTICE' : `Question ${appState.morse.currIdx}/${appState.settings.morseCount}`;
+    
     const checkBtn = document.getElementById('btn-morse-check'); checkBtn.innerText = "Check"; checkBtn.classList.remove('btn-success');
     if(appState.morse.streak >= 3) document.getElementById('morse-chip-streak').classList.add('hot'); else document.getElementById('morse-chip-streak').classList.remove('hot');
 }
 function morseInput(symbol) { if (appState.morse.waiting) return; appState.morse.typed += symbol; document.getElementById('morse-user-input').innerText = appState.morse.typed; }
-function tapDot(e) { if(e && e.preventDefault) e.preventDefault(); playBeep(60); morseInput('.'); }
-function tapDash(e) { if(e && e.preventDefault) e.preventDefault(); playBeep(180); morseInput('-'); }
+function tapDot(e) { if(e && e.preventDefault) e.preventDefault(); playBeep(60); triggerVibration(60); morseInput('.'); }
+function tapDash(e) { if(e && e.preventDefault) e.preventDefault(); playBeep(180); triggerVibration(180); morseInput('-'); }
 function morseBackspace() { if (appState.morse.waiting) return; appState.morse.typed = appState.morse.typed.slice(0, -1); document.getElementById('morse-user-input').innerText = appState.morse.typed; }
 function morseClear() { if (appState.morse.waiting) return; appState.morse.typed = ""; document.getElementById('morse-user-input').innerText = ""; }
 function checkMorse() {
     if (appState.morse.waiting) { pickMorseChar(); return; }
     const correctCode = MORSE_MAP[appState.morse.target]; const userCode = appState.morse.typed; const feedback = document.getElementById('morse-feedback'); const isCorrect = (userCode === correctCode); const checkBtn = document.getElementById('btn-morse-check');
     appState.morse.history.push({ target: appState.morse.target, correctCode: correctCode, userCode: userCode, correct: isCorrect });
-    if (isCorrect) { feedback.innerHTML = "<span style='color:var(--success)'>Correct!</span>"; appState.morse.streak++; appState.morse.correctCount++; appState.morse.waiting = true; if (appState.morse.autoNext) setTimeout(pickMorseChar, 1000); else { checkBtn.innerText = "Next ➡"; checkBtn.classList.add('btn-success'); } }
-    else { feedback.innerHTML = `<span style='color:var(--error)'>Wrong!</span> ${correctCode}`; appState.morse.streak = 0; appState.morse.wrongCount++; appState.morse.typed = ""; document.getElementById('morse-user-input').innerText = ""; document.getElementById('morse-val-streak').innerText = 0; document.getElementById('morse-chip-streak').classList.remove('hot'); }
+    if (isCorrect) { feedback.innerHTML = "<span style='color:var(--success)'>Correct!</span>"; appState.morse.streak++; appState.morse.correctCount++; appState.morse.waiting = true; if (appState.settings.morseAutoNext) setTimeout(pickMorseChar, 1000); else { checkBtn.innerText = "Next ➡"; checkBtn.classList.add('btn-success'); } }
+    else { triggerVibration([100, 50, 100]); feedback.innerHTML = `<span style='color:var(--error)'>Wrong!</span> ${correctCode}`; appState.morse.streak = 0; appState.morse.wrongCount++; appState.morse.typed = ""; document.getElementById('morse-user-input').innerText = ""; document.getElementById('morse-val-streak').innerText = 0; document.getElementById('morse-chip-streak').classList.remove('hot'); }
 }
 const DASH_THRESHOLD_MS = 250; const EMA_ALPHA = 0.2; let pressAnim = null; const keyerBtn = document.getElementById('keyer-btn'); const pressBar = document.getElementById('press-bar');
-function pressDown(e) { if(appState.morse.mode !== 'send' || appState.morse.waiting) return; e.preventDefault(); if(appState.morse.pressActive) return; appState.morse.pressActive = true; appState.morse.pressStart = performance.now(); keyerBtn.classList.add('pressed'); playTone(); const start = performance.now(); const tick = () => { if(!appState.morse.pressActive) return; const elapsed = performance.now() - start; const pct = Math.min((elapsed / DASH_THRESHOLD_MS) * 100, 100); pressBar.style.width = pct + "%"; pressAnim = requestAnimationFrame(tick); }; pressAnim = requestAnimationFrame(tick); }
+function pressDown(e) { if(appState.settings.morseMode !== 'send' || appState.morse.waiting) return; e.preventDefault(); if(appState.morse.pressActive) return; appState.morse.pressActive = true; appState.morse.pressStart = performance.now(); keyerBtn.classList.add('pressed'); playTone(); triggerVibration(30); const start = performance.now(); const tick = () => { if(!appState.morse.pressActive) return; const elapsed = performance.now() - start; const pct = Math.min((elapsed / DASH_THRESHOLD_MS) * 100, 100); pressBar.style.width = pct + "%"; pressAnim = requestAnimationFrame(tick); }; pressAnim = requestAnimationFrame(tick); }
 function pressUp(e) {
-    if(appState.morse.mode !== 'send' || appState.morse.waiting) return; e.preventDefault(); if(!appState.morse.pressActive) return; stopTone(); appState.morse.pressActive = false; keyerBtn.classList.remove('pressed'); if(pressAnim) cancelAnimationFrame(pressAnim); pressBar.style.width = "0%";
+    if(appState.settings.morseMode !== 'send' || appState.morse.waiting) return; e.preventDefault(); if(!appState.morse.pressActive) return; stopTone(); triggerVibration(30); appState.morse.pressActive = false; keyerBtn.classList.remove('pressed'); if(pressAnim) cancelAnimationFrame(pressAnim); pressBar.style.width = "0%";
     const dur = performance.now() - appState.morse.pressStart; const sym = (dur >= DASH_THRESHOLD_MS) ? "-" : "."; morseInput(sym);
     const ditGuess = (sym === ".") ? dur : (dur / 3); const old = appState.morse.ditEma; appState.morse.ditEma = (old == null) ? ditGuess : (EMA_ALPHA * ditGuess + (1 - EMA_ALPHA) * old);
     const wpm = Math.round(1200 / appState.morse.ditEma); if(isFinite(wpm) && wpm > 0 && wpm < 60) document.getElementById('morse-val-wpm').innerText = wpm + " WPM";
@@ -1061,12 +1354,12 @@ function checkProsign(selected, btn) {
     if(appState.prosigns.waiting) return; const correct = appState.prosigns.qList[appState.prosigns.currIdx]; const isCorrect = (selected.code === correct.code);
     appState.prosigns.history.push({ q: correct, correct: isCorrect, userAns: selected.meaning, realAns: correct.meaning });
     if(isCorrect) { btn.classList.add('correct'); appState.prosigns.score++; appState.prosigns.streak++; appState.prosigns.waiting = true; setTimeout(nextProsignQ, 1000); }
-    else { btn.classList.add('wrong'); appState.prosigns.streak = 0; Array.from(document.getElementById('pro-options-grid').children).forEach(child => { if(child.innerText === correct.meaning) child.classList.add('correct'); }); document.getElementById('pro-controls').classList.remove('hidden'); }
+    else { triggerVibration([100, 50, 100]); btn.classList.add('wrong'); appState.prosigns.streak = 0; Array.from(document.getElementById('pro-options-grid').children).forEach(child => { if(child.innerText === correct.meaning) child.classList.add('correct'); }); document.getElementById('pro-controls').classList.remove('hidden'); }
 }
 function nextProsignQ() { appState.prosigns.currIdx++; loadProsignQ(); }
 
 // ==========================================
-//              EXAM LOGIC (MERGED)
+//              EXAM LOGIC
 // ==========================================
 function goToExam() { hideAllScreens(); document.getElementById('screen-exam').classList.remove('hidden'); initExam(); }
 function initExam() { loadExamSection(1); }
@@ -1085,18 +1378,14 @@ function setupSection1(container) {
     const sequence = []; const ALL_CHARS_EXAM = [...Object.keys(DATA_LETTERS), ...NUMBERS_ARR];
     for(let i=0; i<20; i++) sequence.push(ALL_CHARS_EXAM[Math.floor(Math.random()*ALL_CHARS_EXAM.length)]);
     appState.exam.sectionData.sequence = sequence;
-    container.innerHTML = `<div class="exam-section-title">Section 1: Visual Morse Reception (20 Marks)</div><div class="signal-light" id="signal-light"></div><p style="text-align:center; margin-bottom:20px;">Watch the light. 20 Characters. 4s Gap.</p><div style="text-align:center;"><button class="btn" id="btn-start-flash" onclick="startFlashSequence()">Start Sequence</button></div><div id="sec1-input-area" class="hidden" style="margin-top:20px;"><label>Type chars as they appear:</label><input type="text" id="input-sec1" placeholder="Type letters..." autocomplete="off" oninput="handleInputCase(event)"><div style="text-align:center; margin-top:15px;"><button class="btn btn-success" onclick="gradeSection1()">Submit Section 1</button></div></div><div id="sec1-feedback" class="feedback-box hidden"></div>`;
+    container.innerHTML = `<div class="exam-section-title">Section 1: Visual Morse Reception (20 Marks)</div><div class="signal-light" id="signal-light"></div><p style="text-align:center; margin-bottom:20px;">Watch the light. 20 Characters. 4s Gap.<br><strong style="color:var(--gold);">Note: The sequence begins AFTER one initial long flash.</strong></p><div style="text-align:center;"><button class="btn" id="btn-start-flash" onclick="startFlashSequence()">Start Sequence</button></div><div id="sec1-input-area" class="hidden" style="margin-top:20px;"><label>Type chars as they appear:</label><input type="text" id="input-sec1" placeholder="Type letters..." autocomplete="off" oninput="handleInputCase(event)"><div style="text-align:center; margin-top:15px;"><button class="btn btn-success" onclick="gradeSection1()">Submit Section 1</button></div></div><div id="sec1-feedback" class="feedback-box hidden"></div>`;
 }
 function startFlashSequence() {
     const btn = document.getElementById('btn-start-flash'); btn.disabled = true; const light = document.getElementById('signal-light'); const seq = appState.exam.sectionData.sequence;
     const inputArea = document.getElementById('sec1-input-area'); const inputField = document.getElementById('input-sec1');
     inputArea.classList.remove('hidden'); inputField.value = ""; inputField.focus();
     
-    // UPDATED TIMING (A bit shorter dot)
-    const DOT = 600; // Was 800
-    const DASH = 2000;
-    const INTRA_GAP = 600; // Keep rhythm consistent
-    const INTER_GAP = 4000; 
+    const DOT = 600; const DASH = 2000; const INTRA_GAP = 600; const INTER_GAP = 4000; 
     let timeline = [], currentTime = 500;
     
     timeline.push({ time: currentTime, on: true }); currentTime += 3000; timeline.push({ time: currentTime, on: false }); currentTime += 2000; 
@@ -1114,18 +1403,12 @@ function gradeSection1() {
 // EXAM S2: THEORY
 function setupSection2(container) {
     const shuffled = [...THEORY_POOL].sort(() => 0.5 - Math.random());
-    const selectedQs = [];
-    let distressCount = 0;
+    const selectedQs = []; let distressCount = 0;
     
-    // DISTRESS LIMITER LOGIC
     for(let q of shuffled) {
         if(selectedQs.length >= 10) break;
         const isDistress = q.a.some(ans => ans.includes('distress'));
-        if(isDistress) {
-            if(distressCount < 1) { selectedQs.push(q); distressCount++; }
-        } else {
-            selectedQs.push(q);
-        }
+        if(isDistress) { if(distressCount < 1) { selectedQs.push(q); distressCount++; } } else { selectedQs.push(q); }
     }
     
     appState.exam.sectionData.theoryQs = selectedQs;
@@ -1174,9 +1457,9 @@ function setupSection4(container) {
 let examPressStart=0; let examSegTimer=null;
 function setupExamKeyer() {
     const btn = document.getElementById('exam-keyer-btn'); if(!btn) return;
-    const handleDown = (e) => { e.preventDefault(); clearTimeout(examSegTimer); btn.classList.add('pressed'); examPressStart = performance.now(); playTone(); };
+    const handleDown = (e) => { e.preventDefault(); clearTimeout(examSegTimer); btn.classList.add('pressed'); triggerVibration(30); examPressStart = performance.now(); playTone(); };
     const handleUp = (e) => {
-        e.preventDefault(); btn.classList.remove('pressed'); stopTone();
+        e.preventDefault(); btn.classList.remove('pressed'); triggerVibration(30); stopTone();
         const dur = performance.now() - examPressStart;
         const sym = dur > 250 ? '-' : '.';
         processExamInputSymbol(sym);
@@ -1188,7 +1471,7 @@ function setupExamKeyer() {
     btn.addEventListener('touchend', handleUp);
 }
 function processExamInputSymbol(sym) { appState.exam.sectionData.sendCurrentBuffer += sym; document.getElementById('live-dots').innerText = appState.exam.sectionData.sendCurrentBuffer; if (appState.exam.sectionData.sendCurrentBuffer.endsWith(".......")) triggerExamErrorSignal(); }
-function triggerExamErrorSignal() { clearTimeout(examSegTimer); appState.exam.sectionData.sendCurrentBuffer = ""; document.getElementById('live-dots').innerText = ""; let cur = appState.exam.sectionData.sendInputDecoded; if (cur.length > 0) appState.exam.sectionData.sendInputDecoded = cur.slice(0, -1); updateExamDecodedDisplay(); const box = document.getElementById('send-display'); box.classList.add('flash-red'); setTimeout(() => box.classList.remove('flash-red'), 300); }
+function triggerExamErrorSignal() { triggerVibration([100, 50, 100]); clearTimeout(examSegTimer); appState.exam.sectionData.sendCurrentBuffer = ""; document.getElementById('live-dots').innerText = ""; let cur = appState.exam.sectionData.sendInputDecoded; if (cur.length > 0) appState.exam.sectionData.sendInputDecoded = cur.slice(0, -1); updateExamDecodedDisplay(); const box = document.getElementById('send-display'); box.classList.add('flash-red'); setTimeout(() => box.classList.remove('flash-red'), 300); }
 function finishExamCharacter() { const code = appState.exam.sectionData.sendCurrentBuffer; if (!code) return; const REVERSE_MORSE = Object.fromEntries(Object.entries(MORSE_MAP).map(a => a.reverse())); const char = REVERSE_MORSE[code]; if (char) appState.exam.sectionData.sendInputDecoded += char; else appState.exam.sectionData.sendInputDecoded += "?"; appState.exam.sectionData.sendCurrentBuffer = ""; document.getElementById('live-dots').innerText = ""; updateExamDecodedDisplay(); }
 function updateExamDecodedDisplay() { document.getElementById('send-display').innerText = appState.exam.sectionData.sendInputDecoded; }
 function clearExamSend() { appState.exam.sectionData.sendInputDecoded = ""; appState.exam.sectionData.sendCurrentBuffer = ""; document.getElementById('live-dots').innerText = ""; updateExamDecodedDisplay(); }
@@ -1214,8 +1497,41 @@ function showExamFeedback(secNum, passed, score, total, htmlContent, isHTML = fa
     if(passed) content += `<div style="margin-top:15px;"><button class="btn" onclick="nextExamSection(${secNum})">Next Section</button></div>`; else content += `<div style="margin-top:15px;"><button class="btn btn-danger" onclick="loadExamSection(${secNum})">Retry Section</button></div>`; box.innerHTML = content;
 }
 function showExamFinalResults(container) {
-    const s = appState.exam.scores; const total = s[1] + s[2] + s[3] + s[4]; const pct = Math.round((total / 50) * 100);
-    container.innerHTML = `<div style="text-align:center; padding:40px;"><div style="font-size:4rem; margin-bottom:10px;">🏆</div><h2 style="color:var(--accent);">EXAM RESULTS</h2><div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:20px; margin:30px 0;"><div style="font-size:3rem; font-weight:800; color:${pct>=90?'var(--success)':'var(--gold)'};">${pct}%</div><div style="color:var(--text-muted);">Total Score: ${total} / 50</div></div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; text-align:left; font-size:0.9rem; color:var(--text-muted);"><div>Morse Rx: ${s[1]}/20</div><div>Theory: ${s[2]}/10</div><div>Flags: ${s[3]}/10</div><div>Morse Tx: ${s[4]}/10</div></div><button class="btn" style="margin-top:30px;" onclick="initExam()">Take Exam Again</button></div>`;
+    const s = appState.exam.scores; 
+    const total = s[1] + s[2] + s[3] + s[4]; 
+    const pct = Math.round((total / 50) * 100);
+
+    let isNewHighScore = false;
+    if (total > appState.stats.examHighScore) {
+        appState.stats.examHighScore = total;
+        isNewHighScore = true;
+        saveAppData();
+    }
+
+    container.innerHTML = `
+        <div style="text-align:center; padding:30px 10px;">
+            <div style="font-size:4rem; margin-bottom:10px;">🏆</div>
+            <h2 style="color:var(--accent);">EXAM RESULTS</h2>
+            
+            ${isNewHighScore ? `<div style="color:var(--success); font-weight:bold; margin-bottom:10px; font-size:1.2rem; animation: pulse-gold 2s infinite;">⭐ NEW HIGH SCORE! ⭐</div>` : `<div style="color:var(--text-muted); font-size:1rem; font-weight:bold;">High Score: ${appState.stats.examHighScore} / 50</div>`}
+            
+            <div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:20px; margin:20px 0 30px 0;">
+                <div style="font-size:3rem; font-weight:800; color:${pct>=90?'var(--success)':'var(--gold)'};">${pct}%</div>
+                <div style="color:var(--text-muted);">Total Score: ${total} / 50</div>
+            </div>
+            
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; text-align:left; font-size:0.9rem; color:var(--text-muted);">
+                <div>Morse Rx: ${s[1]}/20</div>
+                <div>Theory: ${s[2]}/10</div>
+                <div>Flags: ${s[3]}/10</div>
+                <div>Morse Tx: ${s[4]}/10</div>
+            </div>
+            
+            <div style="margin-top:30px; display:flex; flex-direction:column; gap:10px;">
+                <button class="btn" onclick="initExam()">Take Exam Again</button>
+                <button class="btn btn-outline" onclick="goHome()">Back to Menu</button>
+            </div>
+        </div>`;
 }
 
 // --- RESULTS (GENERAL) ---

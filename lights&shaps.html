@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Marine Mastery - Lights & Day Shapes</title>
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --accent: #0ea5e9;       
+            --accent-glow: rgba(14, 165, 233, 0.4);
+            --success: #4ade80;      
+            --error: #f87171;        
+            --gold: #facc15;         
+            --caution: #facc15;
+            --glass-bg: rgba(30, 41, 59, 0.95);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-blur: 24px;
+            --radius: 16px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: #0f172a;
+            background-image: radial-gradient(circle at 0% 50%, rgba(14, 165, 233, 0.18) 0%, transparent 60%);
+            background-attachment: fixed;
+            background-size: cover;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container { width: 100%; max-width: 800px; margin: 0 auto; position: relative; z-index: 1; }
+        .hidden { display: none !important; }
+
+        h1 { 
+            font-size: 2.8rem; 
+            font-weight: 900;
+            text-align: center; 
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        h2, h3 { text-align: center; margin-bottom: 1rem; color: var(--text-main); }
+        .subtitle { text-align: center; color: var(--text-muted); margin-bottom: 30px; font-size: 1.2rem; font-weight: 500;}
+
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            margin-bottom: 1.5rem;
+            width: 100%;
+        }
+
+        .back-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            border: 2px solid var(--accent); color: var(--accent); border-radius: 50px;
+            padding: 8px 24px; font-size: 1.1rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; cursor: pointer; background: transparent; transition: all 0.2s ease;
+        }
+        .back-btn:hover, .back-btn:active { 
+            background: rgba(14, 165, 233, 0.15); 
+            box-shadow: 0 0 15px var(--accent-glow);
+            transform: scale(0.96); 
+        }
+
+        .hud-dashboard {
+            display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px;
+            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(10px);
+            padding: 15px 20px; border-radius: var(--radius);
+            border: 1px solid var(--glass-border); box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .hud-top-row {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.9rem; color: var(--text-muted);
+            border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;
+        }
+        .hud-stats-row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; align-items: center; }
+
+        .stat-chip {
+            display: flex; align-items: center; gap: 8px; padding: 6px 14px;
+            border-radius: 50px; background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            font-size: 1rem; font-weight: 600;
+        }
+        .chip-pool { color: var(--accent); }
+        .chip-streak.hot { 
+            color: #fff; background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.4)); 
+            border-color: rgba(251, 191, 36, 0.5); box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
+        }
+
+        .mode-select-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; margin-bottom: 25px; }
+        .big-mode-btn {
+            background: linear-gradient(145deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: var(--radius);
+            padding: 22px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        .big-mode-btn:hover, .big-mode-btn:active {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px var(--accent-glow), inset 0 0 10px rgba(14, 165, 233, 0.2);
+            transform: translateY(-2px);
+            background: rgba(14, 165, 233, 0.1);
+        }
+        .big-mode-icon { font-size: 2.6rem; margin-bottom: 5px; }
+        .big-mode-title { font-size: 1.25rem; font-weight: 800; color: var(--accent); margin-bottom: 4px; }
+        .big-mode-desc { color: var(--text-muted); font-size: 0.9rem; }
+
+        .btn {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+            color: white; border: none; padding: 12px 25px; font-size: 1.1rem; font-weight: 700;
+            border-radius: 50px; cursor: pointer; transition: all 0.2s; text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
+            width: 100%; margin-bottom: 10px;
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn-outline { background: transparent; border: 2px solid rgba(56, 189, 248, 0.5); color: var(--accent); box-shadow: none; }
+        .btn-outline:active { background: rgba(56, 189, 248, 0.1); border-color: var(--accent); }
+
+        /* --- QUIZ STYLES --- */
+        .visual-stage {
+            display: flex; justify-content: center; align-items: center;
+            margin: 1rem 0 1.5rem 0; min-height: 180px;
+            background: radial-gradient(circle at center, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.95));
+            border-radius: var(--radius); padding: 15px; position: relative;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05);
+        }
+        .light { width: 28px; height: 28px; border-radius: 50%; margin: 10px; box-shadow: 0 0 25px currentColor; border: 2px solid rgba(255,255,255,0.8); }
+        .q-text { text-align: center; font-size: 1.25rem; font-weight: bold; margin-bottom: 15px; line-height: 1.4; }
+        .grid-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
+        .option-btn {
+            background: linear-gradient(145deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 100%);
+            backdrop-filter: blur(10px); border: 2px solid rgba(255,255,255,0.08);
+            color: var(--text-main); padding: 18px 12px; border-radius: 12px;
+            text-align: center; cursor: pointer; display: flex; align-items: center; justify-content: center; 
+            font-size: 1.05rem; font-weight: 600; line-height: 1.3; min-height: 70px;
+            transition: all 0.2s ease;
+        }
+        .option-btn:hover, .option-btn:active {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px var(--accent-glow);
+            background: rgba(14, 165, 233, 0.12);
+        }
+        .option-btn.correct { background: rgba(74, 222, 128, 0.25) !important; border-color: var(--success) !important; box-shadow: 0 0 15px rgba(74,222,128,0.3) !important; }
+        .option-btn.wrong { background: rgba(248, 113, 113, 0.25) !important; border-color: var(--error) !important; }
+
+        .feedback-wrapper { margin-top: 15px; display: flex; flex-direction: column; align-items: center; width: 100%; }
+        .feedback-pill { 
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px; 
+            padding: 8px 20px; border-radius: 30px; 
+            background: rgba(0,0,0,0.6); font-size: 1.1rem; font-weight: bold; border: 1px solid var(--glass-border); 
+            text-align: center; white-space: nowrap; 
+        }
+        .feedback-pill.correct { color: var(--success); border-color: var(--success); box-shadow: 0 0 10px rgba(74, 222, 128, 0.2); }
+        .feedback-pill.wrong { color: var(--error); border-color: var(--error); box-shadow: 0 0 10px rgba(248, 113, 113, 0.2); }
+        .rule-citation { color: var(--gold); font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; display: inline; margin: 0; }
+
+        /* --- SHAPES --- */
+        .shape-ball { width: 36px; height: 36px; border-radius: 50%; background: #0f172a; border: 3px solid #cbd5e1; margin: 6px; }
+        .shape-diamond { width: 34px; height: 34px; background: #0f172a; border: 3px solid #cbd5e1; transform: rotate(45deg); margin: 12px; }
+        .shape-cylinder { width: 34px; height: 60px; background: #0f172a; border: 3px solid #cbd5e1; margin: 6px; border-radius: 4px; }
+        .shape-cone-down { width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 40px solid #cbd5e1; filter: drop-shadow(0 -2px 0 #0f172a); margin: 4px; }
+        .shape-cone-up { width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-bottom: 40px solid #cbd5e1; filter: drop-shadow(0 2px 0 #0f172a); margin: 4px; }
+        .cones-together { display: flex; flex-direction: column; align-items: center; }
+        .cones-together .shape-cone-down { margin-bottom: -3px; }
+        .cones-together .shape-cone-up { margin-top: -3px; }
+
+        /* --- REFERENCE CATALOG --- */
+        .ref-filter-group { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
+        .ref-filter-btn {
+            padding: 8px 18px; border-radius: 20px; font-size: 0.9rem; font-weight: bold;
+            background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--glass-border);
+            cursor: pointer;
+        }
+        .ref-filter-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
+        .ref-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .ref-card {
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px; padding: 16px 10px; text-align: center; display: flex;
+            flex-direction: column; align-items: center; justify-content: space-between;
+            min-height: 210px;
+        }
+        .ref-card:hover { border-color: var(--accent); box-shadow: 0 0 15px rgba(14, 165, 233, 0.2); }
+        .ref-stage { height: 110px; display: flex; align-items: center; justify-content: center; width: 100%; margin-bottom: 8px; }
+        .ref-title { font-size: 0.95rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px; line-height: 1.25; }
+        .ref-rule { font-size: 0.8rem; color: var(--gold); font-weight: 600; text-transform: uppercase; }
+
+        .light-mini { width: 20px; height: 20px; border-radius: 50%; margin: 4px; box-shadow: 0 0 15px currentColor; border: 1.5px solid rgba(255,255,255,0.9); flex-shrink: 0; }
+        .shape-mini-ball { width: 22px; height: 22px; border-radius: 50%; background: #0f172a; border: 2px solid #cbd5e1; margin: 3px; }
+        .shape-mini-diamond { width: 20px; height: 20px; background: #0f172a; border: 2px solid #cbd5e1; transform: rotate(45deg); margin: 6px; }
+        .shape-mini-cylinder { width: 20px; height: 38px; background: #0f172a; border: 2px solid #cbd5e1; margin: 3px; border-radius: 2px; }
+        .shape-mini-cone-down { width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 24px solid #cbd5e1; margin: 3px; }
+        .cones-together-mini { display: flex; flex-direction: column; align-items: center; }
+        .cones-together-mini .shape-mini-cone-down { margin-bottom: -2px; }
+        .cones-together-mini .shape-mini-cone-up { width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-bottom: 24px solid #cbd5e1; margin: 3px; margin-top: -2px; }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2.2rem; }
+            .card { padding: 1.25rem; }
+            .mode-select-grid { grid-template-columns: 1fr; gap: 12px; }
+            .big-mode-btn { flex-direction: row; text-align: left; justify-content: flex-start; padding: 15px 20px; }
+            .big-mode-icon { margin-bottom: 0; margin-right: 20px; }
+            .grid-options { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .option-btn { font-size: 0.95rem; padding: 15px 10px; min-height: 70px; }
+            .ref-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="app">
+
+    <!-- HOME HUB SCREEN -->
+    <div id="screen-home" class="card">
+        <div style="display: flex; justify-content: flex-start; margin-bottom: 10px;">
+            <button class="back-btn" onclick="window.location.href='colregs.html'">← BACK</button>
+        </div>
+
+        <h1>Lights & Day Shapes</h1>
+        <div class="subtitle">Master Navigational Signals & Patterns</div>
+
+        <div class="mode-select-grid">
+            <!-- LINK TO DEDICATED DRAG & DROP HTML -->
+            <a href="lightsdrag&drop.html" class="big-mode-btn">
+                <div class="big-mode-icon">🛠️</div>
+                <div>
+                    <div class="big-mode-title">Signal Builder</div>
+                    <div class="big-mode-desc">Freeform drag & drop practice mode</div>
+                </div>
+            </a>
+
+            <!-- MULTIPLE CHOICE QUIZ -->
+            <div class="big-mode-btn" onclick="initQuiz()">
+                <div class="big-mode-icon">🎯</div>
+                <div>
+                    <div class="big-mode-title">Multiple Choice Quiz</div>
+                    <div class="big-mode-desc">Test signal and shape recognition</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EMBEDDED REFERENCE GUIDE ON HOME PAGE -->
+        <div style="border-top: 1px solid var(--glass-border); padding-top: 25px; margin-top: 20px;">
+            <h3 style="margin-bottom: 15px; color: var(--accent);">Signals Reference Guide</h3>
+            <div class="ref-filter-group">
+                <button class="ref-filter-btn active" onclick="filterReference('all')">ALL</button>
+                <button class="ref-filter-btn" onclick="filterReference('night')">LIGHTS</button>
+                <button class="ref-filter-btn" onclick="filterReference('day')">DAY SHAPES</button>
+            </div>
+            <div class="ref-grid" id="reference-grid"></div>
+        </div>
+    </div>
+
+    <!-- MULTIPLE CHOICE QUIZ SCREEN -->
+    <div id="screen-quiz" class="hidden">
+        <div class="hud-dashboard">
+            <div class="hud-top-row">
+                <button class="back-btn" onclick="goHome()">BACK</button>
+                <span style="color:var(--accent); font-weight: bold; text-transform: uppercase;">MULTIPLE CHOICE QUIZ</span>
+            </div>
+            <div class="hud-stats-row">
+                <div class="stat-chip chip-pool"><span>🎯</span> Pool: <span id="pool-count">0</span></div>
+                <div id="quiz-streak-chip" class="stat-chip chip-streak"><span>🔥</span> Streak: <span id="streak-count">0</span></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div id="visual-display" class="visual-stage"></div>
+            <div id="q-text" class="q-text"></div>
+            <div id="options-area" class="grid-options"></div>
+            <div id="quiz-feedback" class="feedback-wrapper hidden"></div>
+            <button id="quiz-next-btn" class="btn btn-outline hidden" style="margin-top: 15px;" onclick="loadQuizQuestion()">Next Signal →</button>
+        </div>
+    </div>
+
+    <!-- END SCREEN -->
+    <div id="screen-end" class="hidden card" style="text-align: center;">
+        <div style="font-size: 5rem; margin-bottom: 20px;">🏆</div>
+        <h1 style="color: var(--success); font-size: 2.8rem; margin-bottom: 10px;">Mastery Achieved!</h1>
+        <p style="font-size: 1.2rem; color: var(--text-muted); margin-bottom: 40px;">You have cleared the entire signals pool.</p>
+        <button class="btn" onclick="goHome()">Return to Menu</button>
+    </div>
+
+</div>
+
+<script>
+    const signalsDB = [
+        { type: 'night', q: "Identify this Night Signal:", layout: 'vertical', elements: ['light-red', 'light-red'], ans: "Not Under Command", rule: "Rule 27(a)(i)" },
+        { type: 'night', q: "Identify this Night Signal:", layout: 'vertical', elements: ['light-red', 'light-white', 'light-red'], ans: "Restricted in Ability to Maneuver", rule: "Rule 27(b)(i)" },
+        { type: 'night', q: "Identify this Night Signal:", layout: 'vertical', elements: ['light-white', 'light-white'], ans: "Towing (Length of tow < 200m)", rule: "Rule 24(a)(i)" },
+        { type: 'night', q: "Identify this Night Signal:", layout: 'vertical', elements: ['light-white', 'light-white', 'light-white'], ans: "Towing (Length of tow > 200m)", rule: "Rule 24(a)(i)" },
+        { type: 'night', q: "Identify this Night Signal:", layout: 'vertical', elements: ['light-white', 'light-red'], ans: "Pilotage Duty", rule: "Rule 29(a)(i)" },
+        { type: 'night', q: "Identify this Night Signal:", layout: 'vertical', elements: ['light-red', 'light-red', 'light-red'], ans: "Constrained by Draft", rule: "Rule 28" },
+        { type: 'night', q: "Identify this Night Signal:", layout: 'mineclearance', elements: ['light-green', 'light-green', 'light-green'], ans: "Mineclearance Operations", rule: "Rule 27(f)" },
+        { type: 'night', q: "Identify this Night Signal:", layout: 'dredging', elements: [], ans: "Dredging/Underwater Ops (Obstruction on Port, Clear on Starboard)", rule: "Rule 27(d)" },
+        { type: 'night', q: "Identify this Night Signal:", layout: 'vertical', elements: ['light-green', 'light-white'], ans: "Trawling", rule: "Rule 26(b)(i)" },
+        { type: 'night', q: "Identify this Night Signal:", layout: 'vertical', elements: ['light-red', 'light-white'], ans: "Fishing (Not Trawling)", rule: "Rule 26(c)(i)" },
+        { type: 'night', q: "Identify this Night Signal:", layout: 'horizontal', elements: ['group:light-red,light-white', 'light-white'], ans: "Fishing (Outlying gear > 150m)", rule: "Rule 26(c)(ii)" },
+        
+        { type: 'day', q: "Identify this Day Shape:", layout: 'vertical', elements: ['shape-ball', 'shape-ball'], ans: "Not Under Command", rule: "Rule 27(a)(ii)" },
+        { type: 'day', q: "Identify this Day Shape:", layout: 'vertical', elements: ['shape-ball', 'shape-diamond', 'shape-ball'], ans: "Restricted in Ability to Maneuver", rule: "Rule 27(b)(ii)" },
+        { type: 'day', q: "Identify this Day Shape:", layout: 'vertical', elements: ['shape-diamond'], ans: "Tow exceeding 200m", rule: "Rule 24(a)(v)" },
+        { type: 'day', q: "Identify this Day Shape:", layout: 'vertical', elements: ['shape-cylinder'], ans: "Constrained by Draft", rule: "Rule 28" },
+        { type: 'day', q: "Identify this Day Shape:", layout: 'vertical', elements: ['shape-ball', 'shape-ball', 'shape-ball'], ans: "Vessel Aground", rule: "Rule 30(d)(ii)" },
+        { type: 'day', q: "Identify this Day Shape:", layout: 'vertical', elements: ['shape-cone-down'], ans: "Sailing vessel propelled by machinery", rule: "Rule 25(e)" },
+        { type: 'day', q: "Identify this Day Shape:", layout: 'vertical', elements: ['cones-together'], ans: "Vessel Engaged in Fishing", rule: "Rule 26(b)(i) & (c)(i)" }
+    ];
+
+    const referenceCatalog = [
+        { type: 'night', title: "Power-Driven ≥ 50m", rule: "Rule 23(a)", renderer: 'pdv-large' },
+        { type: 'night', title: "Power-Driven < 50m", rule: "Rule 23(a)", renderer: 'pdv-small' },
+        { type: 'night', title: "Sailing Vessel Underway", rule: "Rule 25(a)", renderer: 'sailing' },
+        { type: 'night', title: "Not Under Command", rule: "Rule 27(a)", renderer: 'nuc' },
+        { type: 'night', title: "Restricted Maneuverability", rule: "Rule 27(b)", renderer: 'ram' },
+        { type: 'night', title: "Constrained by Draft", rule: "Rule 28", renderer: 'cbd' },
+        { type: 'night', title: "Pilotage Duty", rule: "Rule 29(a)", renderer: 'pilot' },
+        { type: 'night', title: "Vessel at Anchor", rule: "Rule 30(a)", renderer: 'anchor' },
+        { type: 'night', title: "Vessel Aground", rule: "Rule 30(d)", renderer: 'aground' },
+        { type: 'night', title: "Trawling", rule: "Rule 26(b)", renderer: 'trawling' },
+        { type: 'night', title: "Fishing (Not Trawling)", rule: "Rule 26(c)", renderer: 'fishing' },
+        { type: 'night', title: "Towing (Tow ≤ 200m)", rule: "Rule 24(a)", renderer: 'tow-short' },
+        { type: 'night', title: "Towing (Tow > 200m)", rule: "Rule 24(a)", renderer: 'tow-long' },
+        { type: 'night', title: "Mineclearance", rule: "Rule 27(f)", renderer: 'mineclearance' },
+        { type: 'night', title: "Dredging / Ops (Pass Stbd)", rule: "Rule 27(d)", renderer: 'dredging' },
+
+        { type: 'day', title: "Not Under Command", rule: "Rule 27(a)", shapeRender: ['shape-mini-ball', 'shape-mini-ball'] },
+        { type: 'day', title: "Restricted Maneuverability", rule: "Rule 27(b)", shapeRender: ['shape-mini-ball', 'shape-mini-diamond', 'shape-mini-ball'] },
+        { type: 'day', title: "Constrained by Draft", rule: "Rule 28", shapeRender: ['shape-mini-cylinder'] },
+        { type: 'day', title: "Tow Exceeding 200m", rule: "Rule 24(a)", shapeRender: ['shape-mini-diamond'] },
+        { type: 'day', title: "Vessel at Anchor", rule: "Rule 30(a)", shapeRender: ['shape-mini-ball'] },
+        { type: 'day', title: "Vessel Aground", rule: "Rule 30(d)", shapeRender: ['shape-mini-ball', 'shape-mini-ball', 'shape-mini-ball'] },
+        { type: 'day', title: "Vessel Engaged in Fishing", rule: "Rule 26(b)", shapeRender: ['cones-together-mini'] },
+        { type: 'day', title: "Sailing with Machinery", rule: "Rule 25(e)", shapeRender: ['shape-mini-cone-down'] },
+        { type: 'day', title: "Mineclearance (Day)", rule: "Rule 27(f)", shapeRender: 'mineclearance-day' }
+    ];
+
+    function hideAll() {
+        ['screen-home', 'screen-quiz', 'screen-end'].forEach(id => {
+            document.getElementById(id).classList.add('hidden');
+        });
+    }
+
+    function goHome() {
+        hideAll();
+        document.getElementById('screen-home').classList.remove('hidden');
+    }
+
+    let quizPool = [];
+    let quizCurrentIdx = -1;
+    let quizCurrentQ = null;
+    let quizStreak = 0;
+
+    function initQuiz() {
+        hideAll();
+        document.getElementById('screen-quiz').classList.remove('hidden');
+        quizPool = [...signalsDB];
+        quizStreak = 0;
+        loadQuizQuestion();
+    }
+
+    function loadQuizQuestion() {
+        if (quizPool.length === 0) {
+            hideAll();
+            document.getElementById('screen-end').classList.remove('hidden');
+            return;
+        }
+
+        quizCurrentIdx = Math.floor(Math.random() * quizPool.length);
+        quizCurrentQ = quizPool[quizCurrentIdx];
+        updateQuizStats();
+
+        document.getElementById('quiz-feedback').classList.add('hidden');
+        document.getElementById('quiz-next-btn').classList.add('hidden');
+
+        const display = document.getElementById('visual-display');
+        display.innerHTML = '';
+        display.appendChild(createVisualTree(quizCurrentQ));
+
+        document.getElementById('q-text').innerText = quizCurrentQ.q;
+        generateQuizOptions(quizCurrentQ.ans, quizCurrentQ.rule, quizCurrentQ.type);
+    }
+
+    function generateQuizOptions(correctAns, ruleStr, type) {
+        const area = document.getElementById('options-area');
+        area.innerHTML = '';
+
+        let pool = signalsDB.filter(s => s.type === type).map(s => s.ans);
+        let falseOpts = [...new Set(pool.filter(ans => ans !== correctAns))].sort(() => 0.5 - Math.random());
+        let choices = [correctAns, falseOpts[0], falseOpts[1], falseOpts[2]];
+
+        choices.sort(() => Math.random() - 0.5).forEach(choice => {
+            const btn = document.createElement('div');
+            btn.className = 'option-btn';
+            btn.innerText = choice;
+            btn.onclick = () => handleQuizChoice(btn, choice, correctAns, ruleStr);
+            area.appendChild(btn);
+        });
+    }
+
+    function handleQuizChoice(btn, selected, correctAns, ruleStr) {
+        if (!document.getElementById('quiz-next-btn').classList.contains('hidden')) return;
+        const btns = document.querySelectorAll('.option-btn');
+        const feedback = document.getElementById('quiz-feedback');
+        feedback.classList.remove('hidden');
+
+        if (selected === correctAns) {
+            btn.classList.add('correct');
+            feedback.innerHTML = `<div class="feedback-pill correct"><span>Correct!</span> <span class="rule-citation">(${ruleStr})</span></div>`;
+            quizPool.splice(quizCurrentIdx, 1);
+            quizStreak++;
+        } else {
+            btn.classList.add('wrong');
+            feedback.innerHTML = `<div class="feedback-pill wrong"><span>Incorrect.</span> <span class="rule-citation">(${ruleStr})</span></div>`;
+            btns.forEach(x => { if (x.innerText === correctAns) x.classList.add('correct'); });
+            quizPool.push(quizCurrentQ);
+            quizStreak = 0;
+        }
+
+        updateQuizStats();
+        document.getElementById('quiz-next-btn').classList.remove('hidden');
+    }
+
+    function updateQuizStats() {
+        document.getElementById('pool-count').innerText = quizPool.length;
+        document.getElementById('streak-count').innerText = quizStreak;
+        const streakChip = document.getElementById('quiz-streak-chip');
+        if (quizStreak >= 3) streakChip.classList.add('hot'); else streakChip.classList.remove('hot');
+    }
+
+    function filterReference(type) {
+        document.querySelectorAll('.ref-filter-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        renderReferenceCards(type);
+    }
+
+    function renderReferenceCards(type) {
+        const grid = document.getElementById('reference-grid');
+        grid.innerHTML = '';
+
+        let items = referenceCatalog;
+        if (type !== 'all') items = referenceCatalog.filter(s => s.type === type);
+
+        items.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'ref-card';
+
+            const stage = document.createElement('div');
+            stage.className = 'ref-stage';
+
+            if (item.type === 'night') {
+                stage.appendChild(renderCatalogNightSignal(item.renderer));
+            } else {
+                stage.appendChild(renderCatalogDayShape(item.shapeRender));
+            }
+
+            card.appendChild(stage);
+
+            const titleEl = document.createElement('div');
+            titleEl.className = 'ref-title';
+            titleEl.innerText = item.title;
+            card.appendChild(titleEl);
+
+            const ruleEl = document.createElement('div');
+            ruleEl.className = 'ref-rule';
+            ruleEl.innerText = item.rule;
+            card.appendChild(ruleEl);
+
+            grid.appendChild(card);
+        });
+    }
+
+    function renderCatalogNightSignal(key) {
+        const c = document.createElement('div');
+        c.style.display = 'flex';
+        c.style.alignItems = 'center';
+        c.style.justifyContent = 'center';
+
+        const makeDot = (color) => {
+            const d = document.createElement('div');
+            d.className = 'light-mini';
+            const hex = color === 'red' ? '#ef4444' : color === 'green' ? '#22c55e' : color === 'yellow' ? '#facc15' : '#ffffff';
+            d.style.color = hex;
+            d.style.backgroundColor = hex;
+            return d;
+        };
+
+        const makeStack = (colors) => {
+            const s = document.createElement('div');
+            s.style.display = 'flex';
+            s.style.flexDirection = 'column';
+            s.style.alignItems = 'center';
+            colors.forEach(col => s.appendChild(makeDot(col)));
+            return s;
+        };
+
+        if (key === 'pdv-large') {
+            c.innerHTML = `<div style="display:flex; flex-direction:column; align-items:center;"><div class="light-mini" style="background:#fff; color:#fff; margin-bottom:5px;"></div><div class="light-mini" style="background:#fff; color:#fff; margin-bottom:8px;"></div><div style="display:flex; gap:30px;"><div class="light-mini" style="background:#22c55e; color:#22c55e;"></div><div class="light-mini" style="background:#ef4444; color:#ef4444;"></div></div></div>`;
+        } else if (key === 'pdv-small') {
+            c.innerHTML = `<div style="display:flex; flex-direction:column; align-items:center;"><div class="light-mini" style="background:#fff; color:#fff; margin-bottom:12px;"></div><div style="display:flex; gap:30px;"><div class="light-mini" style="background:#22c55e; color:#22c55e;"></div><div class="light-mini" style="background:#ef4444; color:#ef4444;"></div></div></div>`;
+        } else if (key === 'sailing') {
+            c.innerHTML = `<div style="display:flex; gap:34px;"><div class="light-mini" style="background:#22c55e; color:#22c55e;"></div><div class="light-mini" style="background:#ef4444; color:#ef4444;"></div></div>`;
+        } else if (key === 'nuc') {
+            c.appendChild(makeStack(['red', 'red']));
+        } else if (key === 'ram') {
+            c.appendChild(makeStack(['red', 'white', 'red']));
+        } else if (key === 'cbd') {
+            c.appendChild(makeStack(['red', 'red', 'red']));
+        } else if (key === 'pilot') {
+            c.appendChild(makeStack(['white', 'red']));
+        } else if (key === 'anchor') {
+            c.appendChild(makeStack(['white']));
+        } else if (key === 'aground') {
+            c.innerHTML = `<div style="display:flex; gap:18px; align-items:center;"><div class="light-mini" style="background:#fff; color:#fff;"></div><div style="display:flex; flex-direction:column;"><div class="light-mini" style="background:#ef4444; color:#ef4444;"></div><div class="light-mini" style="background:#ef4444; color:#ef4444;"></div></div></div>`;
+        } else if (key === 'trawling') {
+            c.appendChild(makeStack(['green', 'white']));
+        } else if (key === 'fishing') {
+            c.appendChild(makeStack(['red', 'white']));
+        } else if (key === 'tow-short') {
+            c.appendChild(makeStack(['white', 'white']));
+        } else if (key === 'tow-long') {
+            c.appendChild(makeStack(['white', 'white', 'white']));
+        } else if (key === 'mineclearance') {
+            c.innerHTML = `<div style="display:flex; flex-direction:column; align-items:center;"><div class="light-mini" style="background:#22c55e; color:#22c55e; margin-bottom:4px;"></div><div style="display:flex; gap:30px;"><div class="light-mini" style="background:#22c55e; color:#22c55e;"></div><div class="light-mini" style="background:#22c55e; color:#22c55e;"></div></div></div>`;
+        } else if (key === 'dredging') {
+            c.innerHTML = `<div style="display:flex; gap:14px; align-items:center;"><div style="display:flex; flex-direction:column; align-items:center;"><div class="light-mini" style="background:#ef4444; color:#ef4444;"></div><div class="light-mini" style="background:#ef4444; color:#ef4444;"></div></div><div style="display:flex; flex-direction:column; align-items:center;"><div class="light-mini" style="background:#ef4444; color:#ef4444;"></div><div class="light-mini" style="background:#fff; color:#fff;"></div><div class="light-mini" style="background:#ef4444; color:#ef4444;"></div></div><div style="display:flex; flex-direction:column; align-items:center;"><div class="light-mini" style="background:#22c55e; color:#22c55e;"></div><div class="light-mini" style="background:#22c55e; color:#22c55e;"></div></div></div>`;
+        }
+        return c;
+    }
+
+    function renderCatalogDayShape(renderer) {
+        const c = document.createElement('div');
+        c.style.display = 'flex';
+        c.style.flexDirection = 'column';
+        c.style.alignItems = 'center';
+        c.style.justifyContent = 'center';
+
+        if (renderer === 'mineclearance-day') {
+            c.innerHTML = `<div style="display:flex; flex-direction:column; align-items:center;"><div class="shape-mini-ball" style="margin-bottom:3px; width:20px; height:20px;"></div><div style="display:flex; gap:24px;"><div class="shape-mini-ball" style="width:20px; height:20px;"></div><div class="shape-mini-ball" style="width:20px; height:20px;"></div></div></div>`;
+        } else {
+            renderer.forEach(cls => {
+                const el = document.createElement('div');
+                el.className = cls;
+                el.style.transform = 'scale(1.2)';
+                c.appendChild(el);
+            });
+        }
+        return c;
+    }
+
+    function createVisualTree(qObj) {
+        const wrapper = document.createElement('div');
+        if (qObj.layout === 'mineclearance') {
+            wrapper.style.display = 'flex';
+            wrapper.style.flexDirection = 'column';
+            wrapper.style.alignItems = 'center';
+            if (qObj.type === 'night') {
+                wrapper.innerHTML = `<div class="light" style="background:#22c55e; color:#22c55e; margin-bottom:6px;"></div><div style="display:flex; gap:40px;"><div class="light" style="background:#22c55e; color:#22c55e;"></div><div class="light" style="background:#22c55e; color:#22c55e;"></div></div>`;
+            } else {
+                wrapper.innerHTML = `<div class="shape-ball" style="margin-bottom:6px;"></div><div style="display:flex; gap:40px;"><div class="shape-ball"></div><div class="shape-ball"></div></div>`;
+            }
+            return wrapper;
+        }
+
+        if (qObj.layout === 'dredging') {
+            wrapper.style.display = 'flex';
+            wrapper.style.gap = '20px';
+            wrapper.style.alignItems = 'center';
+            wrapper.innerHTML = `<div style="display:flex; flex-direction:column; align-items:center;"><div class="light" style="background:#ef4444; color:#ef4444;"></div><div class="light" style="background:#ef4444; color:#ef4444;"></div></div><div style="display:flex; flex-direction:column; align-items:center;"><div class="light" style="background:#ef4444; color:#ef4444;"></div><div class="light" style="background:#fff; color:#fff;"></div><div class="light" style="background:#ef4444; color:#ef4444;"></div></div><div style="display:flex; flex-direction:column; align-items:center;"><div class="light" style="background:#22c55e; color:#22c55e;"></div><div class="light" style="background:#22c55e; color:#22c55e;"></div></div>`;
+            return wrapper;
+        }
+
+        wrapper.style.display = 'flex';
+        wrapper.style.flexDirection = qObj.layout === 'horizontal' ? 'row' : 'column';
+        wrapper.style.alignItems = 'center';
+        wrapper.style.justifyContent = 'center';
+        wrapper.style.gap = qObj.layout === 'horizontal' ? '24px' : '0px';
+
+        qObj.elements.forEach(item => {
+            if (item.startsWith('group:')) {
+                const groupItems = item.split(':')[1].split(',');
+                const inner = document.createElement('div');
+                inner.style.display = 'flex';
+                inner.style.flexDirection = 'column';
+                inner.style.alignItems = 'center';
+                groupItems.forEach(gi => inner.appendChild(createSingleVisual(gi)));
+                wrapper.appendChild(inner);
+            } else {
+                wrapper.appendChild(createSingleVisual(item));
+            }
+        });
+        return wrapper;
+    }
+
+    function createSingleVisual(item) {
+        const el = document.createElement('div');
+        if (item.startsWith('light-')) {
+            const color = item.split('-')[1];
+            let hex = color === 'red' ? '#ef4444' : color === 'green' ? '#22c55e' : color === 'yellow' ? '#facc15' : '#ffffff';
+            el.className = 'light';
+            el.style.color = hex;
+            el.style.backgroundColor = hex;
+        } else if (item === 'cones-together') {
+            el.className = 'cones-together';
+            el.innerHTML = '<div class="shape-cone-down"></div><div class="shape-cone-up"></div>';
+        } else {
+            el.className = item;
+        }
+        return el;
+    }
+
+    // Initialize reference catalog on load
+    renderReferenceCards('all');
+</script>
+</body>
+</html>

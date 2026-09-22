@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Marine Mastery</title>
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --accent: #0ea5e9;       
+            --accent-glow: rgba(14, 165, 233, 0.4);
+            --success: #4ade80;      
+            --error: #f87171;        
+            --gold: #facc15;         
+            --caution: #facc15;
+            --stand-on: #4ade80;      
+            --give-way: #f87171; 
+            --glass-bg: rgba(30, 41, 59, 0.95);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-blur: 24px;
+            --radius: 16px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        /* --- ANIMATED BACKGROUND --- */
+        body {
+            background-color: #0f172a;
+            background-image: 
+                /* Left Blue Hue ONLY */
+                radial-gradient(circle at 0% 50%, rgba(14, 165, 233, 0.18) 0%, transparent 60%);
+            background-attachment: fixed;
+            background-size: cover;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container { width: 100%; max-width: 800px; margin: 0 auto; position: relative; z-index: 1; }
+        .hidden { display: none !important; }
+
+        h1 { 
+            font-size: 3rem; 
+            font-weight: 900;
+            text-align: center; 
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        h2, h3 { text-align: center; margin-bottom: 1rem; color: var(--text-main); }
+        .subtitle { text-align: center; color: var(--text-muted); margin-bottom: 30px; font-size: 1.3rem; font-weight: 500;}
+
+        /* --- GLASS CARDS --- */
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            margin-bottom: 1.5rem;
+            width: 100%;
+        }
+
+        /* --- HOME SCREEN GRID & BUTTONS --- */
+        .mode-select-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .big-mode-btn {
+            background: linear-gradient(145deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: var(--radius);
+            padding: 25px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        /* Interactive Blue Glow State */
+        .big-mode-btn:hover, .big-mode-btn:active {
+            border-color: var(--accent) !important;
+            box-shadow: 0 0 20px var(--accent-glow), inset 0 0 10px rgba(14, 165, 233, 0.2);
+            transform: translateY(-2px);
+            background: linear-gradient(145deg, rgba(14, 165, 233, 0.12) 0%, rgba(14, 165, 233, 0.03) 100%);
+        }
+
+        /* Dedicated Tall Flashcard Container */
+        .fc-mode-btn {
+            border-color: rgba(74, 222, 128, 0.4);
+            background: linear-gradient(145deg, rgba(74, 222, 128, 0.08) 0%, rgba(74, 222, 128, 0.02) 100%);
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 25px 20px !important;
+            min-height: 220px;
+            cursor: default !important;
+        }
+        .fc-mode-btn:hover, .fc-mode-btn:active {
+            border-color: var(--success) !important;
+            box-shadow: 0 0 20px rgba(74, 222, 128, 0.35), inset 0 0 10px rgba(74, 222, 128, 0.15) !important;
+            background: linear-gradient(145deg, rgba(74, 222, 128, 0.12) 0%, rgba(74, 222, 128, 0.03) 100%) !important;
+            transform: translateY(-2px);
+        }
+
+        .fc-header {
+            text-align: center;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        .fc-menu-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .fc-menu-row .btn-outline {
+            width: 95px;
+            padding: 10px 0;
+            font-size: 1.05rem;
+            margin: 0;
+            border-color: var(--success);
+            color: var(--success);
+        }
+        .fc-menu-row .btn-outline:hover, .fc-menu-row .btn-outline:active {
+            border-color: var(--success) !important;
+            box-shadow: 0 0 15px rgba(74, 222, 128, 0.4);
+            background: rgba(74, 222, 128, 0.15);
+        }
+
+        .big-mode-icon { font-size: 3rem; margin-bottom: 5px; }
+        .big-mode-title { font-size: 1.45rem; font-weight: 800; color: var(--accent); }
+        .big-mode-desc { color: var(--text-muted); font-size: 1.1rem; }
+        .full-width-btn { grid-column: 1 / -1; }
+
+        /* --- BUTTON SPECIFIC GRAPHICS --- */
+        .btn-fan {
+            display: flex; justify-content: center; align-items: flex-end;
+            position: relative; height: 110px; width: 140px; flex-shrink: 0;
+        }
+        .btn-fan img {
+            position: absolute; width: 90px; height: 65px; border-radius: 6px;
+            border: 2px solid #1e293b; box-shadow: 0 6px 12px rgba(0,0,0,0.6);
+            object-fit: cover; background: #fff;
+        }
+        .btn-fan .left { transform: translateX(-40px) translateY(-10px) rotate(-15deg); z-index: 1; }
+        .btn-fan .right { transform: translateX(40px) translateY(-10px) rotate(15deg); z-index: 1; }
+        .btn-fan .center { transform: translateY(5px); width: 110px; height: 80px; z-index: 2; border-color: var(--success); }
+
+        .pdv-icon {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 60px; margin-bottom: 15px;
+        }
+        .pdv-dot { width: 14px; height: 14px; border-radius: 50%; box-shadow: 0 0 12px currentColor; margin: 3px; flex-shrink: 0; }
+        .pdv-w { background: #fff; color: #fff; }
+        .pdv-r { background: #ef4444; color: #ef4444; }
+        .pdv-g { background: #22c55e; color: #22c55e; }
+
+        /* --- BACK BUTTON --- */
+        .back-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            border: 2px solid var(--accent); color: var(--accent); border-radius: 50px;
+            padding: 8px 24px; font-size: 1.1rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; cursor: pointer; background: transparent; transition: all 0.2s ease;
+        }
+        .back-btn:hover, .back-btn:active { 
+            background: rgba(14, 165, 233, 0.15); 
+            box-shadow: 0 0 15px var(--accent-glow);
+            transform: scale(0.96); 
+        }
+
+        /* --- HUD DASHBOARD --- */
+        .hud-dashboard {
+            display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px;
+            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(10px);
+            padding: 15px 20px; border-radius: var(--radius);
+            border: 1px solid var(--glass-border); box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .hud-top-row {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.9rem; color: var(--text-muted);
+            border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;
+        }
+        .hud-stats-row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; align-items: center; }
+        
+        .stat-chip {
+            display: flex; align-items: center; gap: 8px; padding: 6px 12px;
+            border-radius: 50px; background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            font-size: 1.05rem; font-weight: 600;
+        }
+        .chip-pool { color: var(--accent); }
+        .chip-streak.hot { 
+            color: #fff; background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.4)); 
+            border-color: rgba(251, 191, 36, 0.5); box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
+        }
+
+        /* --- TOGGLE BUTTONS --- */
+        .toggle-group {
+            display: flex; background: rgba(0,0,0,0.5); border-radius: 50px;
+            overflow: hidden; border: 1px solid var(--glass-border);
+        }
+        .toggle-btn {
+            flex: 1; padding: 10px 15px; border: none; background: transparent;
+            color: var(--text-muted); font-weight: bold; cursor: pointer; transition: 0.3s;
+            font-size: 0.95rem;
+        }
+        .toggle-btn.active { background: var(--accent); color: #000; }
+
+        /* --- SOUND & KNOWLEDGE QUIZ --- */
+        .sound-display { padding: 20px 0; margin: 10px 0; text-align: center; }
+        .sound-desc { font-size: 1.1rem; opacity: 0.8; text-align: center; color: var(--text-muted); }
+        .q-text { text-align: center; font-size: 1.25rem; font-weight: bold; margin-bottom: 15px; line-height: 1.4;}
+
+        /* --- IMAGE DISPLAY (For FC/Knowledge Quiz) --- */
+        .image-display { width: 100%; aspect-ratio: 1.4; margin-bottom: 15px; border-radius: var(--radius); overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid var(--glass-border);}
+        .image-display img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* --- KNOWLEDGE REFERENCE GRID --- */
+        .knowledge-ref-container { display: flex; flex-direction: column; gap: 15px; align-items: center; margin-bottom: 20px;}
+        .knowledge-ref-container img { width: 100%; max-width: 400px; border-radius: 8px; border: 1px solid var(--glass-border); box-shadow: 0 4px 10px rgba(0,0,0,0.5); object-fit: cover;}
+
+        /* --- INPUTS & BUTTONS --- */
+        input[type="text"] {
+            width: 100%; padding: 15px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.1);
+            background: rgba(15, 23, 42, 0.8); color: white; font-size: 1.3rem; outline: none; margin-bottom: 15px; transition: border 0.3s; text-align: center;
+        }
+        input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+        input[type="text"]:disabled { background: rgba(0,0,0,0.5); color: #888; }
+
+        .btn {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+            color: white; border: none; padding: 12px 25px; font-size: 1.1rem; font-weight: 700;
+            border-radius: 50px; cursor: pointer; transition: all 0.2s; text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
+            touch-action: manipulation; width: 100%; margin-bottom: 10px;
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn-outline { background: transparent; border: 2px solid rgba(56, 189, 248, 0.5); color: var(--accent); box-shadow: none; }
+        .btn-outline:active { background: rgba(56, 189, 248, 0.1); border-color: var(--accent); }
+        
+        /* STRICT 2x2 GRID FOR MULTIPLE CHOICE */
+        .grid-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+        
+        .option-btn {
+            background: linear-gradient(145deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 100%);
+            backdrop-filter: blur(10px); border: 2px solid rgba(255,255,255,0.1);
+            color: var(--text-main); padding: 18px 15px; border-radius: 12px;
+            text-align: center; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 600; line-height: 1.3; min-height: 75px;
+            transition: all 0.2s ease;
+        }
+        .option-btn:hover, .option-btn:active {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px var(--accent-glow), inset 0 0 8px rgba(14, 165, 233, 0.2);
+            background: rgba(14, 165, 233, 0.12);
+        }
+        .option-btn.correct { background: rgba(74, 222, 128, 0.25) !important; border-color: var(--success) !important; box-shadow: 0 0 15px rgba(74,222,128,0.3) !important; }
+        .option-btn.wrong { background: rgba(248, 113, 113, 0.25) !important; border-color: var(--error) !important; }
+
+        .feedback-wrapper { margin-top: 15px; display: flex; flex-direction: column; align-items: center; width: 100%; }
+        .feedback-pill { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 10px 24px; border-radius: 50px; background: rgba(0,0,0,0.5); font-size: 1.1rem; font-weight: bold; border: 1px solid var(--glass-border); text-align: center;}
+        .feedback-pill.correct { color: var(--success); border-color: var(--success); box-shadow: 0 0 10px rgba(74, 222, 128, 0.2); }
+        .feedback-pill.wrong { color: var(--error); border-color: var(--error); box-shadow: 0 0 10px rgba(248, 113, 113, 0.2); }
+        
+        .rule-citation { color: var(--gold); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; display: inline; margin-top: 0; }
+        .feedback-img { max-width: 100%; max-height: 180px; border-radius: 8px; margin-top: 15px; border: 1px solid var(--glass-border); object-fit: contain; }
+
+        /* --- LOOKUP SCREEN --- */
+        .lookup-card { background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); border-radius: 12px; padding: 25px; margin-top: 20px; text-align: left; display: none; }
+        .lookup-title { color: var(--accent); margin-top: 0; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px; margin-bottom: 15px; }
+        .lookup-body { line-height: 1.7; font-size: 1.05rem; color: var(--text-main); }
+        .lookup-body ul { padding-left: 20px; margin: 10px 0; }
+        .lookup-body li { margin-bottom: 8px; }
+        .lookup-body strong { color: var(--gold); }
+        
+        /* --- SOUND REFERENCE GRID --- */
+        .sound-ref-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+            gap: 12px; 
+            margin-top: 15px; 
+        }
+        .sound-ref-card { 
+            background: rgba(255,255,255,0.03); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            border-radius: 12px; 
+            padding: 12px; 
+            text-align: center; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 6px; 
+            justify-content: center; 
+            min-height: 105px;
+        }
+        .sound-ref-symbol { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 42px;
+        }
+        .sound-ref-meaning { font-size: 0.95rem; color: var(--text-main); font-weight: 600; line-height: 1.2;}
+        .sound-ref-rule { font-size: 0.8rem; color: var(--text-muted); }
+
+        /* --- FLASHCARDS (3D FLIP) --- */
+        .scene { 
+            width: 100%; 
+            max-width: 550px; 
+            margin: 0 auto 30px auto; 
+            aspect-ratio: 1.4; 
+            perspective: 1000px; 
+        }
+        .flashcard { width: 100%; height: 100%; position: relative; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; cursor: pointer; }
+        .flashcard.is-flipped { transform: rotateY(180deg); }
+        .card-face {
+            position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden;
+            background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur));
+            border: 1px solid var(--glass-border); border-radius: var(--radius); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+        .card-front { padding: 0; align-items: center; justify-content: center; } 
+        .card-front img { width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius); }
+        .card-back { transform: rotateY(180deg); padding: 15px; justify-content: center; text-align: center; overflow-y: auto; }
+        
+        .status-badge { display: inline-block; padding: 6px 12px; border-radius: 50px; font-size: 1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .badge-green { background: rgba(74, 222, 128, 0.2); color: var(--success); border: 1px solid var(--success); }
+        .badge-red { background: rgba(248, 113, 113, 0.2); color: var(--error); border: 1px solid var(--error); }
+        .badge-orange { background: rgba(250, 204, 21, 0.2); color: var(--caution); border: 1px solid var(--caution); }
+
+        .scenario-context { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 8px; font-style: italic; }
+        .fc-rule-citation { display: block; color: var(--gold); font-size: 1rem; margin-bottom: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
+        .fc-action-text { color: var(--text-main); font-size: 1.05rem; line-height: 1.4; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); text-align: left; flex-grow: 1; overflow-y: auto; margin-bottom: 12px;}
+        
+        .fc-controls { display: flex; gap: 10px; margin-top: auto; }
+        .fc-btn { flex: 1; padding: 12px; font-size: 1.1rem; font-weight: bold; border: none; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s; }
+        .fc-btn-red { background: linear-gradient(135deg, #f87171 0%, #dc2626 100%); color: white; box-shadow: 0 4px 15px rgba(248, 113, 113, 0.4); }
+        .fc-btn-green { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4); }
+        .fc-btn:active { transform: scale(0.95); }
+
+        /* --- DYNAMIC SOUND RENDERING --- */
+        .quiz-sound-dash {
+            width: 48px;
+            height: 16px;
+            background-color: var(--accent);
+            border-radius: 8px;
+            box-shadow: 0 0 12px var(--accent-glow);
+            margin: 0 4px;
+            display: inline-block;
+        }
+        .quiz-sound-dot {
+            width: 16px;
+            height: 16px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 12px var(--accent-glow);
+            margin: 0 4px;
+            display: inline-block;
+        }
+        .ref-sound-dash {
+            width: 28px;
+            height: 9px;
+            background-color: var(--accent);
+            border-radius: 5px;
+            margin: 0 2px;
+            display: inline-block;
+        }
+        .ref-sound-dot {
+            width: 9px;
+            height: 9px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            margin: 0 2px;
+            display: inline-block;
+        }
+        .quiz-sound-img {
+            max-height: 85px;
+            max-width: 90%;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 0 12px var(--accent-glow));
+        }
+        .ref-sound-img {
+            max-height: 42px;
+            max-width: 90%;
+            height: auto;
+            object-fit: contain;
+        }
+
+        /* --- RESPONSIVE ADJUSTMENTS --- */
+        @media (max-width: 600px) {
+            h1 { font-size: 2.2rem; }
+            .card { padding: 1.25rem; }
+            .mode-select-grid { grid-template-columns: 1fr; gap: 12px; }
+            
+            /* Big standard menu buttons */
+            .big-mode-btn:not(.fc-mode-btn) { 
+                flex-direction: row; 
+                text-align: left; 
+                justify-content: flex-start; 
+                padding: 15px 20px; 
+            }
+            .big-mode-icon { margin-bottom: 0; margin-right: 20px; }
+            .pdv-icon { margin-bottom: 0; margin-right: 15px; height: auto;}
+            
+            /* Taller Centered Flash Card Container for Mobile */
+            .fc-mode-btn { 
+                min-height: 230px !important; 
+                padding: 22px 15px !important; 
+            }
+            .fc-header { text-align: center; margin-bottom: 12px; }
+            .fc-menu-row { gap: 12px; }
+            .fc-menu-row .btn-outline { width: 85px; font-size: 1rem; padding: 10px 0;}
+            
+            .btn-fan { height: 85px; width: 110px;}
+            .btn-fan img { width: 68px; height: 50px; }
+            .btn-fan .left { transform: translateX(-35px) translateY(-10px) rotate(-15deg); }
+            .btn-fan .right { transform: translateX(35px) translateY(-10px) rotate(15deg); }
+            .btn-fan .center { transform: translateY(0); width: 82px; height: 60px; }
+
+            /* Sound Signals 2-per-screen grid on mobile */
+            .sound-ref-grid { 
+                grid-template-columns: repeat(2, 1fr) !important; 
+                gap: 10px; 
+            }
+
+            /* 2x2 grid structure, comfortable text & touch target */
+            .grid-options { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .option-btn { font-size: 1rem; padding: 16px 10px; min-height: 70px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="app">
+
+    <!-- HOME SCREEN -->
+    <div id="screen-home" class="card" style="margin-top: 20px;">
+        <div style="display: flex; justify-content: flex-start; margin-bottom: 10px;">
+            <button class="back-btn" onclick="window.location.href='index.html'">← MENU</button>
+        </div>
+
+        <h1>Marine Mastery</h1>
+        <div class="subtitle">Learn COLREGs.</div>
+
+        <div class="mode-select-grid">
+            
+            <!-- ROW 1: FLASH CARDS AT THE TOP (Taller & Stacked) -->
+            <div class="big-mode-btn full-width-btn fc-mode-btn">
+                <div class="fc-header">
+                    <div class="big-mode-title" style="color:var(--success);">Flash Cards</div>
+                    <div class="big-mode-desc">Visual Situation Drills</div>
+                </div>
+                
+                <!-- View / Fan / Quiz Layout -->
+                <div class="fc-menu-row">
+                    <button class="btn btn-outline" onclick="init('flashcards')">VIEW</button>
+                    <div class="btn-fan">
+                        <img src="images/24.png" class="left" alt="Card">
+                        <img src="images/27.png" class="right" alt="Card">
+                        <img src="images/19.png" class="center" alt="Card">
+                    </div>
+                    <button class="btn btn-outline" onclick="init('fc-quiz')">QUIZ</button>
+                </div>
+            </div>
+
+            <!-- ROW 2: Dictionary and Knowledge -->
+            <div class="big-mode-btn" onclick="init('lookup')">
+                <div class="big-mode-icon">📖</div>
+                <div>
+                    <div class="big-mode-title">Rule Dictionary</div>
+                    <div class="big-mode-desc">Search full COLREGs</div>
+                </div>
+            </div>
+            
+            <div class="big-mode-btn" onclick="init('knowledge-setup')">
+                <div class="big-mode-icon">🧠</div>
+                <div>
+                    <div class="big-mode-title">Knowledge</div>
+                    <div class="big-mode-desc">Rules Theory</div>
+                </div>
+            </div>
+
+            <!-- ROW 3: Typed Rules -->
+            <div class="big-mode-btn full-width-btn" onclick="init('typed')">
+                <div class="big-mode-icon">🚢</div>
+                <div>
+                    <div class="big-mode-title">Rule Number Practice</div>
+                    <div class="big-mode-desc">Name to Number (Type)</div>
+                </div>
+            </div>
+
+            <!-- ROW 4: Lights & Sound -->
+            <div class="big-mode-btn" onclick="window.location.href='lights&shaps.html'">
+                <div class="pdv-icon">
+                    <div class="pdv-dot pdv-w"></div>
+                    <div class="pdv-dot pdv-w" style="margin-top: 6px;"></div>
+                    <div style="display: flex; gap: 24px; margin-top: 8px;">
+                        <div class="pdv-dot pdv-r"></div>
+                        <div class="pdv-dot pdv-g"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="big-mode-title">Lights & Day Shapes</div>
+                    <div class="big-mode-desc">Identify Signals</div>
+                </div>
+            </div>
+
+            <div class="big-mode-btn" onclick="init('sounds-setup')">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 6px; height: 60px; margin-bottom: 15px;">
+                    <div style="width: 35px; height: 12px; background-color: var(--accent); border-radius: 6px; box-shadow: 0 0 10px var(--accent-glow);"></div>
+                    <div style="width: 12px; height: 12px; background-color: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent-glow);"></div>
+                    <div style="width: 12px; height: 12px; background-color: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent-glow);"></div>
+                </div>
+                <div>
+                    <div class="big-mode-title">Sound Signals</div>
+                    <div class="big-mode-desc">Reference & Quiz</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- LOOKUP SCREEN -->
+    <div id="screen-lookup" class="hidden">
+        <div class="hud-dashboard">
+            <div class="hud-top-row">
+                <button class="back-btn" onclick="goHome()">BACK</button>
+                <span style="color:var(--accent); font-weight: bold; text-transform: uppercase;">Rule Dictionary</span>
+            </div>
+        </div>
+        <div class="card">
+            <input type="text" id="lookup-input" placeholder="Enter a Rule Number (1-38)" oninput="searchRule()">
+            <div id="lookup-result" class="lookup-card">
+                <h3 id="lookup-title" class="lookup-title"></h3>
+                <div id="lookup-body" class="lookup-body"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KNOWLEDGE SETUP/REF SCREEN -->
+    <div id="screen-knowledge-setup" class="hidden">
+        <div class="hud-dashboard">
+            <div class="hud-top-row">
+                <button class="back-btn" onclick="goHome()">BACK</button>
+                <span style="color:var(--accent); font-weight: bold; text-transform: uppercase;">Knowledge Reference</span>
+            </div>
+            <button class="btn" style="width: 100%; margin:0;" onclick="init('knowledge')">START QUIZ</button>
+        </div>
+        
+        <div class="card">
+            <p style="text-align:center; color:var(--text-muted); font-size:1.05rem; margin-bottom: 20px;">Review overtaking angles before starting.</p>
+            <div class="knowledge-ref-container">
+                <img src="images/Angle2.png" alt="Overtaking Angles">
+            </div>
+        </div>
+    </div>
+
+    <!-- SOUND SETUP/REF SCREEN -->
+    <div id="screen-sounds-setup" class="hidden">
+        <div class="hud-dashboard">
+            <div class="hud-top-row">
+                <button class="back-btn" onclick="goHome()">BACK</button>
+                <span style="color:var(--accent); font-weight: bold; text-transform: uppercase;">Sound Reference</span>
+            </div>
+            <button class="btn" style="width: 100%; margin:0;" onclick="init('sounds')">START QUIZ</button>
+        </div>
+        
+        <div class="card">
+            <p style="text-align:center; color:var(--text-muted); font-size:1rem;">Review the signals before starting the quiz.</p>
+            <div id="sound-ref-grid" class="sound-ref-grid">
+                <!-- Populated via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- QUIZ SCREEN -->
+    <div id="screen-quiz" class="hidden">
+        <div class="hud-dashboard">
+            <div class="hud-top-row">
+                <button class="back-btn" onclick="goHome()">BACK</button>
+                <span id="quiz-mode-label" style="color:var(--accent); font-weight: bold; text-transform: uppercase;">MASTERY MODE</span>
+            </div>
+
+            <!-- Inline Toggle for Typed Rules -->
+            <div id="rule-toggle-container" class="hidden" style="margin-bottom: 10px;">
+                <div class="toggle-group">
+                    <button id="tog-19" class="toggle-btn active" onclick="setRuleScope('19')">Rules 1-19</button>
+                    <button id="tog-all" class="toggle-btn" onclick="setRuleScope('all')">All Rules (1-38)</button>
+                </div>
+            </div>
+
+            <div class="hud-stats-row">
+                <div class="stat-chip chip-pool"><span>🎯</span> Pool: <span id="pool-count">0</span></div>
+                <div id="chip-streak" class="stat-chip chip-streak"><span>🔥</span> Streak: <span id="streak-count">0</span></div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <!-- Visual Display for Lights/Shapes -->
+            <div id="visual-display" class="visual-stage hidden"></div>
+            
+            <!-- Image Display for Flashcard/Knowledge Quiz -->
+            <div id="image-display" class="image-display hidden">
+                <img id="quiz-img" src="" alt="Quiz Image">
+            </div>
+
+            <!-- Text Content -->
+            <div id="q-text" class="q-text"></div>
+            <div id="sound-display-area" class="sound-display hidden"></div>
+            <div id="sound-desc-area" class="sound-desc hidden"></div>
+            
+            <div id="typed-input-area" class="hidden">
+                <input type="text" id="answer-input" placeholder="Type rule number (e.g. 5)" autocomplete="off">
+                <button class="btn" onclick="checkTyped()">Submit Answer</button>
+            </div>
+
+            <!-- 2x2 Option Grid -->
+            <div id="options-area" class="grid-options hidden"></div>
+            
+            <!-- Compact Feedback Squircle Wrapper -->
+            <div id="feedback" class="feedback-wrapper hidden"></div>
+
+            <button id="next-btn" class="btn btn-outline hidden" style="margin-top: 15px;" onclick="loadQuestion()">Next Scenario →</button>
+        </div>
+    </div>
+
+    <!-- FLASHCARDS VIEW SCREEN -->
+    <div id="screen-flashcards" class="hidden">
+        <div class="hud-dashboard">
+            <div class="hud-top-row">
+                <button class="back-btn" onclick="goHome()">BACK</button>
+                <span style="color:var(--success); font-weight: bold;">SCENARIO DRILLS</span>
+            </div>
+            <div class="hud-stats-row">
+                <div class="stat-chip chip-pool"><span>🎯</span> Remaining: <span id="fc-pool-count">0</span></div>
+            </div>
+        </div>
+        
+        <div class="scene">
+            <div class="flashcard" id="flashcard" onclick="flipFlashcard()">
+                <!-- Front -->
+                <div class="card-face card-front">
+                    <img id="fc-img" src="" alt="Scenario Image">
+                    <div style="position: absolute; bottom: 10px; right: 15px; color: var(--text-main); font-size: 0.9rem; background: rgba(0,0,0,0.6); padding: 6px 12px; border-radius: 8px;">Tap to flip</div>
+                </div>
+                
+                <!-- Back -->
+                <div class="card-face card-back">
+                    <div id="fc-context" class="scenario-context"></div>
+                    <div id="fc-status" class="status-badge"></div>
+                    <div id="fc-rule" class="fc-rule-citation"></div>
+                    <div id="fc-action" class="fc-action-text"></div>
+                    
+                    <div class="fc-controls">
+                        <button class="fc-btn fc-btn-red" onclick="fcWrong(event)">❌</button>
+                        <button class="fc-btn fc-btn-green" onclick="fcRight(event)">✅</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- END SCREEN -->
+    <div id="screen-end" class="hidden card" style="text-align: center;">
+        <div style="font-size: 5rem; margin-bottom: 20px;">🏆</div>
+        <h1 style="color: var(--success); font-size: 2.8rem; margin-bottom: 10px;">Mastery Achieved!</h1>
+        <p style="font-size: 1.2rem; color: var(--text-muted); margin-bottom: 40px;">You have successfully cleared the entire working pool for this section.</p>
+        <button class="btn" onclick="goHome()">Return to Main Menu</button>
+    </div>
+
+</div>
+
+<script>
+    // --- HELPER FUNCTIONS FOR SOUND RENDERING ---
+    function getSoundImgHTML(imgName, isQuiz) {
+        const cls = isQuiz ? 'quiz-sound-img' : 'ref-sound-img';
+        return `<img class="${cls}" src="images/Sound-signals/${imgName}" onerror="if(!this.dataset.tried){this.dataset.tried=1;this.src='images/${imgName}';}" alt="Sound Signal">`;
+    }
+
+    function renderSoundString(str, isQuiz) {
+        let html = '<div style="display:flex; justify-content:center; gap:6px; align-items:center; flex-wrap:wrap;">';
+        const dashCls = isQuiz ? 'quiz-sound-dash' : 'ref-sound-dash';
+        const dotCls = isQuiz ? 'quiz-sound-dot' : 'ref-sound-dot';
+        for(let i=0; i<str.length; i++) {
+            let char = str[i];
+            if(char === '•') html += `<div class="${dotCls}"></div>`;
+            else if(char === '—') html += `<div class="${dashCls}"></div>`;
+            else if(char === ' ') html += '<div style="width: 8px;"></div>';
+            else html += `<span style="font-size: 1.2rem; line-height: 1;">${char}</span>`;
+        }
+        html += '</div>';
+        return html;
+    }
+
+    // --- DATA LIBRARY ---
+    const library = {
+        rules: [
+            { id: 1, name: "Application", text: "Applies to all vessels on the <strong>high seas</strong> and connected navigable waters.<br><br>Local authorities can set <strong>special rules</strong> (like for harbors or rivers), but they must align as closely as possible with these Rules.<br><br>Allows for special rules and extra signal lights for <strong>ships of war</strong>, <strong>convoys</strong>, and <strong>fishing fleets</strong>, provided they cannot be mistaken for standard signals." },
+            { id: 2, name: "Responsibility", text: "The 'General Prudential Rule'.<br><br>Nothing in the Rules excuses a vessel, owner, master, or crew from the consequences of <strong>neglect</strong> to comply with the rules or good seamanship.<br><br>You must consider all <strong>dangers of navigation and collision</strong>, including vessel limitations. You are allowed to depart from these rules if it is absolutely necessary to <strong>avoid immediate danger</strong>." },
+            { id: 3, name: "General Definitions", text: "<ul><li><strong>Vessel:</strong> Any watercraft used for transportation.</li><li><strong>Power-driven vessel:</strong> Any vessel propelled by machinery.</li><li><strong>Sailing vessel:</strong> Any vessel under sail, provided propelling machinery (if fitted) is not being used.</li><li><strong>Vessel engaged in fishing:</strong> Fishing with nets, lines, or trawls that restrict maneuverability. (Does not include trolling).</li><li><strong>Seaplane:</strong> Aircraft designed to maneuver on water.</li><li><strong>Vessel not under command (NUC):</strong> A vessel which through an exceptional circumstance is broken down or unable to maneuver.</li><li><strong>Vessel restricted in her ability to maneuver (RAM):</strong> A vessel restricted due to the nature of her work (e.g., dredging, towing, laying cable, replenishment).</li><li><strong>Vessel constrained by her draft (CBD):</strong> A power-driven vessel severely restricted in course deviation due to her draft relative to the water depth.</li><li><strong>Underway:</strong> Not anchored, tied to shore, or aground.</li><li><strong>Restricted visibility:</strong> Fog, mist, falling snow, heavy rain, sandstorms, etc.</li></ul>" },
+            { id: 4, name: "Application (Part B, Sec I)", text: "Rules 4 through 10 apply in <strong>any condition of visibility</strong>." },
+            { id: 5, name: "Look-out", text: "Every vessel shall at all times maintain a <strong>proper look-out</strong> using sight, hearing, and all available means appropriate (like radar) to fully assess the situation and the risk of collision." },
+            { id: 6, name: "Safe Speed", text: "Every vessel must proceed at a <strong>safe speed</strong> to allow effective action to avoid collision and stop within an appropriate distance.<br><br><strong>(a) By all vessels:</strong><br>Consider the state of <strong>visibility</strong>, traffic <strong>density</strong>, vessel <strong>manageability</strong> (stopping distance/turning ability), background <strong>lights</strong> at night, state of the <strong>wind</strong>/sea/current, and the vessel's <strong>draft</strong>.<br><br><strong>(b) Additionally, by vessels with operational radar:</strong><br>Consider the <strong>characteristics</strong> and limitations of the radar, <strong>constraints</strong> of the range scale, the <strong>effect</strong> of sea state or weather interference, the <strong>possibility</strong> that small targets may not be detected, the <strong>number</strong> and location of targets, and a <strong>more</strong> exact assessment of visibility." },
+            { id: 7, name: "Risk of Collision", text: "Use all available means to determine if <strong>risk of collision</strong> exists. If in doubt, assume it does.<br><br>Proper use must be made of <strong>radar equipment</strong> if operational.<br><br><strong>Assumptions shall not be made</strong> on the basis of scanty information.<br><br>Risk is deemed to exist if the <strong>compass bearing</strong> of an approaching vessel does not appreciably change (or even if it does change when approaching a very large vessel or a tow at close range)." },
+            { id: 8, name: "Action to Avoid Collision", text: "Actions to avoid collision must be <strong>positive, made in ample time</strong>, and follow good seamanship.<br><br>Any <strong>alteration of course and/or speed</strong> must be large enough to be obvious to the other vessel. Avoid small successive alterations.<br><br>An <strong>alteration of course alone</strong> is often the most effective action if there is sufficient sea room.<br><br>Action must result in passing at a <strong>safe distance</strong>. If you need more time to assess the situation, you must <strong>slacken your speed</strong> or stop completely.<br><br>If required <strong>not to impede</strong> another vessel, you must take early action to allow them sufficient sea room." },
+            { id: 9, name: "Narrow Channels", text: "Keep to the outer limit of the channel which lies on your <strong>starboard side</strong>.<br><br>Vessels <strong>less than 20 meters</strong>, <strong>sailing vessels</strong>, and <strong>fishing vessels</strong> shall not impede the passage of large vessels that can only navigate within the channel.<br><br>Do not <strong>cross</strong> the channel if it impedes traffic.<br><br><strong>Overtaking</strong> requires indicating intention with sound signals and receiving an agreement blast.<br><br>Nearing an obscured <strong>bend</strong> requires sounding one prolonged blast." },
+            { id: 10, name: "Traffic Separation Schemes", text: "When using a <strong>Traffic Separation Scheme (TSS)</strong>, proceed in the appropriate <strong>traffic lane</strong> in the correct direction. Keep clear of the <strong>separation line or zone</strong>.<br><br>Join or leave lanes at the <strong>termination</strong> or at as <strong>small an angle</strong> as possible.<br><br>Avoid <strong>crossing</strong> lanes. If obliged to cross, do so at <strong>right angles</strong> to the traffic flow.<br><br>Vessels <strong>less than 20 meters</strong>, <strong>sailing vessels</strong>, and <strong>fishing vessels</strong> may use inshore traffic zones and shall <strong>not impede</strong> power-driven vessels following a traffic lane." },
+            { id: 11, name: "Application (Part B, Sec II)", text: "Rules in this section (Rules 11-18) apply only to vessels <strong>in sight of one another</strong>." },
+            { id: 12, name: "Sailing Vessels", text: "When two <strong>sailing vessels</strong> are approaching and risk collision, one keeps clear as follows:<ul><li>(i) Wind on <strong>different sides</strong>: the vessel with the wind on her <strong>port side</strong> gives way.</li><li>(ii) Wind on the <strong>same side</strong>: the vessel to <strong>windward</strong> gives way to the leeward vessel.</li><li>(iii) If on a port tack and you see a vessel to windward but <strong>cannot determine</strong> her tack with certainty, you give way.</li></ul>" },
+            { id: 13, name: "Overtaking", text: "Any vessel <strong>overtaking</strong> another shall keep out of the way.<br><br>You are overtaking if you approach from a direction <strong>more than 22.5 degrees abaft her beam</strong> (at night, you would only see her sternlight).<br><br>If in <strong>doubt</strong>, assume you are overtaking and act accordingly.<br><br>Any subsequent alteration of bearing <strong>does not relieve</strong> the overtaking vessel of her duty to keep clear until finally past." },
+            { id: 14, name: "Head-on Situation", text: "When two power-driven vessels meet on reciprocal courses, each shall alter course to <strong>starboard</strong> to pass on the <strong>port side</strong> of the other.<br><br>This applies when you see the other ahead and by night can see their <strong>masthead lights in line</strong> and/or <strong>both sidelights</strong>.<br><br>If in <strong>doubt</strong>, assume the situation exists and turn starboard." },
+            { id: 15, name: "Crossing Situation", text: "When two power-driven vessels cross, the vessel which has the other on her own <strong>starboard side</strong> shall <strong>keep out of the way</strong> and, if circumstances permit, <strong>avoid crossing ahead</strong> of the other vessel." },
+            { id: 16, name: "Action by Give-way Vessel", text: "Every vessel directed to keep out of the way shall take <strong>early and substantial action</strong> to keep well clear." },
+            { id: 17, name: "Action by Stand-on Vessel", text: "(a) The stand-on vessel shall <strong>keep her course and speed</strong>.<br><br>(a)(ii) She <strong>may however take action</strong> to avoid collision as soon as it becomes apparent the give-way vessel is not taking appropriate action.<br><br>(b) When collision <strong>cannot be avoided</strong> by the give-way vessel alone, the stand-on vessel <strong>shall take such action</strong> as will best aid to avoid collision.<br><br>(c) A power-driven vessel altering course under (a) should try to <strong>not alter course to port</strong> for a vessel on her own port side.<br><br>(d) This Rule <strong>does not relieve</strong> the give-way vessel of her obligation." },
+            { id: 18, name: "Responsibilities Between Vessels", text: "Except where Rules 9, 10, and 13 otherwise require:<br><br>A <strong>power-driven vessel</strong> gives way to:<ul><li>A vessel <strong>not under command (NUC)</strong></li><li>A vessel <strong>restricted in her ability to maneuver (RAM)</strong></li><li>A vessel engaged in <strong>fishing</strong></li><li>A <strong>sailing vessel</strong></li></ul>A <strong>sailing vessel</strong> gives way to: NUC, RAM, and Fishing.<br><br>A vessel engaged in <strong>fishing</strong> gives way to: NUC and RAM.<br><br>Any vessel (except NUC/RAM) shall avoid impeding the safe passage of a vessel <strong>constrained by her draft (CBD)</strong>." },
+            { id: 19, name: "Conduct of Vessels in Restricted Visibility", text: "Applies to vessels <strong>not in sight</strong> of one another.<br><br>Proceed at a <strong>safe speed</strong> adapted to the prevailing circumstances. Power-driven vessels must have their <strong>engines ready for immediate maneuver</strong>.<br><br>If detecting a vessel by <strong>radar alone</strong>, determine if risk exists. If taking avoiding action by altering course, avoid:<ul><li>(i) Altering course to <strong>port</strong> for a vessel forward of the beam.</li><li>(ii) Altering course towards a vessel abeam or abaft the beam.</li></ul>Except where risk does not exist, if you hear a <strong>fog signal forward of your beam</strong>, you must <strong>reduce your speed to the minimum</strong> at which you can keep your course, and navigate with extreme caution." },
+            { id: 20, name: "Application (Lights and Shapes)", text: "Rules concerning <strong>lights</strong> shall be complied with from <strong>sunset to sunrise</strong>, and during restricted visibility. Rules concerning <strong>shapes</strong> shall be complied with by <strong>day</strong>." },
+            { id: 21, name: "Definitions (Lights)", text: "<ul><li><strong>Masthead light:</strong> White, 225° forward.</li><li><strong>Sidelights:</strong> Green (starboard) and Red (port), 112.5° each.</li><li><strong>Sternlight:</strong> White, 135° aft.</li><li><strong>Towing light:</strong> Yellow, 135° aft.</li><li><strong>All-round light:</strong> 360°.</li><li><strong>Flashing light:</strong> 120+ flashes per minute.</li></ul>" },
+            { id: 22, name: "Visibility of Lights", text: "Specifies minimum visible ranges based on vessel length. Example: Vessels >50m require Masthead lights visible at <strong>6 miles</strong>, and sidelights/sternlights at <strong>3 miles</strong>." },
+            { id: 23, name: "Power-driven Vessels Underway", text: "Must exhibit: a masthead light forward, a second masthead light abaft and higher (if >50m), sidelights, and a sternlight." },
+            { id: 24, name: "Towing and Pushing", text: "When towing: <strong>two masthead lights</strong> in a vertical line (<strong>three</strong> if tow >200m). Must show sidelights, sternlight, towing light. Day shape: <strong>diamond</strong> if tow >200m." },
+            { id: 25, name: "Sailing Vessels Underway and Under Oars", text: "Exhibit <strong>sidelights and a sternlight</strong>. If <20m, they may be combined in a masthead lantern. Vessels under oars may just show an electric torch in sufficient time." },
+            { id: 26, name: "Fishing Vessels", text: "<strong>Trawling:</strong> Green over White all-round lights. <strong>Other fishing:</strong> Red over White all-round lights. Day shape: two cones with apexes together." },
+            { id: 27, name: "Vessels NUC or RAM", text: "<strong>NUC:</strong> Red over Red all-round lights, two balls in a vertical line.<br><strong>RAM:</strong> Red/White/Red all-round lights, Ball/Diamond/Ball shapes. Dredging adds side clearance lights." },
+            { id: 28, name: "Vessels Constrained by their Draft", text: "May exhibit <strong>three all-round red lights</strong> in a vertical line, or a <strong>cylinder</strong> day shape, in addition to standard power-driven vessel lights." },
+            { id: 29, name: "Pilot Vessels", text: "Engaged on pilotage duty: <strong>White over Red</strong> all-round lights at the masthead, plus sidelights/sternlight when making way." },
+            { id: 30, name: "Anchored Vessels and Vessels Aground", text: "<strong>At anchor:</strong> All-round white light forward (and aft if >50m), or one ball shape.<br><strong>Aground:</strong> Anchor lights plus two red all-round lights or three balls in a vertical line." },
+            { id: 31, name: "Seaplanes", text: "If impracticable to exhibit exact lights/shapes, exhibit ones as closely similar in characteristics and position as possible." },
+            { id: 32, name: "Definitions (Sound Signals)", text: "'Whistle' means any sound signaling appliance. 'Short blast' = approx <strong>1 second</strong>. 'Prolonged blast' = <strong>4 to 6 seconds</strong>." },
+            { id: 33, name: "Equipment for Sound Signals", text: "Vessels <strong>12m+</strong> must have a whistle. Vessels <strong>20m+</strong> require a bell. Vessels <strong>100m+</strong> must also have a gong." },
+            { id: 34, name: "Maneuvering and Warning Signals", text: "Altering course: 1 short (starboard), 2 short (port). Astern propulsion: 3 short. Doubt/Danger: 5+ short rapid blasts. Overtaking: 2 prolonged + short(s)." },
+            { id: 35, name: "Sound Signals in Restricted Visibility", text: "PDV making way: <strong>1 prolonged</strong>. PDV stopped: <strong>2 prolonged</strong>. NUC/RAM/Sailing/Fishing/Towing: <strong>1 prolonged, 2 short</strong>. Anchored: Rapid ringing of bell." },
+            { id: 36, name: "Signals to Attract Attention", text: "Any vessel may make light/sound signals that cannot be mistaken for authorized signals to attract attention to a danger." },
+            { id: 37, name: "Distress Signals", text: "When in distress and requiring assistance, use signals described in Annex IV (e.g., continuous sounding, flares, Mayday, orange smoke)." },
+            { id: 38, name: "Exemptions", text: "Provides legacy exemptions regarding the repositioning of lights and sound appliances for older vessels." }
+        ],
+        signals: [
+            // NIGHT SIGNALS
+            { type: 'night', q: "Identify this Night Signal:", layout: 'vertical', elements: ['light-red', 'light-red'], ans: "Not Under Command", rule: "Rule 27(a)(i)" },
+            { type: 'night', q: "Identify this Night Signal:", layout: 'vertical', elements: ['light-red', 'light-white', 'light-red'], ans: "Restricted in Ability to Maneuver", rule: "Rule 27(b)(i)" },
+            { type: 'night', q: "Identify this Night Signal:", layout: 'vertical', elements: ['light-white', 'light-white'], ans: "Towing (Length of tow < 200m)", rule: "Rule 24(a)(i)" },
+            { type: 'night', q: "Identify this Night Signal:", layout: 'vertical', elements: ['light-white', 'light-white', 'light-white'], ans: "Towing (Length of tow > 200m)", rule: "Rule 24(a)(i)" },
+            { type: 'night', q: "Identify this Night Signal:", layout: 'vertical', elements: ['light-white', 'light-red'], ans: "Pilotage Duty", rule: "Rule 29(a)(i)" },
+            { type: 'night', q: "Identify this Night Signal:", layout: 'vertical', elements: ['light-red', 'light-red', 'light-red'], ans: "Constrained by Draft", rule: "Rule 28" },
+            { type: 'night', q: "Identify this Night Signal:", layout: 'horizontal', elements: ['group:light-green,light-green,light-green'], ans: "Mineclearance Operations", rule: "Rule 27(f)" },
+            { type: 'night', q: "Identify this Night Signal:", layout: 'horizontal', elements: ['group:light-red,light-red', 'group:light-red,light-white,light-red', 'group:light-green,light-green'], ans: "Dredging/Underwater Ops (Obstruction on Port, Clear on Starboard)", rule: "Rule 27(d)" },
+            { type: 'night', q: "Identify this Night Signal:", layout: 'vertical', elements: ['light-green', 'light-white'], ans: "Trawling", rule: "Rule 26(b)(i)" },
+            { type: 'night', q: "Identify this Night Signal:", layout: 'vertical', elements: ['light-red', 'light-white'], ans: "Fishing (Not Trawling)", rule: "Rule 26(c)(i)" },
+            { type: 'night', q: "Identify this Night Signal:", layout: 'horizontal', elements: ['group:light-red,light-white', 'light-white'], ans: "Fishing (Outlying gear > 150m)", rule: "Rule 26(c)(ii)" },
+            // DAY SHAPES
+            { type: 'day', q: "Identify this Day Shape:", layout: 'vertical', elements: ['shape-ball', 'shape-ball'], ans: "Not Under Command", rule: "Rule 27(a)(ii)" },
+            { type: 'day', q: "Identify this Day Shape:", layout: 'vertical', elements: ['shape-ball', 'shape-diamond', 'shape-ball'], ans: "Restricted in Ability to Maneuver", rule: "Rule 27(b)(ii)" },
+            { type: 'day', q: "Identify this Day Shape:", layout: 'vertical', elements: ['shape-diamond'], ans: "Tow exceeding 200m", rule: "Rule 24(a)(v)" },
+            { type: 'day', q: "Identify this Day Shape:", layout: 'vertical', elements: ['shape-cylinder'], ans: "Constrained by Draft", rule: "Rule 28" },
+            { type: 'day', q: "Identify this Day Shape:", layout: 'vertical', elements: ['shape-ball', 'shape-ball', 'shape-ball'], ans: "Vessel Aground", rule: "Rule 30(d)(ii)" },
+            { type: 'day', q: "Identify this Day Shape:", layout: 'vertical', elements: ['shape-cone-down'], ans: "Sailing vessel propelled by machinery", rule: "Rule 25(e)" },
+            { type: 'day', q: "Identify this Day Shape:", layout: 'vertical', elements: ['cones-together'], ans: "Vessel Engaged in Fishing", rule: "Rule 26(b)(i) & (c)(i)" }
+        ],
+        sounds: [
+            { q: "•", desc: "(1 short blast)", ans: "I am altering my course to starboard (In sight)", rule: "Rule 34(a)" },
+            { q: "••", desc: "(2 short blasts)", ans: "I am altering my course to port (In sight)", rule: "Rule 34(a)" },
+            { q: "•••", desc: "(3 short blasts)", ans: "I am operating astern propulsion (In sight)", rule: "Rule 34(a)" },
+            { q: "•••••", desc: "(5 or more rapid short blasts)", ans: "Doubt about intentions / Danger signal", rule: "Rule 34(d)" },
+            { q: "— — •", desc: "(2 prolonged, 1 short blast)", ans: "I intend to overtake you on your starboard side (Narrow Channel)", rule: "Rule 34(c)(i)" },
+            { q: "— — ••", desc: "(2 prolonged, 2 short blasts)", ans: "I intend to overtake you on your port side (Narrow Channel)", rule: "Rule 34(c)(i)" },
+            { q: "— • — •", desc: "(Prolonged, short, prolonged, short)", ans: "Agreement to be overtaken (By overtaken vessel)", rule: "Rule 34(c)(ii)" },
+            { q: "—", desc: "(1 prolonged blast)", ans: "Approaching a bend OR Making way in Restricted Vis", rule: "Rule 34(e) / 35(a)" },
+            { q: "— —", desc: "(2 prolonged blasts)", ans: "Power-driven vessel underway but stopped (Restricted Vis)", rule: "Rule 35(b)" },
+            { q: "— ••", desc: "(1 prolonged, 2 short blasts)", ans: "NUC, RAM, Draft, Sailing, Fishing, or Towing (Restricted Vis)", rule: "Rule 35(c)" },
+            { q: "— •••", desc: "(1 prolonged, 3 short blasts)", ans: "Vessel being towed [if manned] (Restricted Vis)", rule: "Rule 35(e)" },
+            { q: "• — •", desc: "(1 short, 1 prolonged, 1 short blast)", ans: "Vessel at anchor warning approaching vessel (Restricted Vis)", rule: "Rule 35(g)" },
+            { q: "••••", desc: "(4 short blasts)", ans: "Identity signal for a pilot vessel", rule: "Rule 35(k)" },
+            { q: "", img: "sound2.png", desc: "Rapid ringing for 5s", ans: "Vessel at anchor < 100m (Restricted Vis)", rule: "Rule 35(g)" },
+            { q: "", img: "sound3.png", desc: "Rapid bell 5s forward, rapid gong 5s aft", ans: "Vessel at anchor ≥ 100m (Restricted Vis)", rule: "Rule 35(g)" },
+            { q: "", img: "sound1.png", desc: "3 distinct strokes + rapid bell 5s + 3 strokes", ans: "Vessel aground < 100m (Restricted Vis)", rule: "Rule 35(h)" }
+        ],
+        knowledge: [
+            { q: "What is the minimum visibility range for a masthead light on a vessel 50 meters or more in length?", opts: ["6 miles", "5 miles", "3 miles", "2 miles"], ans: "6 miles", rule: "Rule 22(a)" },
+            { q: "What is the arc of visibility for a masthead light?", opts: ["225 degrees", "135 degrees", "112.5 degrees", "360 degrees"], ans: "225 degrees", rule: "Rule 21(a)", img: "images/angle1.png" },
+            { q: "What is the arc of visibility for a sternlight?", opts: ["135 degrees", "112.5 degrees", "225 degrees", "360 degrees"], ans: "135 degrees", rule: "Rule 21(c)", img: "images/angle1.png" },
+            { q: "What is the duration of a 'short blast'?", opts: ["About 1 second", "2 to 3 seconds", "4 to 6 seconds", "8 seconds"], ans: "About 1 second", rule: "Rule 32(b)" },
+            { q: "What is the duration of a 'prolonged blast'?", opts: ["4 to 6 seconds", "About 1 second", "8 to 10 seconds", "2 to 3 seconds"], ans: "4 to 6 seconds", rule: "Rule 32(c)" },
+            { q: "At what angle abaft the beam is a vessel considered to be 'overtaking'?", opts: ["More than 22.5 degrees", "Exactly 45 degrees", "More than 10 degrees", "From directly behind only"], ans: "More than 22.5 degrees", rule: "Rule 13(b)", img: "images/Angle2.png" },
+            { q: "What frequency defines a 'flashing light'?", opts: ["120 flashes or more per minute", "60 flashes per minute", "30 flashes per minute", "90 flashes per minute"], ans: "120 flashes or more per minute", rule: "Rule 21(f)" }
+        ],
+        flashcards: [
+            { file: "images/01.png", quizTarget: "Power-Driven Vessel", context: "Power-Driven Vessel. Target is Power-Driven on stbd side.", status: "Give-Way Vessel", color: "red", rule: "Rule 15", action: "Alter course to starboard to pass astern of the crossing vessel. Avoid crossing ahead." },
+            { file: "images/02.png", quizTarget: false, context: "Power-Driven Vessel. Target is Power-Driven on port side.", status: "Stand-On Vessel", color: "green", rule: "Rule 15 & Rule 17", action: "Keep course and speed. Be prepared to take avoiding action if give-way vessel fails to do so." },
+            { file: "images/03.png", quizTarget: "Sailing Vessel (under power)", context: "Power-Driven Vessel. Target is Sailing Vessel under power on port side.", status: "Stand-On Vessel", color: "green", rule: "Rule 3, 15 & 17", action: "Sailing vessel using machinery is considered power-driven. Keep course and speed." },
+            { file: "images/04.png", quizTarget: "Sailing Vessel", context: "Power-Driven Vessel. Target is Sailing Vessel head-on.", status: "Give-Way Vessel", color: "red", rule: "Rule 18", action: "Power-driven vessels must keep out of the way of sailing vessels. Take substantial action to keep clear." },
+            { file: "images/05.png", quizTarget: "Anchored Vessel", context: "Power-Driven Vessel. Target is Anchored Vessel directly ahead.", status: "Give-Way Vessel", color: "red", rule: "Rule 8 & 18", action: "Target is not making way. Alter course in ample time to keep well clear." },
+            { file: "images/06.png", quizTarget: false, context: "Power-Driven Vessel. Target is Power-Driven directly ahead.", status: "Give-Way (Both)", color: "red", rule: "Rule 14", action: "Both vessels alter course to starboard to pass port-to-port." },
+            { file: "images/07.png", quizTarget: "Vessel with Diver Down", context: "Power-Driven Vessel. Target ahead flying Alpha Flag (diver down on port).", status: "Give-Way Vessel", color: "red", rule: "Rule 18 & 27", action: "Pass well clear on their starboard side at a safe, slow speed." },
+            { file: "images/08.png", quizTarget: false, context: "Fishing Vessel. Target is Sailing Vessel on port side.", status: "Stand-On Vessel", color: "green", rule: "Rule 18", action: "Sailing vessels must keep out of the way of vessels engaged in fishing. Maintain course and speed." },
+            { file: "images/09.png", quizTarget: false, context: "Fishing Vessel. Target is Power-Driven on starboard side.", status: "Stand-On Vessel", color: "green", rule: "Rule 18", action: "Power-driven vessels must keep out of the way of fishing vessels. Maintain course and speed." },
+            { file: "images/10.png", quizTarget: "Vessel Not Under Command (NUC)", context: "Power-Driven Vessel. Target is NUC on port side.", status: "Give-Way Vessel", color: "red", rule: "Rule 18", action: "Keep out of the way of a vessel not under command." },
+            { file: "images/11.png", quizTarget: "Restricted in Ability to Maneuver (RAM)", context: "Power-Driven Vessel. Target is RAM on starboard side.", status: "Give-Way Vessel", color: "red", rule: "Rule 18", action: "Keep out of the way of a vessel restricted in ability to maneuver." },
+            { file: "images/12.png", quizTarget: "Constrained by Draft (CBD)", context: "Power-Driven Vessel. Target is CBD on port side.", status: "Do Not Impede", color: "red", rule: "Rule 18(d)", action: "Do not impede safe passage of a vessel constrained by draft. Alter course early." },
+            { file: "images/13.png", quizTarget: false, context: "Power-Driven Vessel. Target is Power-Driven ahead (overtaking).", status: "Give-Way Vessel", color: "red", rule: "Rule 13", action: "Keep out of the way of the vessel being overtaken until finally past and clear." },
+            { file: "images/14.png", quizTarget: false, context: "Overtaking another vessel in a Narrow Channel.", status: "Give-Way Vessel", color: "red", rule: "Rule 9(e) & 34(c)", action: "Indicate intention using sound signals. Only overtake once they sound the agreement signal." },
+            { file: "images/15.png", quizTarget: false, context: "Fishing Vessel. Target is NUC on starboard side.", status: "Give-Way Vessel", color: "red", rule: "Rule 18", action: "Fishing vessels must keep out of the way of NUC vessels." },
+            { file: "images/16.png", quizTarget: false, context: "Fishing Vessel. Target is CBD on starboard side.", status: "Do Not Impede", color: "red", rule: "Rule 18(d)", action: "Do not impede the safe passage of a vessel constrained by draft." },
+            { file: "images/17.png", quizTarget: false, context: "Sailing Vessel (port tack). Target is Sailing (port tack), windward of us.", status: "Stand-On Vessel", color: "green", rule: "Rule 12(a)(ii)", action: "Wind on same side: windward vessel keeps clear. We are leeward, maintain course." },
+            { file: "images/18.png", quizTarget: "Fishing Vessel", context: "Sailing Vessel (port tack). Target is Fishing Vessel on port side.", status: "Give-Way Vessel", color: "red", rule: "Rule 18", action: "Sailing vessels must keep out of the way of fishing vessels." },
+            { file: "images/19.png", quizTarget: false, context: "Sailing Vessel (port tack). Target is NUC on port side.", status: "Give-Way Vessel", color: "red", rule: "Rule 18", action: "Sailing vessels must keep out of the way of NUC vessels." },
+            { file: "images/20.png", quizTarget: false, context: "Sailing Vessel (port tack). Target is Sailing (starboard tack).", status: "Give-Way Vessel", color: "red", rule: "Rule 12(a)(i)", action: "Wind on different sides: vessel on port tack gives way." },
+            { file: "images/21.png", quizTarget: false, context: "Sailing Vessel (starboard tack). Target is Sailing (port tack).", status: "Stand-On Vessel", color: "green", rule: "Rule 12(a)(i)", action: "Target is on port tack and must give way. Maintain course." },
+            { file: "images/22.png", quizTarget: false, context: "Power-Driven Vessel crossing a TSS.", status: "Special Rule", color: "orange", rule: "Rule 10(c)", action: "Avoid crossing. If obliged, cross on a heading as nearly as practicable at right angles to traffic flow." },
+            { file: "images/23.png", quizTarget: false, context: "Power-Driven Vessel entering a TSS.", status: "Special Rule", color: "orange", rule: "Rule 10(b)", action: "Join/leave at terminations, or enter/leave at as small an angle to traffic flow as practicable." },
+            { file: "images/24.png", quizTarget: false, context: "Power-Driven Vessel in a Narrow Channel, another Power-Driven approaching.", status: "Special Rule", color: "orange", rule: "Rule 9(a)", action: "Keep as near to the outer limit on your starboard side as is safe (pass port-to-port)." },
+            { file: "images/25.png", quizTarget: false, context: "Constrained By Draft. Target is Power-Driven on starboard.", status: "Stand-On", color: "orange", rule: "Rule 18(d) / Rule 15", action: "They must not impede you. If they fail to move, Rule 15 applies (you give way). Monitor closely." },
+            { file: "images/26.png", quizTarget: false, context: "Constrained By Draft. Target is Power-Driven on port side.", status: "Stand-On Vessel", color: "green", rule: "Rule 18(d) & Rule 15", action: "They must not impede, AND they are give-way under crossing rules. Maintain course." },
+            { file: "images/27.png", quizTarget: "Towing Vessel", context: "Power-Driven Vessel. Target is Towing head-on.", status: "Give-Way Vessel", color: "red", rule: "Rule 14", action: "Both alter course to starboard to pass port-to-port. Keep well clear of the tow." },
+            { file: "images/28.png", quizTarget: "Mine Clearance Vessel", context: "Power-Driven Vessel. Target is a Mine Clearance vessel ahead.", status: "Give-Way Vessel", color: "red", rule: "Rule 27(f)", action: "Do not approach within 1000 meters of the mineclearance vessel. Keep well clear." },
+            { file: "images/29.png", quizTarget: "Vessel Aground", context: "Power-Driven Vessel. Target is a Vessel Aground ahead.", status: "Give-Way Vessel", color: "red", rule: "Rule 30(d)", action: "Vessel is aground and cannot move. Alter course to keep well clear." },
+            { file: "images/30.png", quizTarget: false, context: "Power-Driven Vessel. Target is a Vessel Aground ahead.", status: "Give-Way Vessel", color: "red", rule: "Rule 30(d)", action: "Vessel is aground and cannot move. Alter course to keep well clear." }
+        ]
+    };
+
+    // --- STATE MANAGEMENT ---
+    let currentMode = '';
+    let activePool = [];
+    let currentQIndex = -1;
+    let currentQ = null;
+    let streak = 0;
+    let fcPool = [];
+    let fcIndex = -1;
+
+    // --- NAVIGATION ---
+    function hideAllScreens() {
+        ['screen-home', 'screen-lookup', 'screen-sounds-setup', 'screen-knowledge-setup', 'screen-quiz', 'screen-flashcards', 'screen-end'].forEach(id => {
+            document.getElementById(id).classList.add('hidden');
+        });
+    }
+
+    function goHome() {
+        hideAllScreens();
+        document.getElementById('screen-home').classList.remove('hidden');
+    }
+
+    // --- APP INIT ---
+    function init(m) {
+        currentMode = m;
+        hideAllScreens();
+        
+        if (m === 'lookup') {
+            document.getElementById('screen-lookup').classList.remove('hidden');
+            document.getElementById('lookup-input').value = '';
+            document.getElementById('lookup-result').style.display = 'none';
+            document.getElementById('lookup-input').focus();
+            return;
+        }
+
+        if (m === 'sounds-setup') {
+            document.getElementById('screen-sounds-setup').classList.remove('hidden');
+            buildSoundRefGrid();
+            return;
+        }
+        
+        if (m === 'knowledge-setup') {
+            document.getElementById('screen-knowledge-setup').classList.remove('hidden');
+            return;
+        }
+
+        if (m === 'flashcards') {
+            document.getElementById('screen-flashcards').classList.remove('hidden');
+            fcPool = [...library.flashcards];
+            loadFlashcard();
+            return;
+        }
+
+        const quizScreen = document.getElementById('screen-quiz');
+        quizScreen.classList.remove('hidden');
+        
+        const ruleToggle = document.getElementById('rule-toggle-container');
+        if (m === 'typed' || m === 'typed_1_19' || m === 'typed_all') {
+            currentMode = 'typed';
+            ruleToggle.classList.remove('hidden');
+            setRuleScope('19'); 
+            return; 
+        } else {
+            ruleToggle.classList.add('hidden');
+        }
+
+        if (m === 'sounds') {
+            activePool = [...library.sounds];
+        } else if (m === 'fc-quiz') {
+            activePool = library.flashcards.filter(c => c.quizTarget);
+        } else {
+            if (m === 'visuals') activePool = [...library.signals];
+            else if (m === 'knowledge') activePool = [...library.knowledge];
+        }
+
+        streak = 0;
+        const labels = {
+            'visuals': 'LIGHTS AND DAY SHAPES',
+            'sounds': 'SOUND SIGNALS',
+            'knowledge': 'GENERAL KNOWLEDGE',
+            'fc-quiz': 'SCENARIO IDENTIFICATION'
+        };
+        document.getElementById('quiz-mode-label').innerText = labels[m] || 'MASTERY MODE';
+
+        loadQuestion();
+    }
+
+    // --- GLOBAL KEY LISTENER ---
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            const nextBtn = document.getElementById('next-btn');
+            if (nextBtn && !nextBtn.classList.contains('hidden')) {
+                loadQuestion();
+                e.preventDefault();
+            } 
+            else if (currentMode === 'typed') {
+                const inputEl = document.getElementById('answer-input');
+                if (document.activeElement === inputEl && inputEl.value.trim() !== '') {
+                    checkTyped();
+                    e.preventDefault();
+                }
+            }
+        }
+    });
+
+    // --- RULE LOOKUP ---
+    function searchRule() {
+        const inputVal = document.getElementById('lookup-input').value.trim();
+        const resultBox = document.getElementById('lookup-result');
+        if (!inputVal) { resultBox.style.display = 'none'; return; }
+
+        const rule = library.rules.find(r => r.id == inputVal);
+        if (rule) {
+            document.getElementById('lookup-title').innerText = `Rule ${rule.id}: ${rule.name}`;
+            document.getElementById('lookup-body').innerHTML = rule.text; 
+            resultBox.style.display = 'block';
+        } else {
+            document.getElementById('lookup-title').innerText = "Rule Not Found";
+            document.getElementById('lookup-body').innerText = "Please enter a valid rule number (1-38).";
+            resultBox.style.display = 'block';
+        }
+    }
+
+    // --- TYPED RULES TOGGLE ---
+    function setRuleScope(scope) {
+        document.getElementById('tog-19').classList.remove('active');
+        document.getElementById('tog-all').classList.remove('active');
+        
+        if (scope === '19') {
+            document.getElementById('tog-19').classList.add('active');
+            activePool = library.rules.filter(r => r.id <= 19);
+            document.getElementById('quiz-mode-label').innerText = 'RULES 1-19';
+        } else {
+            document.getElementById('tog-all').classList.add('active');
+            activePool = [...library.rules];
+            document.getElementById('quiz-mode-label').innerText = 'ALL RULES (1-38)';
+        }
+        streak = 0;
+        loadQuestion();
+    }
+
+    // --- SOUND REFERENCE GRID ---
+    function buildSoundRefGrid() {
+        const grid = document.getElementById('sound-ref-grid');
+        grid.innerHTML = '';
+        library.sounds.forEach(s => {
+            const symbolContent = s.img ? getSoundImgHTML(s.img, false) : renderSoundString(s.q, false);
+            grid.innerHTML += `
+            <div class="sound-ref-card">
+                <div class="sound-ref-symbol">${symbolContent}</div>
+                <div class="sound-ref-meaning">${s.ans}</div>
+                <div class="sound-ref-rule">${s.rule}</div>
+            </div>`;
+        });
+    }
+
+    // --- LOAD QUESTION (QUIZ) ---
+    function loadQuestion() {
+        if (activePool.length === 0) {
+            hideAllScreens();
+            document.getElementById('screen-end').classList.remove('hidden');
+            return;
+        }
+
+        currentQIndex = Math.floor(Math.random() * activePool.length);
+        currentQ = activePool[currentQIndex];
+        updateStats();
+
+        document.getElementById('feedback').classList.add('hidden');
+        document.getElementById('next-btn').classList.add('hidden');
+        document.getElementById('visual-display').classList.add('hidden');
+        document.getElementById('image-display').classList.add('hidden');
+        document.getElementById('typed-input-area').classList.add('hidden');
+        document.getElementById('options-area').classList.add('hidden');
+        
+        document.getElementById('sound-display-area').classList.add('hidden');
+        document.getElementById('sound-desc-area').classList.add('hidden');
+
+        const inputEl = document.getElementById('answer-input');
+        inputEl.value = '';
+        inputEl.disabled = false;
+
+        if (currentMode === 'typed') {
+            document.getElementById('q-text').innerText = `What is the Rule Number for:\n"${currentQ.name}"?`;
+            document.getElementById('typed-input-area').classList.remove('hidden');
+            inputEl.focus();
+        } 
+        else if (currentMode === 'visuals') {
+            document.getElementById('visual-display').classList.remove('hidden');
+            drawVisuals(currentQ.elements, currentQ.layout);
+            document.getElementById('q-text').innerText = currentQ.q;
+            generateDynamicOptions(currentQ.ans, currentQ.rule, 'signals');
+        }
+        else if (currentMode === 'sounds') {
+            document.getElementById('q-text').innerHTML = `What does this sound signal indicate?`;
+            const symbolContent = currentQ.img ? getSoundImgHTML(currentQ.img, true) : renderSoundString(currentQ.q, true);
+            document.getElementById('sound-display-area').innerHTML = symbolContent;
+            document.getElementById('sound-display-area').classList.remove('hidden');
+            document.getElementById('sound-desc-area').innerText = currentQ.desc;
+            document.getElementById('sound-desc-area').classList.remove('hidden');
+            
+            generateDynamicOptions(currentQ.ans, currentQ.rule, 'sounds');
+        }
+        else if (currentMode === 'knowledge') {
+            document.getElementById('q-text').innerHTML = `${currentQ.q}`;
+            generateKnowledgeOptions();
+        }
+        else if (currentMode === 'fc-quiz') {
+            document.getElementById('image-display').classList.remove('hidden');
+            document.getElementById('quiz-img').src = currentQ.file;
+            document.getElementById('q-text').innerText = "Identify the approaching vessel:";
+            generateDynamicOptions(currentQ.quizTarget, currentQ.rule, 'flashcards_targets');
+        }
+    }
+
+    // --- VISUAL DRAWING (Lights/Shapes) ---
+    function createVisualElement(item) {
+        const el = document.createElement('div');
+        if (item.startsWith('light-')) {
+            let parts = item.split(' ');
+            let isSmall = parts[0].includes('-small-');
+            let color = parts[0].substring(parts[0].lastIndexOf('-') + 1);
+            if(color === 'red') color = '#ef4444';
+            if(color === 'white') color = '#ffffff';
+            if(color === 'green') color = '#22c55e';
+            el.className = isSmall ? 'light-small ' + (parts[1] || '') : 'light ' + (parts[1] || '');
+            el.style.color = color; el.style.background = color;
+        } else if (item === 'cones-together') {
+            el.className = 'cones-together'; el.innerHTML = '<div class="shape-cone-down"></div><div class="shape-cone-up"></div>';
+        } else { el.className = item; }
+        return el;
+    }
+
+    function drawVisuals(arr, layout) {
+        const container = document.getElementById('visual-display');
+        container.innerHTML = '';
+        const wrapper = document.createElement('div');
+        wrapper.className = layout === 'horizontal' ? 'horizontal-group' : 'vertical-group';
+        arr.forEach(item => {
+            if(item.startsWith('group:')) {
+                const groupItems = item.split(':')[1].split(',');
+                const innerGroup = document.createElement('div'); innerGroup.className = 'vertical-group';
+                groupItems.forEach(gi => innerGroup.appendChild(createVisualElement(gi)));
+                wrapper.appendChild(innerGroup);
+            } else { wrapper.appendChild(createVisualElement(item)); }
+        });
+        container.appendChild(wrapper);
+    }
+
+    // --- MULTIPLE CHOICE GENERATOR ---
+    function generateDynamicOptions(correctName, ruleString, poolKey) {
+        const area = document.getElementById('options-area');
+        area.classList.remove('hidden'); area.innerHTML = '';
+        
+        let allAnswers = [];
+
+        if (poolKey === 'flashcards_targets') {
+            allAnswers = library.flashcards.filter(c => c.quizTarget).map(c => c.quizTarget);
+        } else {
+            allAnswers = library[poolKey];
+            if (poolKey === 'signals' && currentQ.type) {
+                allAnswers = allAnswers.filter(item => item.type === currentQ.type);
+            }
+            allAnswers = allAnswers.map(item => item.ans);
+        }
+
+        let falseOpts = [...new Set(allAnswers.filter(ans => ans !== correctName))].sort(() => 0.5 - Math.random());
+        let choices = [correctName, falseOpts[0], falseOpts[1], falseOpts[2]];
+        
+        choices.sort(() => Math.random() - 0.5).forEach(choice => {
+            const b = document.createElement('div'); b.className = 'option-btn'; b.innerText = choice;
+            b.onclick = () => handleChoice(b, choice, correctName, ruleString); area.appendChild(b);
+        });
+    }
+
+    function generateKnowledgeOptions() {
+        const area = document.getElementById('options-area');
+        area.classList.remove('hidden'); area.innerHTML = '';
+        let choices = [...currentQ.opts].sort(() => Math.random() - 0.5);
+        choices.forEach(choice => {
+            const b = document.createElement('div'); b.className = 'option-btn'; b.innerText = choice;
+            b.onclick = () => handleChoice(b, choice, currentQ.ans, currentQ.rule); area.appendChild(b);
+        });
+    }
+
+    // --- SUBMISSION HANDLING (QUIZ) ---
+    function handleChoice(btn, selected, correctAns, ruleString) {
+        if(!document.getElementById('next-btn').classList.contains('hidden')) return;
+        const btns = document.querySelectorAll('.option-btn');
+        const feedback = document.getElementById('feedback'); feedback.classList.remove('hidden');
+
+        if(selected === correctAns) {
+            btn.classList.add('correct');
+            feedback.innerHTML = `<div class="feedback-pill correct"><span>Correct!</span> <span class="rule-citation">${ruleString ? `(${ruleString})` : ''}</span></div>`;
+            activePool.splice(currentQIndex, 1); streak++;
+        } else {
+            btn.classList.add('wrong');
+            
+            let extraHTML = '';
+            if (currentMode === 'knowledge' && currentQ.img) {
+                extraHTML = `<img src="${currentQ.img}" alt="Reference Image" class="feedback-img">`;
+            }
+
+            feedback.innerHTML = `<div class="feedback-pill wrong"><span>Incorrect.</span> <span class="rule-citation">${ruleString ? `(${ruleString})` : ''}</span></div>${extraHTML}`;
+            btns.forEach(x => { if(x.innerText === correctAns) x.classList.add('correct') });
+            activePool.push(currentQ); streak = 0;
+        }
+        updateStats(); document.getElementById('next-btn').classList.remove('hidden');
+    }
+
+    function checkTyped() {
+        const inputEl = document.getElementById('answer-input');
+        const val = inputEl.value.trim();
+        if(!val) return;
+        inputEl.disabled = true;
+        const feedback = document.getElementById('feedback'); feedback.classList.remove('hidden');
+        if(val == currentQ.id) {
+            feedback.innerHTML = `<div class="feedback-pill correct"><span>Correct!</span> <span class="rule-citation">(Rule ${currentQ.id})</span></div>`;
+            activePool.splice(currentQIndex, 1); streak++;
+        } else {
+            feedback.innerHTML = `<div class="feedback-pill wrong"><span>Incorrect.</span> <span class="rule-citation">(Rule ${currentQ.id})</span></div><div style="margin-top:10px; color:var(--text-main); font-weight:bold;">${currentQ.name}</div>`;
+            activePool.push(currentQ); streak = 0;
+        }
+        updateStats(); document.getElementById('next-btn').classList.remove('hidden');
+    }
+
+    function updateStats() {
+        document.getElementById('pool-count').innerText = activePool.length;
+        document.getElementById('streak-count').innerText = streak;
+        const streakChip = document.getElementById('chip-streak');
+        if (streak >= 3) streakChip.classList.add('hot'); else streakChip.classList.remove('hot');
+    }
+
+    // --- FLASHCARD LOGIC ---
+    const fcCardEl = document.getElementById('flashcard');
+    function loadFlashcard() {
+        document.getElementById('fc-pool-count').innerText = fcPool.length;
+        if (fcPool.length === 0) {
+            hideAllScreens(); document.getElementById('screen-end').classList.remove('hidden'); return;
+        }
+        
+        let newIndex = fcIndex;
+        while (newIndex === fcIndex && fcPool.length > 1) { newIndex = Math.floor(Math.random() * fcPool.length); }
+        fcIndex = newIndex;
+        const data = fcPool[fcIndex];
+
+        fcCardEl.classList.remove('is-flipped');
+        setTimeout(() => {
+            document.getElementById('fc-img').src = data.file;
+            document.getElementById('fc-context').innerText = data.context;
+            
+            const statusEl = document.getElementById('fc-status');
+            statusEl.innerText = data.status;
+            if (data.color === "green") statusEl.className = "status-badge badge-green";
+            else if (data.color === "red") statusEl.className = "status-badge badge-red";
+            else statusEl.className = "status-badge badge-orange";
+
+            document.getElementById('fc-rule').innerText = data.rule;
+            document.getElementById('fc-action').innerText = data.action;
+        }, 150);
+    }
+
+    function flipFlashcard() { fcCardEl.classList.toggle('is-flipped'); }
+    
+    function fcRight(e) {
+        e.stopPropagation(); 
+        fcPool.splice(fcIndex, 1); 
+        fcIndex = -1; 
+        fcCardEl.classList.remove('is-flipped');
+        setTimeout(loadFlashcard, 300);
+    }
+    
+    function fcWrong(e) {
+        e.stopPropagation();
+        fcCardEl.classList.remove('is-flipped');
+        setTimeout(loadFlashcard, 300); 
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Marine Mastery - Signal Builder</title>
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --accent: #0ea5e9;       
+            --accent-glow: rgba(14, 165, 233, 0.4);
+            --success: #4ade80;      
+            --error: #f87171;        
+            --gold: #facc15;         
+            --caution: #facc15;
+            --glass-bg: rgba(30, 41, 59, 0.95);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-blur: 24px;
+            --radius: 16px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: #0f172a;
+            background-image: radial-gradient(circle at 0% 50%, rgba(14, 165, 233, 0.18) 0%, transparent 60%);
+            background-attachment: fixed;
+            background-size: cover;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container { width: 100%; max-width: 800px; margin: 0 auto; position: relative; z-index: 1; }
+        .hidden { display: none !important; }
+
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 1.75rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            margin-bottom: 1.5rem;
+            width: 100%;
+        }
+
+        /* --- BACK BUTTON --- */
+        .back-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            border: 2px solid var(--accent); color: var(--accent); border-radius: 50px;
+            padding: 8px 24px; font-size: 1.05rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; cursor: pointer; background: transparent; transition: all 0.2s ease;
+        }
+        .back-btn:hover, .back-btn:active { 
+            background: rgba(14, 165, 233, 0.15); 
+            box-shadow: 0 0 15px var(--accent-glow);
+            transform: scale(0.96); 
+        }
+
+        /* --- HUD DASHBOARD --- */
+        .hud-dashboard {
+            display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;
+            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(10px);
+            padding: 14px 18px; border-radius: var(--radius);
+            border: 1px solid var(--glass-border); box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .hud-top-row {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.9rem; color: var(--text-muted);
+            border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;
+        }
+        .hud-stats-row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; align-items: center; }
+
+        .stat-chip {
+            display: flex; align-items: center; gap: 8px; padding: 6px 14px;
+            border-radius: 50px; background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            font-size: 1rem; font-weight: 600;
+        }
+        .chip-pool { color: var(--accent); }
+        .chip-streak.hot { 
+            color: #fff; background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.4)); 
+            border-color: rgba(251, 191, 36, 0.5); box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
+        }
+
+        /* --- BUILDER PROMPT --- */
+        .builder-prompt {
+            text-align: center; font-size: 1.15rem; font-weight: 700; color: var(--text-main);
+            background: rgba(0,0,0,0.3); padding: 14px; border-radius: 12px;
+            border: 1px solid var(--glass-border); margin-bottom: 15px; line-height: 1.4;
+        }
+        .builder-prompt span { 
+            color: var(--gold) !important; 
+            display: block; 
+            font-size: 1.25rem; 
+            margin-top: 6px; 
+            font-weight: 800 !important;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- BLACKBOARD CANVAS --- */
+        .blackboard {
+            width: 100%;
+            height: 360px;
+            background: #020617;
+            border-radius: var(--radius);
+            border: 2px solid rgba(255,255,255,0.12);
+            position: relative;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.9);
+            margin-bottom: 15px;
+            touch-action: none;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+
+        .vessel-guide {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; opacity: 0.25; display: flex; align-items: center; justify-content: center;
+        }
+        .vessel-guide svg { width: 92%; height: 92%; }
+
+        /* Top-Left Correct Answer Box */
+        .answer-preview-box {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(15, 23, 42, 0.94);
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            padding: 8px 12px;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+            pointer-events: none;
+            min-width: 110px;
+            transition: all 0.3s ease;
+        }
+        .answer-preview-box.correct-box {
+            border-color: var(--success);
+            box-shadow: 0 0 15px rgba(74, 222, 128, 0.4);
+        }
+        .answer-preview-box.wrong-box {
+            border-color: var(--error);
+            box-shadow: 0 0 15px rgba(248, 113, 113, 0.4);
+        }
+        .preview-title {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        .preview-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 52px;
+        }
+
+        /* Trash Zone */
+        .trash-zone {
+            position: absolute; top: 12px; right: 12px; padding: 8px 16px;
+            border-radius: 30px; background: rgba(239, 68, 68, 0.1); border: 1.5px dashed rgba(239, 68, 68, 0.4);
+            color: var(--error); font-size: 0.85rem; font-weight: bold; display: flex; align-items: center;
+            gap: 6px; z-index: 10; transition: all 0.2s ease; pointer-events: auto;
+        }
+        .trash-zone.highlight {
+            background: rgba(239, 68, 68, 0.35); border-color: var(--error); transform: scale(1.05); box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+        }
+
+        .placed-light {
+            position: absolute; width: 34px; height: 34px; border-radius: 50% !important;
+            border: 2.5px solid rgba(255,255,255,0.9); box-shadow: 0 0 20px currentColor;
+            transform: translate(-50%, -50%); cursor: move; z-index: 20; touch-action: none;
+        }
+        .placed-light:active { transform: translate(-50%, -50%) scale(1.2); z-index: 30; }
+
+        .palette-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0,0,0,0.35);
+            padding: 12px;
+            border-radius: var(--radius);
+            border: 1px solid var(--glass-border);
+            margin-bottom: 15px;
+        }
+        .palette-hint { font-size: 0.85rem; color: var(--text-muted); text-align: center; }
+        .palette-dots { display: flex; gap: 24px; align-items: center; justify-content: center; }
+
+        .palette-dot {
+            width: 44px; height: 44px; border-radius: 50% !important; cursor: grab;
+            border: 2px solid rgba(255,255,255,0.85); box-shadow: 0 0 15px currentColor;
+            touch-action: none; user-select: none; display: flex; align-items: center;
+            justify-content: center; transition: transform 0.15s;
+        }
+        .palette-dot:active { transform: scale(1.15); }
+        .palette-dot.selected { outline: 3px solid var(--gold); transform: scale(1.15); }
+
+        .dot-white { background: #ffffff; color: #ffffff; }
+        .dot-red { background: #ef4444; color: #ef4444; }
+        .dot-green { background: #22c55e; color: #22c55e; }
+        .dot-yellow { background: #facc15; color: #facc15; }
+
+        .dragging-dot {
+            position: fixed; width: 38px; height: 38px; border-radius: 50% !important;
+            border: 2px solid #fff; box-shadow: 0 0 25px currentColor; pointer-events: none;
+            z-index: 9999; transform: translate(-50%, -50%);
+        }
+
+        .btn {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+            color: white; border: none; padding: 12px 25px; font-size: 1.1rem; font-weight: 700;
+            border-radius: 50px; cursor: pointer; transition: all 0.2s; text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4); width: 100%; margin-bottom: 0;
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn-outline { background: transparent; border: 2px solid rgba(56, 189, 248, 0.5); color: var(--accent); box-shadow: none; }
+        .btn-outline:active { background: rgba(56, 189, 248, 0.1); border-color: var(--accent); }
+        
+        .btn-next-step {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
+            box-shadow: 0 4px 20px rgba(34, 197, 94, 0.4) !important;
+        }
+
+        .feedback-wrapper { margin-top: 15px; display: flex; flex-direction: column; align-items: center; width: 100%; }
+        .feedback-pill { 
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px; 
+            padding: 8px 20px; border-radius: 30px; 
+            background: rgba(0,0,0,0.6); font-size: 1.1rem; font-weight: bold; border: 1px solid var(--glass-border); 
+            text-align: center; white-space: nowrap; 
+        }
+        .feedback-pill.correct { color: var(--success); border-color: var(--success); box-shadow: 0 0 10px rgba(74, 222, 128, 0.2); }
+        .feedback-pill.wrong { color: var(--error); border-color: var(--error); box-shadow: 0 0 10px rgba(248, 113, 113, 0.2); }
+        .rule-citation { color: var(--gold); font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; display: inline; margin: 0; }
+
+        .light-mini { width: 14px; height: 14px; border-radius: 50% !important; margin: 3px; box-shadow: 0 0 12px currentColor; border: 1.5px solid rgba(255,255,255,0.85); flex-shrink: 0; }
+
+        @media (max-width: 600px) {
+            .card { padding: 1.25rem; }
+            .blackboard { height: 320px; }
+            .answer-preview-box { top: 8px; left: 8px; padding: 6px 10px; min-width: 95px; }
+            .preview-title { font-size: 0.68rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="app">
+
+    <div class="hud-dashboard">
+        <div class="hud-top-row">
+            <button class="back-btn" onclick="window.location.href='lights&shaps.html'">← BACK</button>
+            <span style="color:var(--accent); font-weight: bold; text-transform: uppercase;">SIGNAL BUILDER</span>
+        </div>
+        <div class="hud-stats-row">
+            <div class="stat-chip chip-pool"><span>🎯</span> Solved: <span id="builder-score">0</span></div>
+            <div id="builder-streak-chip" class="stat-chip chip-streak"><span>🔥</span> Streak: <span id="builder-streak">0</span></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="builder-prompt">
+            Place the required night lights for:
+            <span id="target-vessel-title">Loading...</span>
+        </div>
+
+        <div class="blackboard" id="blackboard">
+            <div class="vessel-guide" id="vessel-guide-svg"></div>
+
+            <div id="answer-preview-box" class="answer-preview-box hidden">
+                <div class="preview-title" id="preview-title">CORRECT SIGNAL</div>
+                <div class="preview-diagram" id="preview-diagram"></div>
+            </div>
+
+            <div id="trash-zone" class="trash-zone">
+                <span>🗑️ DROP TO REMOVE</span>
+            </div>
+        </div>
+
+        <div class="palette-container">
+            <div class="palette-hint">Drag light to board (or tap color then tap board) • Drag light to reposition or drop on bin to remove</div>
+            <div class="palette-dots">
+                <div class="palette-dot dot-white selected" data-color="white" title="White Light"></div>
+                <div class="palette-dot dot-red" data-color="red" title="Red Light"></div>
+                <div class="palette-dot dot-green" data-color="green" title="Green Light"></div>
+                <div class="palette-dot dot-yellow" data-color="yellow" title="Yellow Light"></div>
+            </div>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+            <button class="btn btn-outline" style="flex:1;" onclick="clearBoard()">CLEAR</button>
+            <button id="main-action-btn" class="btn" style="flex:2;" onclick="handleMainAction()">CHECK SIGNAL</button>
+        </div>
+
+        <div id="builder-feedback" class="feedback-wrapper hidden"></div>
+    </div>
+
+</div>
+
+<script>
+    // =========================================================
+    // --- BUILDER SCENARIO DEFINITIONS ---
+    // =========================================================
+    const builderScenarios = [
+        // --- HEAD-ON SCENARIOS ---
+        {
+            title: "Power-driven vessel underway & making way (≥ 50m, seen head-on)",
+            rule: "Rule 23(a)",
+            aspect: "head-on",
+            previewType: "pdv-50",
+            allowedInventories: [
+                { white: 2, red: 1, green: 1 }
+            ],
+            sidelights: true,
+            mastheads: 2
+        },
+        {
+            title: "Power-driven vessel underway & making way (< 50m, seen head-on)",
+            rule: "Rule 23(a)",
+            aspect: "head-on",
+            previewType: "pdv-under50",
+            allowedInventories: [
+                { white: 1, red: 1, green: 1 }
+            ],
+            sidelights: true,
+            mastheads: 1
+        },
+        {
+            title: "Sailing vessel underway & making way (seen head-on)",
+            rule: "Rule 25(a)",
+            aspect: "head-on",
+            previewType: "sailing",
+            allowedInventories: [
+                { red: 1, green: 1 }
+            ],
+            sidelights: true,
+            noMastheads: true
+        },
+        {
+            title: "Vessel Constrained by Draft (CBD) underway & making way (≥ 50m, seen head-on)",
+            rule: "Rule 28 & Rule 23",
+            aspect: "head-on",
+            previewType: "cbd-50",
+            allowedInventories: [
+                { white: 2, red: 4, green: 1 }
+            ],
+            sidelights: true,
+            mastheads: 2,
+            verticalStack: ['red', 'red', 'red']
+        },
+        {
+            title: "Vessel Constrained by Draft (CBD) underway & making way (< 50m, seen head-on)",
+            rule: "Rule 28 & Rule 23",
+            aspect: "head-on",
+            previewType: "cbd-under50",
+            allowedInventories: [
+                { white: 1, red: 4, green: 1 }
+            ],
+            sidelights: true,
+            mastheads: 1,
+            verticalStack: ['red', 'red', 'red']
+        },
+        {
+            title: "Vessel Not Under Command (NUC) making way through the water (seen head-on)",
+            rule: "Rule 27(a)(i) & (iii)",
+            aspect: "head-on",
+            previewType: "nuc-makingway",
+            allowedInventories: [
+                { red: 3, green: 1 }
+            ],
+            sidelights: true,
+            noMastheads: true,
+            verticalStack: ['red', 'red']
+        },
+        {
+            title: "Vessel Not Under Command (NUC) underway but NOT making way",
+            rule: "Rule 27(a)(i)",
+            aspect: "head-on",
+            previewType: "nuc-stopped",
+            allowedInventories: [
+                { red: 2 }
+            ],
+            sidelights: false,
+            noMastheads: true,
+            verticalStack: ['red', 'red']
+        },
+        {
+            title: "Restricted in Ability to Maneuver (RAM) underway & making way (≥ 50m, seen head-on)",
+            rule: "Rule 27(b)(i) & (iii)",
+            aspect: "head-on",
+            previewType: "ram-50",
+            // Rule 27(b)(iii): A power-driven vessel must exhibit masthead light(s). Vessel >= 50m can show 1 forward masthead or 2 mastheads.
+            allowedInventories: [
+                { white: 2, red: 3, green: 1 }, // 1 masthead + R-W-R hoist + sidelights
+                { white: 3, red: 3, green: 1 }  // 2 mastheads + R-W-R hoist + sidelights
+            ],
+            sidelights: true,
+            mastheads: 'flexible', // allows 1 or 2
+            verticalStack: ['red', 'white', 'red']
+        },
+        {
+            title: "Restricted in Ability to Maneuver (RAM) underway & making way (< 50m, seen head-on)",
+            rule: "Rule 27(b)(i) & (iii)",
+            aspect: "head-on",
+            previewType: "ram-under50",
+            allowedInventories: [
+                { white: 2, red: 3, green: 1 }
+            ],
+            sidelights: true,
+            mastheads: 1,
+            verticalStack: ['red', 'white', 'red']
+        },
+        {
+            title: "Restricted in Ability to Maneuver (RAM) underway but NOT making way",
+            rule: "Rule 27(b)(i)",
+            aspect: "head-on",
+            previewType: "ram-stopped",
+            allowedInventories: [
+                { white: 1, red: 2 }
+            ],
+            sidelights: false,
+            noMastheads: true,
+            verticalStack: ['red', 'white', 'red']
+        },
+        {
+            title: "Pilot vessel on pilotage duty underway & making way (seen head-on)",
+            rule: "Rule 29(a)",
+            aspect: "head-on",
+            previewType: "pilot",
+            allowedInventories: [
+                { white: 1, red: 2, green: 1 }
+            ],
+            sidelights: true,
+            noMastheads: true,
+            verticalStack: ['white', 'red']
+        },
+        {
+            title: "Vessel engaged in trawling making way through the water (≥ 50m, seen head-on)",
+            rule: "Rule 26(b)",
+            aspect: "head-on",
+            previewType: "trawling-50",
+            allowedInventories: [
+                { white: 2, red: 1, green: 2 }
+            ],
+            sidelights: true,
+            mastheadHigherThanHoist: true,
+            verticalStack: ['green', 'white']
+        },
+        {
+            title: "Vessel engaged in trawling making way through the water (< 50m, seen head-on)",
+            rule: "Rule 26(b)",
+            aspect: "head-on",
+            previewType: "trawling-under50",
+            allowedInventories: [
+                { white: 1, red: 1, green: 2 }
+            ],
+            sidelights: true,
+            noMastheads: true,
+            verticalStack: ['green', 'white']
+        },
+        {
+            title: "Vessel engaged in fishing (not trawling) making way through the water (seen head-on)",
+            rule: "Rule 26(c)",
+            aspect: "head-on",
+            previewType: "fishing",
+            allowedInventories: [
+                { white: 1, red: 2, green: 1 }
+            ],
+            sidelights: true,
+            noMastheads: true,
+            verticalStack: ['red', 'white']
+        },
+        {
+            title: "Power-driven vessel towing (length of tow ≤ 200m, vessel < 50m, making way, seen head-on)",
+            rule: "Rule 24(a)",
+            aspect: "head-on",
+            previewType: "towing-short",
+            allowedInventories: [
+                { white: 2, red: 1, green: 1 }
+            ],
+            sidelights: true,
+            verticalStack: ['white', 'white']
+        },
+        {
+            title: "Power-driven vessel towing (length of tow > 200m, vessel < 50m, making way, seen head-on)",
+            rule: "Rule 24(a)",
+            aspect: "head-on",
+            previewType: "towing-long",
+            allowedInventories: [
+                { white: 3, red: 1, green: 1 }
+            ],
+            sidelights: true,
+            verticalStack: ['white', 'white', 'white']
+        },
+        {
+            title: "Power-driven vessel towing (length of tow > 200m, vessel ≥ 50m, making way, seen head-on)",
+            rule: "Rule 24(a) & 23(a)(ii)",
+            aspect: "head-on",
+            previewType: "towing-long-50",
+            allowedInventories: [
+                { white: 4, red: 1, green: 1 }
+            ],
+            sidelights: true,
+            mastheads: 1,
+            verticalStack: ['white', 'white', 'white']
+        },
+        {
+            title: "Vessel at anchor (≥ 50m in length, seen head-on)",
+            rule: "Rule 30(a)",
+            aspect: "head-on",
+            previewType: "anchor-50",
+            allowedInventories: [
+                { white: 2 }
+            ],
+            sidelights: false,
+            noMastheads: true
+        },
+        {
+            title: "Vessel at anchor (< 50m in length)",
+            rule: "Rule 30(b)",
+            aspect: "head-on",
+            previewType: "anchor-under50",
+            allowedInventories: [
+                { white: 1 }
+            ],
+            sidelights: false,
+            noMastheads: true
+        },
+        {
+            title: "Vessel aground (< 50m in length)",
+            rule: "Rule 30(d)",
+            aspect: "head-on",
+            previewType: "aground",
+            allowedInventories: [
+                { white: 1, red: 2 }
+            ],
+            sidelights: false,
+            noMastheads: true,
+            verticalStack: ['red', 'red']
+        },
+
+        // --- PORT ASPECT SCENARIOS ---
+        {
+            title: "Power-driven vessel underway & making way (≥ 50m, seen from PORT side)",
+            rule: "Rule 23(a)",
+            aspect: "port",
+            previewType: "pdv-50-port",
+            allowedInventories: [
+                { white: 2, red: 1 }
+            ],
+            sideAspect: "port",
+            mastheads: 2
+        },
+        {
+            title: "Power-driven vessel underway & making way (< 50m, seen from PORT side)",
+            rule: "Rule 23(a)",
+            aspect: "port",
+            previewType: "pdv-under50-port",
+            allowedInventories: [
+                { white: 1, red: 1 }
+            ],
+            sideAspect: "port",
+            mastheads: 1
+        },
+        {
+            title: "Sailing vessel underway & making way (seen from PORT side)",
+            rule: "Rule 25(a)",
+            aspect: "port",
+            previewType: "sailing-port",
+            allowedInventories: [
+                { red: 1 }
+            ],
+            sideAspect: "port",
+            noMastheads: true
+        },
+        {
+            title: "Vessel Not Under Command (NUC) making way (seen from PORT side)",
+            rule: "Rule 27(a)",
+            aspect: "port",
+            previewType: "nuc-port",
+            allowedInventories: [
+                { red: 3 }
+            ],
+            sideAspect: "port",
+            verticalStack: ['red', 'red']
+        },
+        {
+            title: "Restricted in Ability to Maneuver (RAM) making way (≥ 50m, seen from PORT side)",
+            rule: "Rule 27(b)",
+            aspect: "port",
+            previewType: "ram-50-port",
+            allowedInventories: [
+                { white: 2, red: 3 }, // 1 masthead
+                { white: 3, red: 3 }  // 2 mastheads
+            ],
+            sideAspect: "port",
+            mastheads: 'flexible',
+            verticalStack: ['red', 'white', 'red']
+        },
+
+        // --- STARBOARD ASPECT SCENARIOS ---
+        {
+            title: "Power-driven vessel underway & making way (≥ 50m, seen from STARBOARD side)",
+            rule: "Rule 23(a)",
+            aspect: "starboard",
+            previewType: "pdv-50-stbd",
+            allowedInventories: [
+                { white: 2, green: 1 }
+            ],
+            sideAspect: "starboard",
+            mastheads: 2
+        },
+        {
+            title: "Power-driven vessel underway & making way (< 50m, seen from STARBOARD side)",
+            rule: "Rule 23(a)",
+            aspect: "starboard",
+            previewType: "pdv-under50-stbd",
+            allowedInventories: [
+                { white: 1, green: 1 }
+            ],
+            sideAspect: "starboard",
+            mastheads: 1
+        },
+        {
+            title: "Sailing vessel underway & making way (seen from STARBOARD side)",
+            rule: "Rule 25(a)",
+            aspect: "starboard",
+            previewType: "sailing-stbd",
+            allowedInventories: [
+                { green: 1 }
+            ],
+            sideAspect: "starboard",
+            noMastheads: true
+        },
+        {
+            title: "Vessel Not Under Command (NUC) making way (seen from STARBOARD side)",
+            rule: "Rule 27(a)",
+            aspect: "starboard",
+            previewType: "nuc-stbd",
+            allowedInventories: [
+                { red: 2, green: 1 }
+            ],
+            sideAspect: "starboard",
+            verticalStack: ['red', 'red']
+        },
+        {
+            title: "Restricted in Ability to Maneuver (RAM) making way (≥ 50m, seen from STARBOARD side)",
+            rule: "Rule 27(b)",
+            aspect: "starboard",
+            previewType: "ram-50-stbd",
+            allowedInventories: [
+                { white: 2, red: 2, green: 1 },
+                { white: 3, red: 2, green: 1 }
+            ],
+            sideAspect: "starboard",
+            mastheads: 'flexible',
+            verticalStack: ['red', 'white', 'red']
+        }
+    ];
+
+    let builderIndex = -1;
+    let builderScore = 0;
+    let builderStreak = 0;
+    let placedLights = [];
+    let nextLightId = 1;
+    let selectedPaletteColor = 'white';
+    let isCurrentSolved = false;
+
+    function initBuilder() {
+        builderScore = 0;
+        builderStreak = 0;
+        updateBuilderStats();
+        setupFreeformBoard();
+        loadBuilderScenario();
+    }
+
+    function loadBuilderScenario() {
+        let newIdx = builderIndex;
+        while(newIdx === builderIndex && builderScenarios.length > 1) {
+            newIdx = Math.floor(Math.random() * builderScenarios.length);
+        }
+        builderIndex = newIdx;
+        const current = builderScenarios[builderIndex];
+
+        document.getElementById('target-vessel-title').innerText = current.title;
+        document.getElementById('builder-feedback').classList.add('hidden');
+        document.getElementById('answer-preview-box').classList.add('hidden');
+
+        // Reset Action Button to Check Signal
+        const actionBtn = document.getElementById('main-action-btn');
+        actionBtn.innerText = "CHECK SIGNAL";
+        actionBtn.classList.remove('btn-next-step');
+        isCurrentSolved = false;
+
+        renderWatermarkGuide(current.aspect);
+        clearBoard();
+    }
+
+    function renderWatermarkGuide(aspect) {
+        const svgContainer = document.getElementById('vessel-guide-svg');
+        if (aspect === 'port') {
+            svgContainer.innerHTML = `
+            <svg viewBox="0 0 300 200" fill="none" stroke="currentColor" stroke-width="2">
+                <!-- Port Profile Silhouette (Bow Left, Stern Right) -->
+                <path d="M 35 152 Q 60 170 120 170 L 265 170 Q 275 170 270 148 L 220 148 L 220 120 L 170 120 L 160 148 L 35 148 Z" />
+                <line x1="85" y1="50" x2="85" y2="148" stroke-dasharray="4,4" />
+                <line x1="190" y1="25" x2="190" y2="120" stroke-dasharray="4,4" />
+            </svg>`;
+        } else if (aspect === 'starboard') {
+            svgContainer.innerHTML = `
+            <svg viewBox="0 0 300 200" fill="none" stroke="currentColor" stroke-width="2">
+                <!-- Starboard Profile Silhouette (Bow Right, Stern Left) -->
+                <path d="M 265 152 Q 240 170 180 170 L 35 170 Q 25 170 30 148 L 80 148 L 80 120 L 130 120 L 140 148 L 265 148 Z" />
+                <line x1="215" y1="50" x2="215" y2="148" stroke-dasharray="4,4" />
+                <line x1="110" y1="25" x2="110" y2="120" stroke-dasharray="4,4" />
+            </svg>`;
+        } else {
+            // Head-on view
+            svgContainer.innerHTML = `
+            <svg viewBox="0 0 300 200" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="150" y1="15" x2="150" y2="185" stroke-dasharray="4,4" />
+                <path d="M 50 160 Q 150 190 250 160" />
+            </svg>`;
+        }
+    }
+
+    function clearBoard() {
+        placedLights.forEach(l => l.el.remove());
+        placedLights = [];
+        document.getElementById('answer-preview-box').classList.add('hidden');
+    }
+
+    function createPlacedLight(color, xPct, yPct) {
+        const board = document.getElementById('blackboard');
+        const light = document.createElement('div');
+        const id = nextLightId++;
+
+        light.className = `placed-light dot-${color}`;
+        light.style.left = xPct + '%';
+        light.style.top = yPct + '%';
+
+        const lightObj = { id, color, x: xPct, y: yPct, el: light };
+        placedLights.push(lightObj);
+
+        setupPlacedLightDragging(light, lightObj);
+
+        let lastTap = 0;
+        light.addEventListener('pointerdown', (e) => {
+            const now = Date.now();
+            if (now - lastTap < 300) {
+                deleteLight(lightObj);
+                e.stopPropagation();
+            }
+            lastTap = now;
+        });
+
+        board.appendChild(light);
+    }
+
+    function deleteLight(lightObj) {
+        lightObj.el.remove();
+        placedLights = placedLights.filter(l => l.id !== lightObj.id);
+    }
+
+    function setupFreeformBoard() {
+        const board = document.getElementById('blackboard');
+        const dots = document.querySelectorAll('.palette-dot');
+        const trash = document.getElementById('trash-zone');
+        let activeClone = null;
+        let dragColor = null;
+
+        dots.forEach(dot => {
+            dot.onpointerdown = (e) => {
+                e.preventDefault();
+                dragColor = dot.dataset.color;
+                
+                dots.forEach(d => d.classList.remove('selected'));
+                dot.classList.add('selected');
+                selectedPaletteColor = dragColor;
+
+                activeClone = document.createElement('div');
+                activeClone.className = `dragging-dot dot-${dragColor}`;
+                activeClone.style.left = e.clientX + 'px';
+                activeClone.style.top = e.clientY + 'px';
+                document.body.appendChild(activeClone);
+
+                dot.setPointerCapture(e.pointerId);
+            };
+
+            dot.onpointermove = (e) => {
+                if (!activeClone) return;
+                activeClone.style.left = e.clientX + 'px';
+                activeClone.style.top = e.clientY + 'px';
+            };
+
+            dot.onpointerup = (e) => {
+                if (!activeClone) return;
+                const rect = board.getBoundingClientRect();
+                if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+                    const trashRect = trash.getBoundingClientRect();
+                    if (!(e.clientX >= trashRect.left && e.clientX <= trashRect.right && e.clientY >= trashRect.top && e.clientY <= trashRect.bottom)) {
+                        const xPct = Math.min(Math.max(((e.clientX - rect.left) / rect.width) * 100, 5), 95);
+                        const yPct = Math.min(Math.max(((e.clientY - rect.top) / rect.height) * 100, 5), 95);
+                        createPlacedLight(dragColor, xPct, yPct);
+                    }
+                }
+                activeClone.remove();
+                activeClone = null;
+            };
+
+            dot.onpointercancel = () => {
+                if (activeClone) { activeClone.remove(); activeClone = null; }
+            };
+        });
+
+        board.onpointerdown = (e) => {
+            if (e.target === board || e.target.classList.contains('vessel-guide') || e.target.tagName.toLowerCase() === 'svg') {
+                const rect = board.getBoundingClientRect();
+                const xPct = Math.min(Math.max(((e.clientX - rect.left) / rect.width) * 100, 5), 95);
+                const yPct = Math.min(Math.max(((e.clientY - rect.top) / rect.height) * 100, 5), 95);
+                if (selectedPaletteColor) {
+                    createPlacedLight(selectedPaletteColor, xPct, yPct);
+                }
+            }
+        };
+    }
+
+    function setupPlacedLightDragging(lightEl, lightObj) {
+        const board = document.getElementById('blackboard');
+        const trash = document.getElementById('trash-zone');
+        let isDragging = false;
+
+        lightEl.onpointerdown = (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            isDragging = true;
+            lightEl.setPointerCapture(e.pointerId);
+        };
+
+        lightEl.onpointermove = (e) => {
+            if (!isDragging) return;
+            const rect = board.getBoundingClientRect();
+            const xPct = Math.min(Math.max(((e.clientX - rect.left) / rect.width) * 100, 4), 96);
+            const yPct = Math.min(Math.max(((e.clientY - rect.top) / rect.height) * 100, 4), 96);
+
+            lightEl.style.left = xPct + '%';
+            lightEl.style.top = yPct + '%';
+            lightObj.x = xPct;
+            lightObj.y = yPct;
+
+            const trashRect = trash.getBoundingClientRect();
+            if (e.clientX >= trashRect.left && e.clientX <= trashRect.right && e.clientY >= trashRect.top && e.clientY <= trashRect.bottom) {
+                trash.classList.add('highlight');
+            } else {
+                trash.classList.remove('highlight');
+            }
+        };
+
+        lightEl.onpointerup = (e) => {
+            if (!isDragging) return;
+            isDragging = false;
+            trash.classList.remove('highlight');
+
+            const trashRect = trash.getBoundingClientRect();
+            if (e.clientX >= trashRect.left && e.clientX <= trashRect.right && e.clientY >= trashRect.top && e.clientY <= trashRect.bottom) {
+                deleteLight(lightObj);
+            }
+        };
+    }
+
+    // =========================================================
+    // --- EXACT SIGNAL PREVIEW GENERATOR ---
+    // =========================================================
+    function renderPreviewDiagram(key) {
+        const c = document.createElement('div');
+        c.style.display = 'flex';
+        c.style.flexDirection = 'column';
+        c.style.alignItems = 'center';
+        c.style.justifyContent = 'center';
+
+        const dot = (col) => `<div class="light-mini" style="background:${col}; color:${col};"></div>`;
+
+        if (key === 'pdv-50') {
+            c.innerHTML = `
+            ${dot('#fff')}
+            <div style="margin: 2px 0;">${dot('#fff')}</div>
+            <div style="display:flex; gap:26px;">${dot('#22c55e')}${dot('#ef4444')}</div>`;
+        } else if (key === 'pdv-under50') {
+            c.innerHTML = `
+            <div style="margin-bottom: 6px;">${dot('#fff')}</div>
+            <div style="display:flex; gap:26px;">${dot('#22c55e')}${dot('#ef4444')}</div>`;
+        } else if (key === 'sailing') {
+            c.innerHTML = `
+            <div style="display:flex; gap:30px;">${dot('#22c55e')}${dot('#ef4444')}</div>`;
+        } else if (key === 'nuc-makingway') {
+            c.innerHTML = `
+            ${dot('#ef4444')}${dot('#ef4444')}
+            <div style="display:flex; gap:26px; margin-top:4px;">${dot('#22c55e')}${dot('#ef4444')}</div>`;
+        } else if (key === 'nuc-stopped') {
+            c.innerHTML = `${dot('#ef4444')}${dot('#ef4444')}`;
+        } else if (key === 'ram-50') {
+            c.innerHTML = `
+            <div style="margin-bottom:2px;">${dot('#fff')}</div>
+            <div style="display:flex; flex-direction:column; align-items:center;">
+                ${dot('#ef4444')}${dot('#fff')}${dot('#ef4444')}
+            </div>
+            <div style="display:flex; gap:26px; margin-top:2px;">${dot('#22c55e')}${dot('#ef4444')}</div>`;
+        } else if (key === 'ram-under50') {
+            c.innerHTML = `
+            <div style="margin-bottom:2px;">${dot('#fff')}</div>
+            <div style="display:flex; flex-direction:column; align-items:center;">
+                ${dot('#ef4444')}${dot('#fff')}${dot('#ef4444')}
+            </div>
+            <div style="display:flex; gap:26px; margin-top:2px;">${dot('#22c55e')}${dot('#ef4444')}</div>`;
+        } else if (key === 'ram-stopped') {
+            c.innerHTML = `${dot('#ef4444')}${dot('#fff')}${dot('#ef4444')}`;
+        } else if (key === 'cbd-50') {
+            c.innerHTML = `
+            ${dot('#fff')}
+            <div style="display:flex; gap:6px; align-items:center;">
+                <div style="display:flex; flex-direction:column; align-items:center;">
+                    ${dot('#ef4444')}${dot('#ef4444')}${dot('#ef4444')}
+                </div>
+            </div>
+            <div style="display:flex; gap:26px; margin-top:2px;">${dot('#22c55e')}${dot('#ef4444')}</div>`;
+        } else if (key === 'cbd-under50') {
+            c.innerHTML = `
+            <div style="margin-bottom:2px;">${dot('#fff')}</div>
+            <div style="display:flex; flex-direction:column; align-items:center;">
+                ${dot('#ef4444')}${dot('#ef4444')}${dot('#ef4444')}
+            </div>
+            <div style="display:flex; gap:26px; margin-top:2px;">${dot('#22c55e')}${dot('#ef4444')}</div>`;
+        } else if (key === 'pilot') {
+            c.innerHTML = `
+            ${dot('#fff')}${dot('#ef4444')}
+            <div style="display:flex; gap:26px; margin-top:4px;">${dot('#22c55e')}${dot('#ef4444')}</div>`;
+        } else if (key === 'trawling-50') {
+            c.innerHTML = `
+            <div style="margin-bottom:2px;">${dot('#fff')}</div>
+            ${dot('#22c55e')}${dot('#fff')}
+            <div style="display:flex; gap:26px; margin-top:4px;">${dot('#22c55e')}${dot('#ef4444')}</div>`;
+        } else if (key === 'trawling-under50') {
+            c.innerHTML = `
+            ${dot('#22c55e')}${dot('#fff')}
+            <div style="display:flex; gap:26px; margin-top:4px;">${dot('#22c55e')}${dot('#ef4444')}</div>`;
+        } else if (key === 'fishing') {
+            c.innerHTML = `
+            ${dot('#ef4444')}${dot('#fff')}
+            <div style="display:flex; gap:26px; margin-top:4px;">${dot('#22c55e')}${dot('#ef4444')}</div>`;
+        } else if (key === 'towing-short') {
+            c.innerHTML = `
+            ${dot('#fff')}${dot('#fff')}
+            <div style="display:flex; gap:26px; margin-top:4px;">${dot('#22c55e')}${dot('#ef4444')}</div>`;
+        } else if (key === 'towing-long') {
+            c.innerHTML = `
+            ${dot('#fff')}${dot('#fff')}${dot('#fff')}
+            <div style="display:flex; gap:26px; margin-top:4px;">${dot('#22c55e')}${dot('#ef4444')}</div>`;
+        } else if (key === 'towing-long-50') {
+            c.innerHTML = `
+            ${dot('#fff')}
+            <div style="margin:2px 0;">${dot('#fff')}${dot('#fff')}${dot('#fff')}</div>
+            <div style="display:flex; gap:26px; margin-top:2px;">${dot('#22c55e')}${dot('#ef4444')}</div>`;
+        } else if (key === 'anchor-50') {
+            c.innerHTML = `
+            <div style="display:flex; gap:20px; align-items:flex-end;">
+                <div>${dot('#fff')}</div>
+                <div style="margin-bottom:-10px;">${dot('#fff')}</div>
+            </div>`;
+        } else if (key === 'anchor-under50') {
+            c.innerHTML = `${dot('#fff')}`;
+        } else if (key === 'aground') {
+            c.innerHTML = `
+            <div style="display:flex; gap:16px; align-items:center;">
+                <div>${dot('#fff')}</div>
+                <div style="display:flex; flex-direction:column;">${dot('#ef4444')}${dot('#ef4444')}</div>
+            </div>`;
+        }
+        else if (key === 'pdv-50-port') {
+            c.innerHTML = `
+            <div style="display:flex; gap:28px; align-items:flex-start;">
+                <div style="margin-top:14px;">${dot('#fff')}</div>
+                <div>${dot('#fff')}</div>
+            </div>
+            <div style="margin-top:6px; margin-right:20px;">${dot('#ef4444')}</div>`;
+        } else if (key === 'pdv-under50-port') {
+            c.innerHTML = `
+            <div style="margin-bottom:6px; margin-right:16px;">${dot('#fff')}</div>
+            <div style="margin-right:16px;">${dot('#ef4444')}</div>`;
+        } else if (key === 'sailing-port') {
+            c.innerHTML = `${dot('#ef4444')}`;
+        } else if (key === 'nuc-port') {
+            c.innerHTML = `
+            ${dot('#ef4444')}${dot('#ef4444')}
+            <div style="margin-top:6px;">${dot('#ef4444')}</div>`;
+        } else if (key === 'ram-50-port') {
+            c.innerHTML = `
+            <div style="display:flex; gap:16px; align-items:center;">
+                <div style="margin-top:10px;">${dot('#fff')}</div>
+                <div style="display:flex; flex-direction:column; align-items:center;">
+                    ${dot('#ef4444')}${dot('#fff')}${dot('#ef4444')}
+                </div>
+            </div>
+            <div style="margin-top:4px;">${dot('#ef4444')}</div>`;
+        }
+        else if (key === 'pdv-50-stbd') {
+            c.innerHTML = `
+            <div style="display:flex; gap:28px; align-items:flex-start;">
+                <div>${dot('#fff')}</div>
+                <div style="margin-top:14px;">${dot('#fff')}</div>
+            </div>
+            <div style="margin-top:6px; margin-left:20px;">${dot('#22c55e')}</div>`;
+        } else if (key === 'pdv-under50-stbd') {
+            c.innerHTML = `
+            <div style="margin-bottom:6px; margin-left:16px;">${dot('#fff')}</div>
+            <div style="margin-left:16px;">${dot('#22c55e')}</div>`;
+        } else if (key === 'sailing-stbd') {
+            c.innerHTML = `${dot('#22c55e')}`;
+        } else if (key === 'nuc-stbd') {
+            c.innerHTML = `
+            ${dot('#ef4444')}${dot('#ef4444')}
+            <div style="margin-top:6px;">${dot('#22c55e')}</div>`;
+        } else if (key === 'ram-50-stbd') {
+            c.innerHTML = `
+            <div style="display:flex; gap:16px; align-items:center;">
+                <div style="display:flex; flex-direction:column; align-items:center;">
+                    ${dot('#ef4444')}${dot('#fff')}${dot('#ef4444')}
+                </div>
+                <div style="margin-top:10px;">${dot('#fff')}</div>
+            </div>
+            <div style="margin-top:4px;">${dot('#22c55e')}</div>`;
+        }
+
+        return c;
+    }
+
+    // =========================================================
+    // --- MAIN ACTION (CHECK SIGNAL / NEXT VESSEL) ---
+    // =========================================================
+    function handleMainAction() {
+        if (isCurrentSolved) {
+            loadBuilderScenario();
+            return;
+        }
+
+        const current = builderScenarios[builderIndex];
+        const feedback = document.getElementById('builder-feedback');
+        feedback.classList.remove('hidden');
+
+        const result = evaluateFreeformLights(placedLights, current);
+
+        const previewBox = document.getElementById('answer-preview-box');
+        const previewTitle = document.getElementById('preview-title');
+        const previewDiagram = document.getElementById('preview-diagram');
+        
+        previewDiagram.innerHTML = '';
+        previewDiagram.appendChild(renderPreviewDiagram(current.previewType));
+        previewBox.classList.remove('hidden');
+
+        const actionBtn = document.getElementById('main-action-btn');
+
+        if (result.ok) {
+            feedback.innerHTML = `<div class="feedback-pill correct"><span>Correct!</span> <span class="rule-citation">(${current.rule})</span></div>`;
+            builderScore++;
+            builderStreak++;
+            previewBox.className = "answer-preview-box correct-box";
+            previewTitle.innerText = "CORRECT SIGNAL";
+            previewTitle.style.color = "var(--success)";
+
+            // Transform Check Button into Next Button
+            actionBtn.innerText = "NEXT VESSEL →";
+            actionBtn.classList.add('btn-next-step');
+            isCurrentSolved = true;
+        } else {
+            feedback.innerHTML = `<div class="feedback-pill wrong"><span>${result.msg}</span> <span class="rule-citation">(${current.rule})</span></div>`;
+            builderStreak = 0;
+            previewBox.className = "answer-preview-box wrong-box";
+            previewTitle.innerText = "CORRECT SIGNAL:";
+            previewTitle.style.color = "var(--error)";
+        }
+
+        updateBuilderStats();
+    }
+
+    function evaluateFreeformLights(lights, spec) {
+        // 1. Check against allowed inventory profiles
+        const userColors = { white: 0, red: 0, green: 0, yellow: 0 };
+        lights.forEach(l => { if (userColors[l.color] !== undefined) userColors[l.color]++; });
+
+        let matchingInv = null;
+        for (let inv of spec.allowedInventories) {
+            let match = true;
+            for (let c of ['white', 'red', 'green', 'yellow']) {
+                const exp = inv[c] || 0;
+                if (userColors[c] !== exp) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) {
+                matchingInv = inv;
+                break;
+            }
+        }
+
+        if (!matchingInv) {
+            const descriptions = spec.allowedInventories.map(inv => {
+                const names = [];
+                for(let k in inv) names.push(`${inv[k]} ${k}`);
+                return names.join(', ');
+            });
+            return { ok: false, msg: `Incorrect lights. Requires: ${descriptions.join(' OR ')}.` };
+        }
+
+        let unassigned = [...lights];
+
+        // 2. Sidelights Verification
+        if (spec.aspect === 'head-on') {
+            if (spec.sidelights) {
+                const stbdGreen = unassigned.find(l => l.color === 'green' && l.x <= 48 && l.y >= 35);
+                const portRed = unassigned.find(l => l.color === 'red' && l.x >= 52 && l.y >= 35);
+
+                if (!stbdGreen || !portRed) {
+                    return { ok: false, msg: "Missing sidelights: Green on Left (Starboard), Red on Right (Port)." };
+                }
+                if (Math.abs(portRed.y - stbdGreen.y) > 28) {
+                    return { ok: false, msg: "Sidelights should be level horizontally." };
+                }
+                unassigned = unassigned.filter(l => l.id !== stbdGreen.id && l.id !== portRed.id);
+            }
+        } else if (spec.aspect === 'port') {
+            const portRed = unassigned.find(l => l.color === 'red' && l.y >= 40);
+            if (!portRed) return { ok: false, msg: "Missing port sidelight (Red)." };
+            unassigned = unassigned.filter(l => l.id !== portRed.id);
+        } else if (spec.aspect === 'starboard') {
+            const stbdGreen = unassigned.find(l => l.color === 'green' && l.y >= 40);
+            if (!stbdGreen) return { ok: false, msg: "Missing starboard sidelight (Green)." };
+            unassigned = unassigned.filter(l => l.id !== stbdGreen.id);
+        }
+
+        // 3. Vertical Stack Extraction
+        let foundStackLights = [];
+        if (spec.verticalStack) {
+            const stackResult = extractVerticalStack(unassigned, spec.verticalStack);
+            if (!stackResult.ok) return stackResult;
+            foundStackLights = stackResult.stack;
+            unassigned = unassigned.filter(l => !foundStackLights.some(sl => sl.id === l.id));
+        }
+
+        // 4. Masthead Verification
+        if (spec.aspect === 'head-on') {
+            if (spec.mastheadHigherThanHoist) {
+                const mastWhite = unassigned.find(l => l.color === 'white' && l.x >= 35 && l.x <= 65);
+                if (!mastWhite) return { ok: false, msg: "Missing white masthead light abaft and higher than all-round lights." };
+                
+                const topHoist = foundStackLights[0];
+                if (mastWhite.y >= topHoist.y) {
+                    return { ok: false, msg: "Masthead light must be higher than the green all-round light." };
+                }
+                unassigned = unassigned.filter(l => l.id !== mastWhite.id);
+            } else if (spec.mastheads === 1) {
+                const mastWhite = unassigned.find(l => l.color === 'white' && l.x >= 35 && l.x <= 65 && l.y < 65);
+                if (!mastWhite) return { ok: false, msg: "Requires 1 forward white masthead light on centerline." };
+                unassigned = unassigned.filter(l => l.id !== mastWhite.id);
+            } else if (spec.mastheads === 2) {
+                const mastWhites = unassigned.filter(l => l.color === 'white' && l.x >= 35 && l.x <= 65 && l.y < 65);
+                if (mastWhites.length !== 2) return { ok: false, msg: "Requires 2 white masthead lights on centerline." };
+                
+                mastWhites.sort((a,b) => a.y - b.y);
+                if (mastWhites[1].y - mastWhites[0].y < 8) {
+                    return { ok: false, msg: "Aft masthead light must be higher than forward one." };
+                }
+                unassigned = unassigned.filter(l => !mastWhites.some(mw => mw.id === l.id));
+            } else if (spec.mastheads === 'flexible') {
+                const mastWhites = unassigned.filter(l => l.color === 'white');
+                if (mastWhites.length === 1) {
+                    unassigned = unassigned.filter(l => l.id !== mastWhites[0].id);
+                } else if (mastWhites.length === 2) {
+                    mastWhites.sort((a,b) => a.y - b.y);
+                    unassigned = unassigned.filter(l => !mastWhites.some(mw => mw.id === l.id));
+                }
+            }
+        } else if (spec.aspect === 'port') {
+            if (spec.mastheads === 1 || (spec.mastheads === 'flexible' && unassigned.filter(l => l.color === 'white').length === 1)) {
+                const mastWhite = unassigned.find(l => l.color === 'white' && l.y < 55);
+                if (!mastWhite) return { ok: false, msg: "Missing forward white masthead light." };
+                unassigned = unassigned.filter(l => l.id !== mastWhite.id);
+            } else if (spec.mastheads === 2 || (spec.mastheads === 'flexible' && unassigned.filter(l => l.color === 'white').length === 2)) {
+                const mastWhites = unassigned.filter(l => l.color === 'white' && l.y < 60);
+                if (mastWhites.length !== 2) return { ok: false, msg: "Requires 2 white masthead lights." };
+                
+                mastWhites.sort((a,b) => a.x - b.x);
+                const fwd = mastWhites[0];
+                const aft = mastWhites[1];
+
+                if (aft.y >= fwd.y - 4) {
+                    return { ok: false, msg: "Aft masthead light (right) must be higher than forward masthead." };
+                }
+                unassigned = unassigned.filter(l => !mastWhites.some(mw => mw.id === l.id));
+            }
+        } else if (spec.aspect === 'starboard') {
+            if (spec.mastheads === 1 || (spec.mastheads === 'flexible' && unassigned.filter(l => l.color === 'white').length === 1)) {
+                const mastWhite = unassigned.find(l => l.color === 'white' && l.y < 55);
+                if (!mastWhite) return { ok: false, msg: "Missing forward white masthead light." };
+                unassigned = unassigned.filter(l => l.id !== mastWhite.id);
+            } else if (spec.mastheads === 2 || (spec.mastheads === 'flexible' && unassigned.filter(l => l.color === 'white').length === 2)) {
+                const mastWhites = unassigned.filter(l => l.color === 'white' && l.y < 60);
+                if (mastWhites.length !== 2) return { ok: false, msg: "Requires 2 white masthead lights." };
+                
+                mastWhites.sort((a,b) => a.x - b.x);
+                const aft = mastWhites[0];
+                const fwd = mastWhites[1];
+
+                if (aft.y >= fwd.y - 4) {
+                    return { ok: false, msg: "Aft masthead light (left) must be higher than forward masthead." };
+                }
+                unassigned = unassigned.filter(l => !mastWhites.some(mw => mw.id === l.id));
+            }
+        }
+
+        if (spec.previewType === 'anchor-50') {
+            const whites = unassigned.filter(l => l.color === 'white');
+            if (whites.length === 2) unassigned = [];
+        }
+
+        return { ok: true };
+    }
+
+    function extractVerticalStack(lights, expectedColors) {
+        const candidates = lights.filter(l => expectedColors.includes(l.color));
+        if (candidates.length < expectedColors.length) {
+            return { ok: false, msg: `Missing lights for vertical hoist (${expectedColors.join('-')}).` };
+        }
+
+        for (let i = 0; i < candidates.length; i++) {
+            const anchor = candidates[i];
+            const column = candidates.filter(c => Math.abs(c.x - anchor.x) <= 16);
+
+            if (column.length >= expectedColors.length) {
+                column.sort((a, b) => a.y - b.y);
+                
+                for (let start = 0; start <= column.length - expectedColors.length; start++) {
+                    let match = true;
+                    for (let k = 0; k < expectedColors.length; k++) {
+                        if (column[start + k].color !== expectedColors[k]) {
+                            match = false;
+                            break;
+                        }
+                    }
+                    if (match) {
+                        return { ok: true, stack: column.slice(start, start + expectedColors.length) };
+                    }
+                }
+            }
+        }
+
+        return { ok: false, msg: `Vertical hoist must be ordered top-to-bottom: ${expectedColors.join(' over ')}.` };
+    }
+
+    function updateBuilderStats() {
+        document.getElementById('builder-score').innerText = builderScore;
+        document.getElementById('builder-streak').innerText = builderStreak;
+        const streakChip = document.getElementById('builder-streak-chip');
+        if (builderStreak >= 3) streakChip.classList.add('hot'); else streakChip.classList.remove('hot');
+    }
+
+    // Launch directly into Signal Builder
+    initBuilder();
+</script>
+</body>
+</html>
